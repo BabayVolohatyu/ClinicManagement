@@ -10,6 +10,8 @@ namespace ClinicManagement.Data
         public DbSet<Symptom> Symptoms {get; set; }
         public DbSet<SicknessSymptom> SicknessSymptoms {get; set; }
 
+        public DbSet<DoctorSpecialty> DoctorSpecialties {get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //Sickness
@@ -36,6 +38,10 @@ namespace ClinicManagement.Data
                 .HasOne(ss => ss.Symptom)
                 .WithMany(s => s.SicknessSymptoms)
                 .HasForeignKey(ss => ss.SymptomId);
+
+            //DoctorSpecialty
+            modelBuilder.Entity<DoctorSpecialty>()
+                .HasKey(ds => ds.Id);
         }
     }
 }
