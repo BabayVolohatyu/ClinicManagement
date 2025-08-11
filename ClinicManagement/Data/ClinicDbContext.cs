@@ -12,11 +12,19 @@ namespace ClinicManagement.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //Sickness-Symptom many-to-many relationship
-            //PrimaryKey setup
+            //Sickness
+            modelBuilder.Entity<Sickness>()
+                .HasKey(s => s.Id);
+
+            //Symptom
+            modelBuilder.Entity<Symptom>()
+                .HasKey(s => s.Id);
+
+            //SicknessSymptom
             modelBuilder.Entity<SicknessSymptom>()
                 .HasKey(ss => new { ss.SicknessId, ss.SymptomId });
 
+            //Sickness-Symptom many-to-many relationship
             //One to many from SS to Sickness  
             modelBuilder.Entity<SicknessSymptom>()
                 .HasOne(ss => ss.Sickness)
