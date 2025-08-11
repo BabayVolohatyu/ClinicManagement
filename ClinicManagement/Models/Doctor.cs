@@ -1,0 +1,15 @@
+﻿namespace ClinicManagement.Models
+{
+    public class Doctor
+    {
+        public int Id { get; set; }
+        public string FirstName { get; set; } = null!;
+        public string LastName { get; set; } = null!;
+        public string Patronymic { get; set; } = null!;
+
+        public int SpecialtyId { get; set; }
+
+        //Many-to-one
+        public DoctorSpecialty Specialty { get; set; } = null!;
+    }
+}

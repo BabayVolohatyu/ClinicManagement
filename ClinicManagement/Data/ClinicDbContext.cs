@@ -9,7 +9,7 @@ namespace ClinicManagement.Data
         public DbSet<Sickness> Sicknesses {get; set; }
         public DbSet<Symptom> Symptoms {get; set; }
         public DbSet<SicknessSymptom> SicknessSymptoms {get; set; }
-
+        public DbSet<Doctor> Doctors {get; set; }
         public DbSet<DoctorSpecialty> DoctorSpecialties {get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -39,9 +39,20 @@ namespace ClinicManagement.Data
                 .WithMany(s => s.SicknessSymptoms)
                 .HasForeignKey(ss => ss.SymptomId);
 
+            //Doctor
+            modelBuilder.Entity<Doctor>()
+                .HasKey(d => d.Id);
+
             //DoctorSpecialty
             modelBuilder.Entity<DoctorSpecialty>()
                 .HasKey(ds => ds.Id);
+
+            //Doctor - Specialty many-to-one relationship
+            modelBuilder.Entity<Doctor>()
+                .HasOne(d => d.Specialty)
+                .WithMany(s => s.Doctors)
+                .HasForeignKey(d => d.SpecialtyId)
+                .IsRequired();
         }
     }
 }
