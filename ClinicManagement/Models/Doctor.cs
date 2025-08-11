@@ -10,6 +10,6 @@
         public int SpecialtyId { get; set; }
 
         //Many-to-one
-        public DoctorSpecialty Specialty { get; set; } = null!;
+        public Specialty Specialty { get; set; } = null!;
     }
 }

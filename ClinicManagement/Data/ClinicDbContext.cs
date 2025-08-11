@@ -10,7 +10,7 @@ namespace ClinicManagement.Data
         public DbSet<Symptom> Symptoms {get; set; }
         public DbSet<SicknessSymptom> SicknessSymptoms {get; set; }
         public DbSet<Doctor> Doctors {get; set; }
-        public DbSet<DoctorSpecialty> DoctorSpecialties {get; set; }
+        public DbSet<Specialty> Specialties {get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -43,8 +43,8 @@ namespace ClinicManagement.Data
             modelBuilder.Entity<Doctor>()
                 .HasKey(d => d.Id);
 
-            //DoctorSpecialty
-            modelBuilder.Entity<DoctorSpecialty>()
+            //Specialty
+            modelBuilder.Entity<Specialty>()
                 .HasKey(ds => ds.Id);
 
             //Doctor - Specialty many-to-one relationship
