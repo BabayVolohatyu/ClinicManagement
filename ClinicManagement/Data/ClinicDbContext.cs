@@ -1,7 +1,7 @@
 ﻿using ClinicManagement.Models;
-using ClinicManagement.Models.Cabinet;
-using ClinicManagement.Models.Doctor;
-using ClinicManagement.Models.Sickness;
+using ClinicManagement.Models.Facilities;
+using ClinicManagement.Models.Staff;
+using ClinicManagement.Models.Health;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicManagement.Data
@@ -19,6 +19,7 @@ namespace ClinicManagement.Data
         public DbSet<Address> Addresses {get; set; }
         public DbSet<Cabinet> Cabinets {get; set; }
         public DbSet<CabinetType> CabinetTypes {get; set; }
+        public DbSet<Schedule> Schedules {get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -101,6 +102,34 @@ namespace ClinicManagement.Data
                 .WithOne(c => c.Type)
                 .HasForeignKey(c => c.TypeId)
                 .IsRequired();
+
+            //Schedule
+            modelBuilder.Entity<Schedule>()
+                .HasKey(s => s.Id);
+
+            //Explicit definition of date type
+            modelBuilder.Entity<Schedule>()
+                .Property(s => s.StartTime)
+                .HasColumnType("timestamp")
+                .IsRequired();
+
+            modelBuilder.Entity<Schedule>()
+                .Property(s => s.EndTime)
+                .HasColumnType("timestamp")
+                .IsRequired();
+
+            //One-to-many from Doctor to Schedule
+            modelBuilder.Entity<Doctor>()
+                .HasMany(d => d.Schedules)
+                .WithOne(s => s.Doctor)
+                .HasForeignKey(s => s.DoctorId)
+                .IsRequired();
+            //One-to-many from Cabinet to Schedule
+            modelBuilder.Entity<Cabinet>()
+               .HasMany(c => c.Schedules)
+               .WithOne(s => s.Cabinet)
+               .HasForeignKey(s => s.CabinetId)
+               .IsRequired();
         }
     }
 }

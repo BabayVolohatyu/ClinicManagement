@@ -1,4 +1,4 @@
-﻿namespace ClinicManagement.Models.Cabinet
+﻿namespace ClinicManagement.Models.Facilities
 {
     public class Cabinet
     {
@@ -10,6 +10,9 @@
 
         //Many-to-one
         public CabinetType Type { get; set; } = null!;
+
+        //One-to-many
+        public ICollection<Schedule> Schedules { get; set; } = null!;
 
     }
 }
