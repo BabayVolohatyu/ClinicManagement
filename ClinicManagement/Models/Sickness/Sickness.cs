@@ -1,4 +1,4 @@
-﻿namespace ClinicManagement.Models
+﻿namespace ClinicManagement.Models.Sickness
 {
     public class Sickness
     {

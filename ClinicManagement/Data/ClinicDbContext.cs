@@ -1,4 +1,5 @@
-﻿using ClinicManagement.Models;
+﻿using ClinicManagement.Models.Doctor;
+using ClinicManagement.Models.Sickness;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicManagement.Data

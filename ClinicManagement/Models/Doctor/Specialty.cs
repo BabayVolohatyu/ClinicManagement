@@ -1,4 +1,4 @@
-﻿namespace ClinicManagement.Models
+﻿namespace ClinicManagement.Models.Doctor
 {
     public class Specialty
     {
