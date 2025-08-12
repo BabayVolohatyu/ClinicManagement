@@ -24,29 +24,12 @@ namespace ClinicManagement.Data
         public DbSet<Schedule> Schedules {get; set; }
         public DbSet<DistrictDoctor> DistrictDoctors {get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-
-            //Person
-            modelBuilder.Entity<Person>()
-                .HasKey(p => p.Id);
-
-            //Patient
-            modelBuilder.Entity<Patient>()
-                .HasKey(pt =>pt.Id);
-            
+        {   
             //One-to-one from Patient to Person
             modelBuilder.Entity<Patient>()
                 .HasOne(pt => pt.Person)
                 .WithOne(p => p.Patient)
                 .HasForeignKey<Patient>(pt => pt.PersonId);
-
-            //Sickness
-            modelBuilder.Entity<Sickness>()
-                .HasKey(s => s.Id);
-
-            //Symptom
-            modelBuilder.Entity<Symptom>()
-                .HasKey(s => s.Id);
 
             //SicknessSymptom
             modelBuilder.Entity<SicknessSymptom>()
@@ -65,10 +48,6 @@ namespace ClinicManagement.Data
                 .WithMany(s => s.SicknessSymptoms)
                 .HasForeignKey(ss => ss.SymptomId);
 
-            //Treatment
-            modelBuilder.Entity<Treatment>()
-                .HasKey(t => t.Id);
-
             //SicknessTreatment
             modelBuilder.Entity<SicknessTreatment>()
                 .HasKey(st => new { st.SicknessId, st.TreatmentId });
@@ -86,10 +65,6 @@ namespace ClinicManagement.Data
                 .WithMany(s => s.SicknessTreatment)
                 .HasForeignKey(st => st.TreatmentId);
 
-            //Doctor
-            modelBuilder.Entity<Doctor>()
-                .HasKey(d => d.Id);
-
             //One-to-one from Doctor to Person
             modelBuilder.Entity<Doctor>()
                 .HasOne(d => d.Person)
@@ -104,9 +79,7 @@ namespace ClinicManagement.Data
                 .HasOne(dd => dd.Doctor)
                 .WithOne(d => d.DistrictDoctor)
                 .HasForeignKey<DistrictDoctor>(dd => dd.DoctorId);
-            //Specialty
-            modelBuilder.Entity<Specialty>()
-                .HasKey(ds => ds.Id);
+       
 
             //One-to-many from Specialty to Doctor
             modelBuilder.Entity<Specialty>()
@@ -115,18 +88,6 @@ namespace ClinicManagement.Data
                 .HasForeignKey(d => d.SpecialtyId)
                 .IsRequired();
 
-            //Address 
-            modelBuilder.Entity<Address>()
-                .HasKey(a => a.Id);
-
-            //Cabinet
-            modelBuilder.Entity<Cabinet>()
-                .HasKey(c => c.Id);
-
-            //CabinetType
-            modelBuilder.Entity<CabinetType>()
-                .HasKey(ct => ct.Id);
-
             //One-to-many from CT to Cabinet
             modelBuilder.Entity<CabinetType>()
                 .HasMany(ct => ct.Cabinets)
@@ -134,11 +95,8 @@ namespace ClinicManagement.Data
                 .HasForeignKey(c => c.TypeId)
                 .IsRequired();
 
-            //Schedule
-            modelBuilder.Entity<Schedule>()
-                .HasKey(s => s.Id);
 
-            //Explicit definition of date type
+            //Explicit definition of Schedule date type
             modelBuilder.Entity<Schedule>()
                 .Property(s => s.StartTime)
                 .HasColumnType("timestamp")
