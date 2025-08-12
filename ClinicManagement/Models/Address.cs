@@ -11,5 +11,13 @@
 
         //One-to-many
         public ICollection<Patient> Patients { get; set; } = null!;
+
+        //One-to-many
+        public ICollection<DoctorOnCallStatus> DoctorOnCallStatuses { get; set; } = null!;
+
+
+        //One-to-many
+        public ICollection<HomeCallLog> HomeCallLogs { get; set; } = null!;
+
     }
 }
