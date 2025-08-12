@@ -1,4 +1,5 @@
 ﻿using ClinicManagement.Models;
+using ClinicManagement.Models.Cabinet;
 using ClinicManagement.Models.Doctor;
 using ClinicManagement.Models.Sickness;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,8 @@ namespace ClinicManagement.Data
         public DbSet<Doctor> Doctors {get; set; }
         public DbSet<Specialty> Specialties {get; set; }
         public DbSet<Address> Addresses {get; set; }
+        public DbSet<Cabinet> Cabinets {get; set; }
+        public DbSet<CabinetType> CabinetTypes {get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -73,16 +76,31 @@ namespace ClinicManagement.Data
             modelBuilder.Entity<Specialty>()
                 .HasKey(ds => ds.Id);
 
-            //Doctor - Specialty many-to-one relationship
-            modelBuilder.Entity<Doctor>()
-                .HasOne(d => d.Specialty)
-                .WithMany(s => s.Doctors)
+            //One-to-many from Specialty to Doctor
+            modelBuilder.Entity<Specialty>()
+                .HasMany(s => s.Doctors)
+                .WithOne(d => d.Specialty)
                 .HasForeignKey(d => d.SpecialtyId)
                 .IsRequired();
 
             //Address 
             modelBuilder.Entity<Address>()
                 .HasKey(a => a.Id);
+
+            //Cabinet
+            modelBuilder.Entity<Cabinet>()
+                .HasKey(c => c.Id);
+
+            //CabinetType
+            modelBuilder.Entity<CabinetType>()
+                .HasKey(ct => ct.Id);
+
+            //One-to-many from CT to Cabinet
+            modelBuilder.Entity<CabinetType>()
+                .HasMany(ct => ct.Cabinets)
+                .WithOne(c => c.Type)
+                .HasForeignKey(c => c.TypeId)
+                .IsRequired();
         }
     }
 }
