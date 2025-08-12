@@ -11,5 +11,8 @@
 
         //Many-to-one
         public Specialty Specialty { get; set; } = null!;
+
+        //One-to-many
+        public ICollection<Schedule> Schedules { get; set; } = null!;
     }
 }

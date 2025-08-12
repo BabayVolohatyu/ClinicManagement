@@ -1,4 +1,4 @@
-﻿namespace ClinicManagement.Models.Cabinet
+﻿namespace ClinicManagement.Models.Facilities
 {
     public class CabinetType
     {
