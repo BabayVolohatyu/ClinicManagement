@@ -1,4 +1,5 @@
-﻿using ClinicManagement.Models.Doctor;
+﻿using ClinicManagement.Models;
+using ClinicManagement.Models.Doctor;
 using ClinicManagement.Models.Sickness;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +13,7 @@ namespace ClinicManagement.Data
         public DbSet<SicknessSymptom> SicknessSymptoms {get; set; }
         public DbSet<Doctor> Doctors {get; set; }
         public DbSet<Specialty> Specialties {get; set; }
+        public DbSet<Address> Addresses {get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -54,6 +56,10 @@ namespace ClinicManagement.Data
                 .WithMany(s => s.Doctors)
                 .HasForeignKey(d => d.SpecialtyId)
                 .IsRequired();
+
+            //Address 
+            modelBuilder.Entity<Address>()
+                .HasKey(a => a.Id);
         }
     }
 }
