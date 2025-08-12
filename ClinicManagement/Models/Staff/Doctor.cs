@@ -3,10 +3,10 @@
     public class Doctor
     {
         public int Id { get; set; }
-        public string FirstName { get; set; } = null!;
-        public string LastName { get; set; } = null!;
-        public string Patronymic { get; set; } = null!;
+        public int PersonId { get; set; }
 
+        //One-to-one
+        public Person Person { get; set; } = null!;
         public int SpecialtyId { get; set; }
 
         //Many-to-one

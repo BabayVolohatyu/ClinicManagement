@@ -8,5 +8,8 @@
         public string Locality { get; set; } = null!;
         public string StreetName { get; set; } = null!;
         public int StreetNumber { get; set; }
+
+        //One-to-many
+        public ICollection<Patient> Patients { get; set; } = null!;
     }
 }

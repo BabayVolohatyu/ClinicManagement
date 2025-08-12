@@ -9,6 +9,8 @@ namespace ClinicManagement.Data
     public class ClinicDbContext : DbContext
     {
         public ClinicDbContext(DbContextOptions<ClinicDbContext> options) : base(options) { }
+        public DbSet<Person> People { get; set; }
+        public DbSet<Patient> Patients { get; set; }
         public DbSet<Sickness> Sicknesses {get; set; }
         public DbSet<Symptom> Symptoms {get; set; }
         public DbSet<SicknessSymptom> SicknessSymptoms {get; set; }
@@ -23,6 +25,21 @@ namespace ClinicManagement.Data
         public DbSet<DistrictDoctor> DistrictDoctors {get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
+            //Person
+            modelBuilder.Entity<Person>()
+                .HasKey(p => p.Id);
+
+            //Patient
+            modelBuilder.Entity<Patient>()
+                .HasKey(pt =>pt.Id);
+            
+            //One-to-one from Patient to Person
+            modelBuilder.Entity<Patient>()
+                .HasOne(pt => pt.Person)
+                .WithOne(p => p.Patient)
+                .HasForeignKey<Patient>(pt => pt.PersonId);
+
             //Sickness
             modelBuilder.Entity<Sickness>()
                 .HasKey(s => s.Id);
@@ -72,6 +89,12 @@ namespace ClinicManagement.Data
             //Doctor
             modelBuilder.Entity<Doctor>()
                 .HasKey(d => d.Id);
+
+            //One-to-one from Doctor to Person
+            modelBuilder.Entity<Doctor>()
+                .HasOne(d => d.Person)
+                .WithOne(p => p.Doctor)
+                .HasForeignKey<Doctor>(d => d.PersonId);
 
             //DistrictDoctor
             modelBuilder.Entity<DistrictDoctor>()
