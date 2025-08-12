@@ -1,4 +1,6 @@
-﻿namespace ClinicManagement.Models.Staff
+﻿using ClinicManagement.Models.Health;
+
+namespace ClinicManagement.Models.Staff
 {
     public class Doctor
     {
@@ -17,5 +19,8 @@
 
         //One-to-many
         public ICollection<Schedule> Schedules { get; set; } = null!;
+
+        //Many-to-one
+        public ICollection<DoctorProcedure> DoctorProcedures { get; set; } = null!;
     }
 }
