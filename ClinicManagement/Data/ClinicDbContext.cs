@@ -20,7 +20,7 @@ namespace ClinicManagement.Data
         public DbSet<Cabinet> Cabinets {get; set; }
         public DbSet<CabinetType> CabinetTypes {get; set; }
         public DbSet<Schedule> Schedules {get; set; }
-
+        public DbSet<DistrictDoctor> DistrictDoctors {get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //Sickness
@@ -73,6 +73,14 @@ namespace ClinicManagement.Data
             modelBuilder.Entity<Doctor>()
                 .HasKey(d => d.Id);
 
+            //DistrictDoctor
+            modelBuilder.Entity<DistrictDoctor>()
+                .HasKey(dd =>  dd.DoctorId);
+            //One-to-one from DD to Doctor
+            modelBuilder.Entity<DistrictDoctor>()
+                .HasOne(dd => dd.Doctor)
+                .WithOne(d => d.DistrictDoctor)
+                .HasForeignKey<DistrictDoctor>(dd => dd.DoctorId);
             //Specialty
             modelBuilder.Entity<Specialty>()
                 .HasKey(ds => ds.Id);
