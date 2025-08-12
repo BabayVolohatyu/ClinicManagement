@@ -11,6 +11,8 @@ namespace ClinicManagement.Data
         public DbSet<Sickness> Sicknesses {get; set; }
         public DbSet<Symptom> Symptoms {get; set; }
         public DbSet<SicknessSymptom> SicknessSymptoms {get; set; }
+        public DbSet<Treatment> Treatments {get; set; }
+        public DbSet<SicknessTreatment> SicknessTreatments {get; set; }
         public DbSet<Doctor> Doctors {get; set; }
         public DbSet<Specialty> Specialties {get; set; }
         public DbSet<Address> Addresses {get; set; }
@@ -41,6 +43,27 @@ namespace ClinicManagement.Data
                 .HasOne(ss => ss.Symptom)
                 .WithMany(s => s.SicknessSymptoms)
                 .HasForeignKey(ss => ss.SymptomId);
+
+            //Treatment
+            modelBuilder.Entity<Treatment>()
+                .HasKey(t => t.Id);
+
+            //SicknessTreatment
+            modelBuilder.Entity<SicknessTreatment>()
+                .HasKey(st => new { st.SicknessId, st.TreatmentId });
+
+            //Sickness-Treatment many-to-many relationship
+            //One-to-many from ST to Sickness
+            modelBuilder.Entity<SicknessTreatment>()
+                .HasOne(st => st.Sickness)
+                .WithMany(t => t.SicknessTreatment)
+                .HasForeignKey(st => st.SicknessId);
+
+            //One-to-many from ST to Treatment
+            modelBuilder.Entity<SicknessTreatment>()
+                .HasOne(st => st.Treatment)
+                .WithMany(s => s.SicknessTreatment)
+                .HasForeignKey(st => st.TreatmentId);
 
             //Doctor
             modelBuilder.Entity<Doctor>()

@@ -1,14 +1,11 @@
 ﻿namespace ClinicManagement.Models.Sickness
 {
-    public class Sickness
+    public class Treatment
     {
-        public int Id { get; set; }
+        public  int Id { get; set; }
         public string Name { get; set; } = null!;
 
         //Many-to-many
-        public ICollection<SicknessSymptom> SicknessSymptoms { get; set; } = null!;
-        //Many-to-many
         public ICollection<SicknessTreatment> SicknessTreatment { get; set; } = null!;
     }
-
 }
