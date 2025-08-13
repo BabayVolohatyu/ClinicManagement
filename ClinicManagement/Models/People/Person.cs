@@ -1,7 +1,4 @@
-﻿using ClinicManagement.Models.Staff;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-
-namespace ClinicManagement.Models
+﻿namespace ClinicManagement.Models.People
 {
     public class Person
     {

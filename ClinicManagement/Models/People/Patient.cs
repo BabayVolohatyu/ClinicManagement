@@ -1,4 +1,6 @@
-﻿namespace ClinicManagement.Models
+﻿using ClinicManagement.Models.Info;
+
+namespace ClinicManagement.Models.People
 {
     public class Patient
     {

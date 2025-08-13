@@ -1,6 +1,6 @@
-﻿using ClinicManagement.Models.Staff;
+﻿using ClinicManagement.Models.People;
 
-namespace ClinicManagement.Models
+namespace ClinicManagement.Models.Info
 {
     public class DoctorOnCallStatus
     {

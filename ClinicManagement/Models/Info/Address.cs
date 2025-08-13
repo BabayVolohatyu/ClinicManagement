@@ -1,4 +1,6 @@
-﻿namespace ClinicManagement.Models
+﻿using ClinicManagement.Models.People;
+
+namespace ClinicManagement.Models.Info
 {
     public class Address
     {

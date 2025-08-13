@@ -1,4 +1,6 @@
-﻿namespace ClinicManagement.Models.Health
+﻿using ClinicManagement.Models.Info;
+
+namespace ClinicManagement.Models.Health
 {
     public class Diagnosis
     {

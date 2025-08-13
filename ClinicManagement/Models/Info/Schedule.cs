@@ -1,7 +1,7 @@
-﻿using ClinicManagement.Models.Staff;
+﻿using ClinicManagement.Models.People;
 using ClinicManagement.Models.Facilities;
 
-namespace ClinicManagement.Models
+namespace ClinicManagement.Models.Info
 {
     public class Schedule
     {

@@ -1,8 +1,8 @@
 ﻿using ClinicManagement.Models.Facilities;
 using ClinicManagement.Models.Health;
-using Npgsql;
+using ClinicManagement.Models.People;
 
-namespace ClinicManagement.Models
+namespace ClinicManagement.Models.Info
 {
     public class Appointment
     {

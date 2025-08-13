@@ -1,8 +1,9 @@
-﻿using ClinicManagement.Models;
-using ClinicManagement.Models.Facilities;
-using ClinicManagement.Models.Staff;
+﻿using ClinicManagement.Models.Facilities;
+using ClinicManagement.Models.People;
 using ClinicManagement.Models.Health;
 using Microsoft.EntityFrameworkCore;
+using ClinicManagement.Models.Info;
+using ClinicManagement.Models.People;
 
 namespace ClinicManagement.Data
 {

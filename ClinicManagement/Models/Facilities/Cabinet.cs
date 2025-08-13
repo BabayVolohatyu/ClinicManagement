@@ -1,4 +1,6 @@
-﻿namespace ClinicManagement.Models.Facilities
+﻿using ClinicManagement.Models.Info;
+
+namespace ClinicManagement.Models.Facilities
 {
     public class Cabinet
     {
