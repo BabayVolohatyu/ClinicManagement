@@ -1,6 +1,6 @@
 ﻿using ClinicManagement.Models.Info;
 
-namespace ClinicManagement.Models.People
+namespace ClinicManagement.Models.Humans
 {
     public class Doctor
     {

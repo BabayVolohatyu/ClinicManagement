@@ -1,6 +1,6 @@
 ﻿using ClinicManagement.Models.Facilities;
 using ClinicManagement.Models.Health;
-using ClinicManagement.Models.People;
+using ClinicManagement.Models.Humans;
 
 namespace ClinicManagement.Models.Info
 {

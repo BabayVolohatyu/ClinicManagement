@@ -1,4 +1,4 @@
-﻿using ClinicManagement.Models.People;
+﻿using ClinicManagement.Models.Humans;
 using ClinicManagement.Models.Facilities;
 
 namespace ClinicManagement.Models.Info
