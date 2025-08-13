@@ -11,7 +11,7 @@ namespace ClinicManagement.Data
     {
         public ClinicDbContext(DbContextOptions<ClinicDbContext> options) : base(options) { }
         
-        //Simple models
+        //Simple models(first wave)
         public DbSet<Person> People { get; set; }
         public DbSet<Specialty> Specialties { get; set; }
         public DbSet<Address> Addresses { get; set; }
@@ -21,7 +21,7 @@ namespace ClinicManagement.Data
         public DbSet<Treatment> Treatments { get; set; }
         public DbSet<Procedure> Procedures { get; set; }
 
-        //Models that depend only on previous ones
+        //Models that depend only on previous ones(second wave)
         public DbSet<Patient> Patients { get; set; }
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Cabinet> Cabinets { get; set; }
@@ -37,6 +37,7 @@ namespace ClinicManagement.Data
 
         //Models that depend only on previous ones(fourth wave)
         public DbSet<Appointment> Appointments { get; set; }
+        public DbSet<HomeCallLog> HomeCallLogs { get; set; }
 
         //Models that depend only on previous ones(fifth wave)
         public DbSet<Diagnosis> Diagnoses { get; set; }
