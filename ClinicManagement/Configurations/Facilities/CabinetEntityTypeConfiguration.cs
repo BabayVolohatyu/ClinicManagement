@@ -8,7 +8,14 @@ namespace ClinicManagement.Configurations.Facilities
     {
         public void Configure(EntityTypeBuilder<Cabinet> builder)
         {
-            throw new NotImplementedException();
+            builder
+                .HasKey(c => c.Id);
+
+            builder
+                .HasOne(c => c.Type)
+                .WithMany(ct => ct.Cabinets)
+                .HasForeignKey(c => c.TypeId)
+                .IsRequired();
         }
     }
 }

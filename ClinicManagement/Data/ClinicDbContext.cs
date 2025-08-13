@@ -3,7 +3,7 @@ using ClinicManagement.Models.Humans;
 using ClinicManagement.Models.Health;
 using Microsoft.EntityFrameworkCore;
 using ClinicManagement.Models.Info;
-using ClinicManagement.Models.Humans;
+
 
 namespace ClinicManagement.Data
 {
