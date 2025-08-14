@@ -12,5 +12,8 @@ namespace ClinicManagement.Models.Humans
 
         //Many-to-one
         public Address Address { get; set; } = null!;
+
+        //One-to-many
+        public ICollection<Appointment> Appointments { get; set; } = null!;
     }
 }
