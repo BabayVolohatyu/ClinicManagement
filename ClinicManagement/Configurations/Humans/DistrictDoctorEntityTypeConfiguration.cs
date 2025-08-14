@@ -8,7 +8,14 @@ namespace ClinicManagement.Configurations.Humans
     {
         public void Configure(EntityTypeBuilder<DistrictDoctor> builder)
         {
-            throw new NotImplementedException();
+            builder
+                .HasKey(dd => dd.DoctorId);
+
+            builder
+                .HasOne(dd => dd.Doctor)
+                .WithOne(d => d.DistrictDoctor)
+                .HasForeignKey<DistrictDoctor>(dd => dd.DoctorId)
+                .IsRequired();
         }
     }
 }

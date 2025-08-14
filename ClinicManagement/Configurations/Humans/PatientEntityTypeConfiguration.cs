@@ -8,7 +8,19 @@ namespace ClinicManagement.Configurations.Humans
     {
         public void Configure(EntityTypeBuilder<Patient> builder)
         {
-            throw new NotImplementedException();
+            builder
+                .HasKey(pt => pt.Id);
+
+            builder
+                .HasOne(pt => pt.Person)
+                .WithOne(p => p.Patient)
+                .HasForeignKey<Patient>(pt => pt.PersonId)
+                .IsRequired();
+
+            builder
+                .HasOne(pt => pt.Address)
+                .WithMany(a => a.Patients)
+                .HasForeignKey(pt => pt.AddressId);
         }
     }
 }

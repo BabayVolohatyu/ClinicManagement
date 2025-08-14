@@ -8,7 +8,8 @@ namespace ClinicManagement.Configurations.Humans
     {
         public void Configure(EntityTypeBuilder<Specialty> builder)
         {
-            throw new NotImplementedException();
+            builder
+                .HasKey(s =>  s.Id);
         }
     }
 }
