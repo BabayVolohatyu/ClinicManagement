@@ -8,7 +8,8 @@ namespace ClinicManagement.Configurations.Info
     {
         public void Configure(EntityTypeBuilder<Address> builder)
         {
-            throw new NotImplementedException();
+            builder
+                .HasKey(a => a.Id);
         }
     }
 }

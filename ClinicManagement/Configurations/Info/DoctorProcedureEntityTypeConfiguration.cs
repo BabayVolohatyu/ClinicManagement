@@ -8,7 +8,20 @@ namespace ClinicManagement.Configurations.Info
     {
         public void Configure(EntityTypeBuilder<DoctorProcedure> builder)
         {
-            throw new NotImplementedException();
+            builder
+                .HasKey(dp => dp.Id);
+
+            builder
+                .HasOne(dp => dp.Doctor)
+                .WithMany(d => d.DoctorProcedures)
+                .HasForeignKey(d => d.DoctorId)
+                .IsRequired();
+
+            builder
+                .HasOne(dp => dp.Procedure)
+                .WithMany(p => p.DoctorProcedures)
+                .HasForeignKey(d => d.ProcedureId)
+                .IsRequired();
         }
     }
 }

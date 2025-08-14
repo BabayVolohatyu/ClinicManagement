@@ -8,7 +8,25 @@ namespace ClinicManagement.Configurations.Info
     {
         public void Configure(EntityTypeBuilder<HomeCallLog> builder)
         {
-            throw new NotImplementedException();
+            builder
+                .HasKey(hcl => hcl.Id);
+
+            builder
+                .HasOne(hcl => hcl.Doctor)
+                .WithMany(d => d.HomeCallLogs)
+                .HasForeignKey(hcl => hcl.DoctorId)
+                .IsRequired();
+
+            builder
+                .HasOne(hcl => hcl.Address)
+                .WithMany(a => a.HomeCallLogs)
+                .HasForeignKey(hcl => hcl.AddressId)
+                .IsRequired();
+
+            builder
+                .Property(hcl => hcl.DateTime)
+                .HasColumnType("timestamp")
+                .IsRequired();
         }
     }
 }

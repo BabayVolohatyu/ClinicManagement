@@ -8,7 +8,36 @@ namespace ClinicManagement.Configurations.Info
     {
         public void Configure(EntityTypeBuilder<Appointment> builder)
         {
-            throw new NotImplementedException();
+            builder
+                .HasKey(a => a.Id);
+
+            builder
+                .HasOne(a => a.DoctorProcedure)
+                .WithMany(dp => dp.Appointments)
+                .HasForeignKey(a => a.DoctorProcedureId)
+                .IsRequired();
+
+            builder
+                .HasOne(a => a.Cabinet)
+                .WithMany(c => c.Appointments)
+                .HasForeignKey(a => a.CabinetId)
+                .IsRequired();
+
+            builder
+                .HasOne(a => a.Patient)
+                .WithMany(p => p.Appointments)
+                .HasForeignKey(a => a.DoctorProcedureId)
+                .IsRequired();
+
+            builder
+                .Property(a => a.StartTime)
+                .HasColumnType("timestamp")
+                .IsRequired();
+
+            builder
+                .Property(a => a.EndTime)
+                .HasColumnType("timestamp")
+                .IsRequired();
         }
     }
 }
