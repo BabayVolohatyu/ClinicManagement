@@ -8,7 +8,14 @@ namespace ClinicManagement.Configurations.Health
     {
         public void Configure(EntityTypeBuilder<Diagnosis> builder)
         {
-            throw new NotImplementedException();
+            builder
+                .HasKey(d => d.Id);
+
+            builder.
+                HasOne(d => d.Appointment)
+                .WithOne(a => a.Diagnosis)
+                .HasForeignKey<Diagnosis>(d => d.AppointmentId)
+                .IsRequired();
         }
     }
 }
