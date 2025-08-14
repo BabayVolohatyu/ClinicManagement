@@ -9,5 +9,6 @@ namespace ClinicManagement.Models.Health
 
         //One-to-one
         public Appointment Appointment { get; set; } = null!;
+        public string Prescription { get; set; } = null!;
     }
 }
