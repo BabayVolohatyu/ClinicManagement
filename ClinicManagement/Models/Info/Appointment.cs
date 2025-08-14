@@ -20,8 +20,8 @@ namespace ClinicManagement.Models.Info
 
         //Many-to-one
         public Patient Patient { get; set; } = null!;
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
+        public DateTimeOffset StartTime { get; set; }
+        public DateTimeOffset EndTime { get; set; }
         public bool DidItHappen {  get; set; }
 
         //One-to-one

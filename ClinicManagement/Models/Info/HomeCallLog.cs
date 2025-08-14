@@ -12,6 +12,6 @@ namespace ClinicManagement.Models.Info
         public int AddressId { get; set; }
         //Many-to-one
         public Address Address { get; set; } = null!;
-        public DateTime DateTime { get; set; }
+        public DateTimeOffset DateTime { get; set; }
     }
 }

@@ -25,7 +25,7 @@ namespace ClinicManagement.Configurations.Info
 
             builder
                 .Property(hcl => hcl.DateTime)
-                .HasColumnType("timestamp")
+                .HasColumnType("timestamptz")
                 .IsRequired();
         }
     }

@@ -25,12 +25,12 @@ namespace ClinicManagement.Configurations.Info
 
             builder
                 .Property(s => s.StartTime)
-                .HasColumnType("timestamp")
+                .HasColumnType("timestamptz")
                 .IsRequired();
 
             builder
                 .Property(s => s.EndTime)
-                .HasColumnType("timestamp")
+                .HasColumnType("timestamptz")
                 .IsRequired();
         }
     }
