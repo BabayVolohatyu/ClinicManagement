@@ -1,8 +1,12 @@
-﻿using ClinicManagement.Models.Facilities;
-using ClinicManagement.Models.Humans;
+﻿using ClinicManagement.Configurations.Facilities;
+using ClinicManagement.Configurations.Health;
+using ClinicManagement.Configurations.Humans;
+using ClinicManagement.Configurations.Info;
+using ClinicManagement.Models.Facilities;
 using ClinicManagement.Models.Health;
-using Microsoft.EntityFrameworkCore;
+using ClinicManagement.Models.Humans;
 using ClinicManagement.Models.Info;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace ClinicManagement.Data
@@ -43,7 +47,7 @@ namespace ClinicManagement.Data
         public DbSet<Diagnosis> Diagnoses { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ClinicDbContext).Assembly);
         }
     }
 }
