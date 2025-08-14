@@ -8,7 +8,8 @@ namespace ClinicManagement.Configurations.Health
     {
         public void Configure(EntityTypeBuilder<Procedure> builder)
         {
-            throw new NotImplementedException();
+            builder
+                .HasKey(p => p.Id);
         }
     }
 }
