@@ -11,15 +11,10 @@ namespace ClinicManagement.Models.Info
         public string StreetName { get; set; } = null!;
         public int StreetNumber { get; set; }
 
-        //One-to-many
-        public ICollection<Patient> Patients { get; set; } = null!;
+        public ICollection<Patient> Patients { get; set; } = new List<Patient>();
+        public ICollection<DoctorOnCallStatus> DoctorOnCallStatuses { get; set; } = new List<DoctorOnCallStatus>();
+        public ICollection<HomeCallLog> HomeCallLogs { get; set; } = new List<HomeCallLog>();
 
-        //One-to-many
-        public ICollection<DoctorOnCallStatus> DoctorOnCallStatuses { get; set; } = null!;
-
-
-        //One-to-many
-        public ICollection<HomeCallLog> HomeCallLogs { get; set; } = null!;
 
     }
 }

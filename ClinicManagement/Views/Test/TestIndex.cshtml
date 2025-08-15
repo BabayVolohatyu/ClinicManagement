@@ -1,0 +1,26 @@
+﻿@model List<Dictionary<string, object?>>
+
+<table class="table-container">
+    <thead>
+        <tr>
+            @if (Model.Any())
+            {
+                foreach (var key in Model.First().Keys)
+                {
+                    <th>@key</th>
+                }
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                @foreach (var value in item.Values)
+                {
+                    <td>@value</td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
