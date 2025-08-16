@@ -12,14 +12,14 @@ namespace ClinicManagement.Models.Info
         public int StreetNumber { get; set; }
 
         //One-to-many
-        public ICollection<Patient> Patients { get; set; } = null!;
+        public ICollection<Patient> Patients { get; set; } = [];
 
         //One-to-many
-        public ICollection<DoctorOnCallStatus> DoctorOnCallStatuses { get; set; } = null!;
+        public ICollection<DoctorOnCallStatus> DoctorOnCallStatuses { get; set; } = [];
 
 
         //One-to-many
-        public ICollection<HomeCallLog> HomeCallLogs { get; set; } = null!;
+        public ICollection<HomeCallLog> HomeCallLogs { get; set; } = [];
 
     }
 }

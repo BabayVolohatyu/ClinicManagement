@@ -14,10 +14,10 @@ namespace ClinicManagement.Models.Facilities
         public CabinetType Type { get; set; } = null!;
 
         //One-to-many
-        public ICollection<Schedule> Schedules { get; set; } = null!;
+        public ICollection<Schedule> Schedules { get; set; } = [];
 
         //One-to-many
-        public ICollection<Appointment> Appointments { get; set; } = null!;
+        public ICollection<Appointment> Appointments { get; set; } = [];
 
     }
 }

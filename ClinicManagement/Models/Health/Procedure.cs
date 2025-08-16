@@ -10,9 +10,9 @@ namespace ClinicManagement.Models.Health
         public float Price { get; set; }
 
         //Many-to-one
-        public ICollection<SicknessProcedure> SicknessProcedures { get; set; } = null!;
+        public ICollection<SicknessProcedure> SicknessProcedures { get; set; } = [];
 
         //Many-to-one
-        public ICollection<DoctorProcedure> DoctorProcedures { get; set; } = null!;
+        public ICollection<DoctorProcedure> DoctorProcedures { get; set; } = [];
     }
 }

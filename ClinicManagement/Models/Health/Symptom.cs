@@ -6,6 +6,6 @@
         public string Name { get; set; } = null!;
         
         //Many-to-Many
-        public ICollection<SicknessSymptom> SicknessSymptoms { get; set; } = null!;
+        public ICollection<SicknessSymptom> SicknessSymptoms { get; set; } = [];
     }
 }

@@ -6,6 +6,6 @@
         public string Name { get; set; } = null!;
 
         //One-to-many
-        public ICollection<Doctor> Doctors { get; set; } = null!;
+        public ICollection<Doctor> Doctors { get; set; } = [];
     }
 }
