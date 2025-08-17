@@ -26,7 +26,8 @@ namespace ClinicManagement.Controllers
                     if (
                     prop.PropertyType.IsPrimitive ||
                     prop.PropertyType == typeof(string) ||
-                    Nullable.GetUnderlyingType(prop.PropertyType) != null)
+                    Nullable.GetUnderlyingType(prop.PropertyType) != null ||
+                    prop.PropertyType == typeof(DateTimeOffset))
                     {
                         dict[prop.Name] = prop.GetValue(item);
                     }
