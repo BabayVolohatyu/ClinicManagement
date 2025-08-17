@@ -4,14 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicManagement.Controllers
 {
-    [Route("/address")]
-    public class AddressController : Controller
+    [Route("[controller]")]
+    public class AddressController : TestController<Address>
     {
-        private readonly ClinicDbContext _context;
-        public AddressController(ClinicDbContext context)
-        {
-            _context = context;
-        }
+        public AddressController(ClinicDbContext context) : base(context) { }
+
         [HttpGet("create")]
         public IActionResult Create()
         {
@@ -30,7 +27,7 @@ namespace ClinicManagement.Controllers
             }
             _context.Addresses.Add(address);
              await _context.SaveChangesAsync();
-             return RedirectToRoute(new {modelName = nameof(Address).ToLower()});
+             return RedirectToAction(nameof(Index));
         }
     }
 }

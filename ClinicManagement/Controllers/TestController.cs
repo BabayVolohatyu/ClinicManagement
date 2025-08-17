@@ -1,11 +1,9 @@
 ﻿using ClinicManagement.Data;
-using ClinicManagement.Models.Info;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicManagement.Controllers
 {
-    [Route("{modelName}")]
-    public class TestController : Controller
+    public class TestController<T> : Controller where T : class
     {
         protected readonly ClinicDbContext _context;
 
@@ -13,39 +11,31 @@ namespace ClinicManagement.Controllers
         {
             _context = context;
         }
+
         [HttpGet("")]
         [HttpGet("index")]
-        public IActionResult Index(string modelName)
+        public IActionResult Index()
         {
-            var dbSetProperty = _context
-                .GetType()
-                .GetProperties()
-                .FirstOrDefault(p => p.Name.Equals(modelName, StringComparison.OrdinalIgnoreCase));
-        
+            var items = _context.Set<T>().ToList();
 
-            if (dbSetProperty == null) 
-            {
-                return NotFound($"Haven't found {modelName}");
-            }
-
-            var items = ((IQueryable<object>)dbSetProperty.GetValue(_context)).ToList();
-
-            var filteredItems = items.Select(item =>
-            {
+            var filteredItems = items.Select(item => {
                 var dict = new Dictionary<string, object?>();
-                foreach (var prop in item.GetType().GetProperties())
+
+                foreach (var prop in typeof(T).GetProperties())
                 {
-                    if (prop.PropertyType.IsPrimitive
-                        || prop.PropertyType == typeof(string)
-                        || prop.PropertyType == typeof(DateTimeOffset))
+                    if (
+                    prop.PropertyType.IsPrimitive ||
+                    prop.PropertyType == typeof(string) ||
+                    Nullable.GetUnderlyingType(prop.PropertyType) != null)
                     {
                         dict[prop.Name] = prop.GetValue(item);
                     }
                 }
+
                 return dict;
             }).ToList();
 
-            return View("TestIndex", filteredItems);
+            return View(filteredItems);
         }
     }
 }
