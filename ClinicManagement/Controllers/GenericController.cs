@@ -40,5 +40,20 @@ namespace ClinicManagement.Controllers
 
             return View(filteredItems);
         }
+
+        [HttpGet("create")]
+        public virtual IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost("create")]
+        public virtual async Task<IActionResult> Create(T entity)
+        {
+            _context.Set<T>().Add(entity);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }
