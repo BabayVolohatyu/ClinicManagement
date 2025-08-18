@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicManagement.Controllers
 {
+    [Route("[controller]")]
     public class GenericController<T> : Controller where T : class
     {
         protected readonly ClinicDbContext _context;
