@@ -21,12 +21,12 @@ namespace ClinicManagement.Models.Humans
         public DoctorOnCallStatus? OnCallStatus { get; set; }
 
         //One-to-many
-        public ICollection<Schedule> Schedules { get; set; } = [];
+        public ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
 
         //One-to-many
-        public ICollection<HomeCallLog> HomeCallLogs { get; set; } = [];
+        public ICollection<HomeCallLog> HomeCallLogs { get; set; } = new List<HomeCallLog>();
 
         //Many-to-one
-        public ICollection<DoctorProcedure> DoctorProcedures { get; set; } = [];
+        public ICollection<DoctorProcedure> DoctorProcedures { get; set; } = new List<DoctorProcedure>();
     }
 }

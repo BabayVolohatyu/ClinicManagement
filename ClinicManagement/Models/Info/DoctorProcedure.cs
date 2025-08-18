@@ -16,6 +16,6 @@ namespace ClinicManagement.Models.Info
         public Procedure Procedure { get; set; } = null!;
 
         //Many-to-one
-        public ICollection<Appointment> Appointments { get; set; } = [];
+        public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
     }
 }

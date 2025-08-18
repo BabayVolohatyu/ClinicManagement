@@ -6,6 +6,6 @@
         public string Type { get; set; } = null!;
 
         //One-to-many(Configured in Cabinet entity config)
-        public ICollection<Cabinet> Cabinets { get; set; } = [];
+        public ICollection<Cabinet> Cabinets { get; set; } = new List<Cabinet>();
     }
 }
