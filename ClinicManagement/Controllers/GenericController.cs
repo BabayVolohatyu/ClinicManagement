@@ -8,7 +8,7 @@ namespace ClinicManagement.Controllers
     {
         protected readonly ClinicDbContext _context;
 
-        public GenericController(ClinicDbContext context) 
+        public GenericController(ClinicDbContext context)
         {
             _context = context;
         }
@@ -19,7 +19,8 @@ namespace ClinicManagement.Controllers
         {
             var items = _context.Set<T>().ToList();
 
-            var filteredItems = items.Select(item => {
+            var filteredItems = items.Select(item =>
+            {
                 var dict = new Dictionary<string, object?>();
 
                 foreach (var prop in typeof(T).GetProperties())

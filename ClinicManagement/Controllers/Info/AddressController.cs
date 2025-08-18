@@ -17,13 +17,6 @@ namespace ClinicManagement.Controllers.Info
         [HttpPost("create")]
         public async Task<IActionResult> Create(Address address)
         {
-            if (!ModelState.IsValid)
-            {
-                var errors = string.Join("; ", ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage));
-                return Content("Model is invalid: " + errors);
-            }
             _context.Addresses.Add(address);
              await _context.SaveChangesAsync();
              return RedirectToAction(nameof(Index));
