@@ -98,3 +98,73 @@ th, td {
         border-bottom: 1px solid var(--accent);
     }
 
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+    nav ul li {
+        display: inline-block;
+        position: relative;
+        margin-right: 20px;
+    }
+
+        nav ul li ul {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            background-color: var(--panel-dark);
+            border: 1px solid var(--accent);
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+            min-width: 180px;
+            z-index: 1000;
+        }
+
+        nav ul li:hover ul {
+            display: block;
+        }
+
+        nav ul li ul li {
+            display: block;
+            margin: 0;
+        }
+
+            nav ul li ul li a {
+                display: block;
+                padding: 8px 12px;
+                text-decoration: none;
+                color: var(--text-light);
+                transition: all 0.3s;
+            }
+
+                nav ul li ul li a:hover {
+                    background-color: rgba(0, 255, 255, 0.1);
+                    color: var(--accent);
+                    text-shadow: 0 0 6px var(--accent);
+                }
+
+.dropdown-menu {
+    background-color: var(--panel-dark);
+    border: 1px solid var(--accent);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+.dropdown-item {
+    color: var(--text-light);
+}
+
+    .dropdown-item:hover {
+        background-color: rgba(0, 255, 255, 0.1);
+        color: var(--accent);
+        text-shadow: 0 0 6px var(--accent);
+    }
+
+
+
+
