@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicManagement.Controllers
 {
-    public class TestController<T> : Controller where T : class
+    public class GenericController<T> : Controller where T : class
     {
         protected readonly ClinicDbContext _context;
 
-        public TestController(ClinicDbContext context) 
+        public GenericController(ClinicDbContext context) 
         {
             _context = context;
         }

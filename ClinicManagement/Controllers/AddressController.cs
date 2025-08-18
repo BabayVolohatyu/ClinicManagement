@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ClinicManagement.Controllers
 {
     [Route("[controller]")]
-    public class AddressController : TestController<Address>
+    public class AddressController : GenericController<Address>
     {
         public AddressController(ClinicDbContext context) : base(context) { }
 
