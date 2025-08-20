@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicManagement.Controllers
 {
-    [Route("[controller]")]
+    [Route("[controller]/[action]")]
     public class GenericController<T> : Controller where T : class
     {
         protected readonly ClinicDbContext _context;
@@ -13,8 +13,7 @@ namespace ClinicManagement.Controllers
             _context = context;
         }
 
-        [HttpGet("")]
-        [HttpGet("index")]
+        [HttpGet]
         public IActionResult Index()
         {
             var items = _context.Set<T>().ToList();
@@ -40,14 +39,13 @@ namespace ClinicManagement.Controllers
 
             return View(filteredItems);
         }
-
-        [HttpGet("create")]
+        [HttpGet]
         public virtual IActionResult Create()
         {
             return View();
         }
 
-        [HttpPost("create")]
+        [HttpPost]
         public virtual async Task<IActionResult> Create(T entity)
         {
             _context.Set<T>().Add(entity);
