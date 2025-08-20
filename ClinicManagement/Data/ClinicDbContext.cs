@@ -1,8 +1,4 @@
-﻿using ClinicManagement.Configurations.Facilities;
-using ClinicManagement.Configurations.Health;
-using ClinicManagement.Configurations.Humans;
-using ClinicManagement.Configurations.Info;
-using ClinicManagement.Models.Facilities;
+﻿using ClinicManagement.Models.Facilities;
 using ClinicManagement.Models.Health;
 using ClinicManagement.Models.Humans;
 using ClinicManagement.Models.Info;
