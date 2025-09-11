@@ -164,7 +164,22 @@ nav ul {
         color: var(--accent);
         text-shadow: 0 0 6px var(--accent);
     }
+.btn-create {
+    background-color: var(--panel-dark);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+    transition: all 0.3s;
+}
 
-
+    .btn-create:hover {
+        background-color: rgba(0, 255, 255, 0.1);
+        color: var(--accent);
+        text-shadow: 0 0 6px var(--accent);
+    }
 
 
