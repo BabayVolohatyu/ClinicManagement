@@ -4,11 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicManagement.Controllers.Health
 {
-    public class SicknessProcedureController : GenericController<SicknessProcedure>
+    public class SicknessProcedureController : Controller
     {
         private readonly ClinicDbContext _context;
 
-        public SicknessProcedureController(ClinicDbContext context) : base(context) { }
+        public SicknessProcedureController(ClinicDbContext context)
+        {
+            _context = context;
+        }
 
         public IActionResult Index()
         {
