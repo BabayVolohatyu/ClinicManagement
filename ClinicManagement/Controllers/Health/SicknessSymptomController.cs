@@ -1,10 +1,21 @@
 ﻿using ClinicManagement.Data;
 using ClinicManagement.Models.Health;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicManagement.Controllers.Health
 {
-    public class SicknessSymptomController : GenericController<SicknessSymptom>
+    public class SicknessSymptomController : Controller
     {
-        public SicknessSymptomController(ClinicDbContext context) : base(context) { }
+        private readonly ClinicDbContext _context;
+
+        public SicknessSymptomController(ClinicDbContext context)
+        {
+            _context = context;
+        }
+
+        public IActionResult Index()
+        {
+            return View();
+        }
     }
 }

@@ -1,10 +1,20 @@
 ﻿using ClinicManagement.Data;
-using ClinicManagement.Models.Health;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicManagement.Controllers.Health
 {
-    public class DiagnosisController : GenericController<Diagnosis>
+    public class DiagnosisController : Controller
     {
-        public DiagnosisController(ClinicDbContext context) : base(context){  }
+        private readonly ClinicDbContext _context;
+
+        public DiagnosisController(ClinicDbContext context)
+        {
+            _context = context;
+        }
+
+        public IActionResult Index()
+        { 
+            return View();
+        }
     }
 }

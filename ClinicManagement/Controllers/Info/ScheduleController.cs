@@ -1,10 +1,21 @@
 ﻿using ClinicManagement.Data;
 using ClinicManagement.Models.Info;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicManagement.Controllers.Info
 {
-    public class ScheduleController : GenericController<Schedule>
+    public class ScheduleController : Controller
     {
-        public ScheduleController(ClinicDbContext context) : base(context) { }
+        private readonly ClinicDbContext _context;
+
+        public ScheduleController(ClinicDbContext context)
+        {
+            _context = context;
+        }
+
+        public IActionResult Index()
+        {
+            return View();
+        }
     }
 }

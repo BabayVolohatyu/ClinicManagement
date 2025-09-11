@@ -1,24 +1,20 @@
 ﻿using ClinicManagement.Data;
 using ClinicManagement.Models.Humans;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ClinicManagement.Controllers.Humans
 {
-    public class PatientController : GenericController<Patient>
+    public class PatientController : Controller
     {
-        public PatientController(ClinicDbContext context) : base(context) { }
+        private readonly ClinicDbContext _context;
 
-
-        [HttpGet]
-        public override IActionResult Create()
+        public PatientController(ClinicDbContext context)
         {
-            var availablePeople = _context.People
-                .Where(p => p.Patient == null)                               
-                .ToList();
+            _context = context;
+        }
 
-            ViewBag.PersonId = new SelectList(availablePeople, "Id", "Id");
-            ViewBag.AddressId = new SelectList(_context.Addresses, "Id", "Id");
+        public IActionResult Index()
+        {
             return View();
         }
     }

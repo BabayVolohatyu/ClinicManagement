@@ -1,10 +1,21 @@
 ﻿using ClinicManagement.Data;
 using ClinicManagement.Models.Info;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicManagement.Controllers.Info
 {
-    public class AddressController : GenericController<Address>
+    public class AddressController : Controller
     {
-        public AddressController(ClinicDbContext context) : base(context) { }
+        private readonly ClinicDbContext _context;
+
+        public AddressController(ClinicDbContext context)
+        {
+            _context = context;
+        }
+
+        public IActionResult Index()
+        {
+            return View();
+        }
     }
 }

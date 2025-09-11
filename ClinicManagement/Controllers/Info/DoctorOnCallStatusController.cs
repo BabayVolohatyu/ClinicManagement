@@ -1,10 +1,21 @@
 ﻿using ClinicManagement.Data;
 using ClinicManagement.Models.Info;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicManagement.Controllers.Info
 {
-    public class DoctorOnCallStatusController : GenericController<DoctorOnCallStatus>
+    public class DoctorOnCallStatusController : Controller
     {
-        public  DoctorOnCallStatusController(ClinicDbContext context) : base(context) { }
+        private readonly ClinicDbContext _context;
+
+        public DoctorOnCallStatusController(ClinicDbContext context)
+        {
+            _context = context;
+        }
+
+        public IActionResult Index()
+        {
+            return View();
+        }
     }
 }

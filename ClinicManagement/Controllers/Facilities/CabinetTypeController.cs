@@ -1,10 +1,19 @@
 ﻿using ClinicManagement.Data;
-using ClinicManagement.Models.Facilities;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicManagement.Controllers.Facilities
 {
-    public class CabinetTypeController : GenericController<CabinetType>
+    public class CabinetTypeController : Controller
     {
-        public CabinetTypeController(ClinicDbContext context) : base(context){ }
+        private readonly ClinicDbContext _context;
+
+        public CabinetTypeController(ClinicDbContext context)
+        {
+            _context = context;
+        }
+        public IActionResult Index()
+        {
+            return View();
+        }
     }
 }

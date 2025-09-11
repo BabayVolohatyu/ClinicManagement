@@ -1,10 +1,21 @@
 ﻿using ClinicManagement.Data;
 using ClinicManagement.Models.Info;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicManagement.Controllers.Info
 {
-    public class AppointmentController : GenericController<Appointment>
+    public class AppointmentController : Controller
     {
-        public AppointmentController(ClinicDbContext context) : base(context) { }
+        private readonly ClinicDbContext _context;
+
+        public AppointmentController(ClinicDbContext context)
+        {
+            _context = context;
+        }
+
+        public IActionResult Index()
+        {
+            return View();
+        }
     }
 }
