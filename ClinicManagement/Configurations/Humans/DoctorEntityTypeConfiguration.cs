@@ -15,7 +15,8 @@ namespace ClinicManagement.Configurations.Humans
                 .HasOne(d => d.Person)
                 .WithOne(p => p.Doctor)
                 .HasForeignKey<Doctor>(d => d.PersonId)
-                .IsRequired();
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder
                 .HasOne(d => d.Specialty)

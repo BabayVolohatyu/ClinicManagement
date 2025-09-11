@@ -15,7 +15,8 @@ namespace ClinicManagement.Configurations.Humans
                 .HasOne(dd => dd.Doctor)
                 .WithOne(d => d.DistrictDoctor)
                 .HasForeignKey<DistrictDoctor>(dd => dd.DoctorId)
-                .IsRequired();
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

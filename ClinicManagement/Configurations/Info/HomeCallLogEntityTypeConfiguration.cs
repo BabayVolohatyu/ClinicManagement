@@ -15,13 +15,15 @@ namespace ClinicManagement.Configurations.Info
                 .HasOne(hcl => hcl.Doctor)
                 .WithMany(d => d.HomeCallLogs)
                 .HasForeignKey(hcl => hcl.DoctorId)
-                .IsRequired();
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder
                 .HasOne(hcl => hcl.Address)
                 .WithMany(a => a.HomeCallLogs)
                 .HasForeignKey(hcl => hcl.AddressId)
-                .IsRequired();
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder
                 .Property(hcl => hcl.DateTime)

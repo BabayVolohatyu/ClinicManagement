@@ -15,13 +15,15 @@ namespace ClinicManagement.Configurations.Health
                 .HasOne(st => st.Sickness)
                 .WithMany(s => s.SicknessTreatment)
                 .HasForeignKey(st => st.SicknessId)
-                .IsRequired();
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder
                 .HasOne(st => st.Treatment)
                 .WithMany(t => t.SicknessTreatment)
                 .HasForeignKey(st => st.TreatmentId)
-                .IsRequired();
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

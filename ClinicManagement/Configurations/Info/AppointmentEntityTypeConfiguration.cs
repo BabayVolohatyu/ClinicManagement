@@ -15,19 +15,22 @@ namespace ClinicManagement.Configurations.Info
                 .HasOne(a => a.DoctorProcedure)
                 .WithMany(dp => dp.Appointments)
                 .HasForeignKey(a => a.DoctorProcedureId)
-                .IsRequired();
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder
                 .HasOne(a => a.Cabinet)
                 .WithMany(c => c.Appointments)
                 .HasForeignKey(a => a.CabinetId)
-                .IsRequired();
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder
                 .HasOne(a => a.Patient)
                 .WithMany(p => p.Appointments)
                 .HasForeignKey(a => a.DoctorProcedureId)
-                .IsRequired();
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder
                 .Property(a => a.StartTime)
