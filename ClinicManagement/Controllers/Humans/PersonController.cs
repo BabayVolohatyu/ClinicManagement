@@ -13,9 +13,11 @@ namespace ClinicManagement.Controllers.Humans
             _context = context;
         }
 
+        [HttpGet]
         public IActionResult Index()
         {
-            return View();
+            var people = _context.People.ToList();
+            return View("Views/Humans/Person/Index.cshtml", people);
         }
     }
 }
