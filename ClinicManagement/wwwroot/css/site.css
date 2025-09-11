@@ -164,7 +164,7 @@ nav ul {
         color: var(--accent);
         text-shadow: 0 0 6px var(--accent);
     }
-.btn-create {
+.btn {
     background-color: var(--panel-dark);
     color: var(--accent);
     border: 1px solid var(--accent);
@@ -176,7 +176,7 @@ nav ul {
     transition: all 0.3s;
 }
 
-    .btn-create:hover {
+    .btn:hover {
         background-color: rgba(0, 255, 255, 0.1);
         color: var(--accent);
         text-shadow: 0 0 6px var(--accent);

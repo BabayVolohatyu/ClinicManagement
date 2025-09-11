@@ -5,8 +5,8 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1>Persons</h1>
-    <a class="btn btn-create" asp-action="Create">Create</a>
+    <h1>People</h1>
+    <a class="btn" asp-action="Create">Create</a>
 </div>
 
 <div class="table-container">
@@ -21,10 +21,14 @@
         <tbody>
             @foreach (var item in Model)
             {
-                <tr onclick="location.href='@Url.Action("Details", "Person", new { id = item.Id })'">
+                <tr class="clickable-row" onclick="document.getElementById('form-@item.Id').submit();">
                     <td>@Html.DisplayFor(modelItem => item.FirstName)</td>
                     <td>@Html.DisplayFor(modelItem => item.LastName)</td>
                     <td>@Html.DisplayFor(modelItem => item.Patronymic)</td>
+
+                    <form id="form-@item.Id" asp-controller="Person" asp-action="Details" method="get">
+                        <input type="hidden" name="id" value="@item.Id" />
+                    </form>
                 </tr>
             }
         </tbody>
