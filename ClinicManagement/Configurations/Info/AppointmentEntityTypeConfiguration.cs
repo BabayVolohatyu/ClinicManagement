@@ -28,7 +28,7 @@ namespace ClinicManagement.Configurations.Info
             builder
                 .HasOne(a => a.Patient)
                 .WithMany(p => p.Appointments)
-                .HasForeignKey(a => a.DoctorProcedureId)
+                .HasForeignKey(a => a.PatientId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
 
