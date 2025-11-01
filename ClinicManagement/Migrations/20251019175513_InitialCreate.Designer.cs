@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ClinicManagement.Migrations
 {
     [DbContext(typeof(ClinicDbContext))]
-    [Migration("20250911070509_UpdateDeleteBehaviors")]
-    partial class UpdateDeleteBehaviors
+    [Migration("20251019175513_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -375,6 +375,8 @@ namespace ClinicManagement.Migrations
 
                     b.HasIndex("DoctorProcedureId");
 
+                    b.HasIndex("PatientId");
+
                     b.ToTable("Appointments");
                 });
 
@@ -622,15 +624,15 @@ namespace ClinicManagement.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ClinicManagement.Models.Humans.Patient", "Patient")
+                    b.HasOne("ClinicManagement.Models.Info.DoctorProcedure", "DoctorProcedure")
                         .WithMany("Appointments")
                         .HasForeignKey("DoctorProcedureId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ClinicManagement.Models.Info.DoctorProcedure", "DoctorProcedure")
+                    b.HasOne("ClinicManagement.Models.Humans.Patient", "Patient")
                         .WithMany("Appointments")
-                        .HasForeignKey("DoctorProcedureId")
+                        .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

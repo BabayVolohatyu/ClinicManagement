@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ClinicManagement.Migrations
 {
     /// <inheritdoc />
-    public partial class Initialmigration : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -425,8 +425,8 @@ namespace ClinicManagement.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Appointments_Patients_DoctorProcedureId",
-                        column: x => x.DoctorProcedureId,
+                        name: "FK_Appointments_Patients_PatientId",
+                        column: x => x.PatientId,
                         principalTable: "Patients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -461,6 +461,11 @@ namespace ClinicManagement.Migrations
                 name: "IX_Appointments_DoctorProcedureId",
                 table: "Appointments",
                 column: "DoctorProcedureId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Appointments_PatientId",
+                table: "Appointments",
+                column: "PatientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Cabinets_TypeId",

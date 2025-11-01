@@ -372,6 +372,8 @@ namespace ClinicManagement.Migrations
 
                     b.HasIndex("DoctorProcedureId");
 
+                    b.HasIndex("PatientId");
+
                     b.ToTable("Appointments");
                 });
 
@@ -619,15 +621,15 @@ namespace ClinicManagement.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ClinicManagement.Models.Humans.Patient", "Patient")
+                    b.HasOne("ClinicManagement.Models.Info.DoctorProcedure", "DoctorProcedure")
                         .WithMany("Appointments")
                         .HasForeignKey("DoctorProcedureId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ClinicManagement.Models.Info.DoctorProcedure", "DoctorProcedure")
+                    b.HasOne("ClinicManagement.Models.Humans.Patient", "Patient")
                         .WithMany("Appointments")
-                        .HasForeignKey("DoctorProcedureId")
+                        .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
