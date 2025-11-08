@@ -15,8 +15,7 @@ namespace ClinicManagement.Configurations.Health
                 HasOne(d => d.Appointment)
                 .WithOne(a => a.Diagnosis)
                 .HasForeignKey<Diagnosis>(d => d.AppointmentId)
-                .IsRequired()
-                .OnDelete(DeleteBehavior.Cascade);
+                .IsRequired();
         }
     }
 }

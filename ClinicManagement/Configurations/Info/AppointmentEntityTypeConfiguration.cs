@@ -15,23 +15,19 @@ namespace ClinicManagement.Configurations.Info
                 .HasOne(a => a.DoctorProcedure)
                 .WithMany(dp => dp.Appointments)
                 .HasForeignKey(a => a.DoctorProcedureId)
-                .IsRequired()
-                .OnDelete(DeleteBehavior.Cascade);
+                .IsRequired();
 
             builder
                 .HasOne(a => a.Cabinet)
                 .WithMany(c => c.Appointments)
                 .HasForeignKey(a => a.CabinetId)
-                .IsRequired()
-                .OnDelete(DeleteBehavior.Cascade);
+                .IsRequired();
 
             builder
                 .HasOne(a => a.Patient)
                 .WithMany(p => p.Appointments)
                 .HasForeignKey(a => a.PatientId)
-                .IsRequired()
-                .OnDelete(DeleteBehavior.Cascade);
-
+                .IsRequired();
             builder
                 .Property(a => a.StartTime)
                 .HasColumnType("timestamptz")
