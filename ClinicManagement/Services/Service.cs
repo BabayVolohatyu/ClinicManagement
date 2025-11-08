@@ -17,7 +17,7 @@ namespace ClinicManagement.Services
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public virtual async Task<IEnumerable<T>> GetAllAsync(
+        public virtual async Task<PaginatedResult<T>> GetAllAsync(
             int pageNumber = 1,
             int pageSize = 10,
             CancellationToken token = default)
@@ -27,11 +27,21 @@ namespace ClinicManagement.Services
 
             try
             {
-                return await _dbSet
+                var items = await _dbSet
                     .AsNoTracking()
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize)
                     .ToListAsync(token);
+
+                var totalCount = await _dbSet.CountAsync(token);
+
+                return new PaginatedResult<T>
+                {
+                    Items = items,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = totalCount
+                };
             }
             catch (OperationCanceledException)
             {

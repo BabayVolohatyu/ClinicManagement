@@ -20,8 +20,8 @@ namespace ClinicManagement.Controllers.Base
         {
             try
             {
-                var entities = await _service.GetAllAsync(pageNumber, pageSize);
-                return View(entities);
+                var result = await _service.GetAllAsync(pageNumber, pageSize);
+                return View(result);
             }
             catch (Exception ex)
             {
