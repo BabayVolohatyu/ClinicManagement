@@ -65,6 +65,8 @@ th, td {
     border: 1px solid var(--accent);
     text-align: left;
     white-space: nowrap;
+    border: 1px solid var(--accent) !important;
+    box-shadow: 0 0 4px rgba(0, 255, 255, 0.3);
 }
 
 .table-container {
@@ -96,6 +98,7 @@ th, td {
 
     .table-container thead tr {
         border-bottom: 1px solid var(--accent);
+        box-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
     }
 
 nav ul {
@@ -197,4 +200,27 @@ nav ul {
             color: var(--accent);
         }
 
+.form-control-plaintext {
+    color: var(--text-light) !important;
+    background-color: transparent !important;
+    border: none !important;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
 
+.form-control {
+    color: #000000 !important; 
+    background-color: #ffffff !important;
+    border: 1px solid var(--accent) !important;
+    box-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+}
+
+
+tr[onclick]:hover {
+    background-color: rgba(0, 255, 255, 0.1);
+}
+
+    tr[onclick]:hover .form-control-plaintext {
+        color: var(--accent) !important;
+        text-shadow: 0 0 5px var(--accent);
+    }
