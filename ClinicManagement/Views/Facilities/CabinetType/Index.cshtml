@@ -27,10 +27,11 @@ else
         <tbody>
             @foreach (var item in Model.Items)
             {
-                <tr style="cursor:pointer" onclick="location.href='@Url.Action("Entity", new { id = item.Id })'">
+                <tr class="clickable-row" data-href="@Url.Action("Entity", new { id = item.Id })">
                     <td>@item.Id</td>
                     <td>@item.Type</td>
                 </tr>
+
             }
         </tbody>
     </table>
@@ -95,5 +96,15 @@ else
         function changePageSize(pageSize) {
             window.location.href = '@Url.Action("Index")' + '?pageNumber=1&pageSize=' + pageSize;
         }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const rows = document.querySelectorAll(".clickable-row");
+            rows.forEach(row => {
+                row.addEventListener("click", () => {
+                    const href = row.getAttribute("data-href");
+                    if(href) window.location.href = href;
+                });
+            });
+        });
     </script>
 }

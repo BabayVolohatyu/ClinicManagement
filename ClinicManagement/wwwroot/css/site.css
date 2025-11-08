@@ -224,3 +224,74 @@ tr[onclick]:hover {
         color: var(--accent) !important;
         text-shadow: 0 0 5px var(--accent);
     }
+
+.pagination .page-item .page-link {
+    color: var(--accent);
+    background-color: var(--panel-dark);
+    border: 1px solid var(--accent);
+    box-shadow: 0 0 5px rgba(0,255,255,0.3);
+    transition: all 0.3s;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--accent);
+    color: var(--panel-dark);
+    border-color: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+}
+
+.pagination .page-item.disabled .page-link {
+    color: rgba(224,224,224,0.4);
+    pointer-events: none;
+    background-color: var(--panel-dark);
+    border-color: rgba(0,255,255,0.2);
+}
+
+.pagination .page-link:hover {
+    background-color: rgba(0,255,255,0.1);
+    color: var(--accent);
+    text-shadow: 0 0 5px var(--accent);
+}
+
+
+.form-select {
+    color: var(--text-light);
+    background-color: var(--panel-dark);
+    border: 1px solid var(--accent);
+    box-shadow: 0 0 5px rgba(0,255,255,0.3);
+    border-radius: 6px;
+    transition: all 0.3s;
+}
+
+    .form-select:hover, .form-select:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 10px var(--accent);
+        color: var(--accent);
+        background-color: rgba(0,255,255,0.05);
+    }
+.btn-success {
+    background-color: var(--panel-dark);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    box-shadow: 0 0 8px rgba(0,255,255,0.4);
+}
+
+    .btn-success:hover {
+        background-color: rgba(0,255,255,0.1);
+        color: var(--accent);
+        text-shadow: 0 0 6px var(--accent);
+    }
+.page-link, .clickable-row {
+    transition: all 0.3s ease-in-out;
+}
+.form-select {
+    background-color: var(--panel-dark) !important; 
+    color: var(--text-light) !important; 
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+}
+
+    .form-select option {
+        background-color: var(--panel-dark);
+        color: var(--text-light);
+    }
