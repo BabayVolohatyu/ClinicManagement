@@ -1,13 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 using ClinicManagement.Services;
 
 namespace ClinicManagement.Controllers.Base
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public abstract class CommonController<T> : ControllerBase where T : class
+    public abstract class CommonController<T> : Controller where T : class
     {
         protected readonly IService<T> _service;
         protected readonly ILogger<CommonController<T>> _logger;
@@ -18,14 +14,14 @@ namespace ClinicManagement.Controllers.Base
             _logger = logger;
         }
 
-        // GET: api/[controller]
+        // GET: /[controller]
         [HttpGet]
         public virtual async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
         {
             try
             {
                 var entities = await _service.GetAllAsync(pageNumber, pageSize);
-                return Ok(entities);
+                return View(entities);
             }
             catch (Exception ex)
             {
@@ -34,8 +30,8 @@ namespace ClinicManagement.Controllers.Base
             }
         }
 
-        // GET: api/[controller]/{id}
-        [HttpGet("{id:int}")]
+        // GET: /[controller]/entity/{id}
+        [HttpGet]
         public virtual async Task<IActionResult> Entity(int id)
         {
             try
@@ -44,7 +40,7 @@ namespace ClinicManagement.Controllers.Base
                 if (entity == null)
                     return NotFound($"Entity with id {id} not found.");
 
-                return Ok(entity);
+                return View(entity);
             }
             catch (Exception ex)
             {
@@ -53,9 +49,25 @@ namespace ClinicManagement.Controllers.Base
             }
         }
 
-        // POST: api/[controller]
+        // GET: /[controller]/create
+        [HttpGet]
+        public virtual IActionResult Create()
+        {
+            try
+            {
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading create form for {EntityName}", typeof(T).Name);
+                return StatusCode(500, "An error occurred while loading the create form.");
+            }
+        }
+
+
+        // POST: /[controller]/create
         [HttpPost]
-        public virtual async Task<IActionResult> Create([FromBody] T entity)
+        public virtual async Task<IActionResult> Create(T entity)
         {
             if (entity == null)
                 return BadRequest("Entity cannot be null.");
@@ -63,7 +75,7 @@ namespace ClinicManagement.Controllers.Base
             try
             {
                 await _service.AddAsync(entity);
-                return CreatedAtAction(nameof(Entity), new { id = entity?.GetType().GetProperty("Id")?.GetValue(entity) }, entity);
+                return RedirectToAction(nameof(Entity), new { id = entity?.GetType().GetProperty("Id")?.GetValue(entity) });
             }
             catch (Exception ex)
             {
@@ -72,9 +84,9 @@ namespace ClinicManagement.Controllers.Base
             }
         }
 
-        // PUT: api/[controller]/{id}
-        [HttpPut("{id:int}")]
-        public virtual async Task<IActionResult> Update(int id, [FromBody] T entity)
+        // POST: /[controller]/update/{id}
+        [HttpPost]
+        public virtual async Task<IActionResult> Update(int id, T entity)
         {
             if (entity == null)
                 return BadRequest("Entity cannot be null.");
@@ -82,7 +94,7 @@ namespace ClinicManagement.Controllers.Base
             try
             {
                 await _service.UpdateAsync(id, entity);
-                return NoContent();
+                return RedirectToAction(nameof(Entity), new { id = id });
             }
             catch (ArgumentException ex)
             {
@@ -96,14 +108,14 @@ namespace ClinicManagement.Controllers.Base
             }
         }
 
-        // DELETE: api/[controller]/{id}
-        [HttpDelete("{id:int}")]
+        // POST: /[controller]/delete/{id}
+        [HttpPost]
         public virtual async Task<IActionResult> Delete(int id)
         {
             try
             {
                 await _service.RemoveAsync(id);
-                return NoContent();
+                return RedirectToAction(nameof(Index));
             }
             catch (ArgumentException ex)
             {
