@@ -17,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\Facilities\CabinetType\" />
     <Folder Include="Views\Facilities\Cabinet\" />
     <Folder Include="Views\Health\Diagnosis\" />
     <Folder Include="Views\Health\Treatment\" />
