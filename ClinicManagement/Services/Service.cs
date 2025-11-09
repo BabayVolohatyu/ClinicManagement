@@ -18,29 +18,53 @@ namespace ClinicManagement.Services
         }
 
         public virtual async Task<PaginatedResult<T>> GetAllAsync(
-            int pageNumber = 1,
-            int pageSize = 10,
-            CancellationToken token = default)
+         int pageNumber = 1,
+         int pageSize = 10,
+         string? searchTerm = null,
+         string? sortBy = null,
+         bool sortAscending = true,
+         CancellationToken token = default)
         {
             if (pageNumber < 1) pageNumber = 1;
             if (pageSize < 1 || pageSize > 100) pageSize = 10;
 
             try
             {
-                var items = await _dbSet
-                    .AsNoTracking()
+                var query = _dbSet.AsNoTracking();
+
+                // Apply filtration if search term is provided
+                if (!string.IsNullOrWhiteSpace(searchTerm))
+                {
+                    query = ApplySearchFilter(query, searchTerm);
+                }
+
+                // Apply sorting if sort field is provided
+                if (!string.IsNullOrWhiteSpace(sortBy))
+                {
+                    query = ApplySorting(query, sortBy, sortAscending);
+                }
+                else
+                {
+                    // Default sorting by ID if no sort specified
+                    query = ApplySorting(query, "Id", true);
+                }
+
+                var items = await query
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize)
                     .ToListAsync(token);
 
-                var totalCount = await _dbSet.CountAsync(token);
+                var totalCount = await query.CountAsync(token);
 
                 return new PaginatedResult<T>
                 {
                     Items = items,
                     PageNumber = pageNumber,
                     PageSize = pageSize,
-                    TotalCount = totalCount
+                    TotalCount = totalCount,
+                    SearchTerm = searchTerm,
+                    SortBy = sortBy,
+                    SortAscending = sortAscending
                 };
             }
             catch (OperationCanceledException)
@@ -53,6 +77,77 @@ namespace ClinicManagement.Services
                 _logger.LogError(ex, "Error while getting {Entity} list", typeof(T).Name);
                 throw;
             }
+        }
+
+        // Virtual method for search filtration - can be overridden in child services
+        protected virtual IQueryable<T> ApplySearchFilter(IQueryable<T> query, string searchTerm)
+        {
+            // Default implementation searches in all string properties
+            var stringProperties = typeof(T).GetProperties()
+                .Where(p => p.PropertyType == typeof(string) && p.CanRead);
+
+            if (!stringProperties.Any())
+                return query;
+
+            // Build OR expression for all string properties
+            var parameter = Expression.Parameter(typeof(T), "x");
+            Expression? orExpression = null;
+
+            foreach (var property in stringProperties)
+            {
+                var propertyAccess = Expression.Property(parameter, property);
+                var constant = Expression.Constant(searchTerm.ToLower());
+                var toLowerMethod = typeof(string).GetMethod("ToLower", Type.EmptyTypes);
+                var containsMethod = typeof(string).GetMethod("Contains", new[] { typeof(string) });
+
+                if (toLowerMethod != null && containsMethod != null)
+                {
+                    var toLowerCall = Expression.Call(propertyAccess, toLowerMethod);
+                    var containsCall = Expression.Call(toLowerCall, containsMethod, constant);
+
+                    orExpression = orExpression == null
+                        ? containsCall
+                        : Expression.OrElse(orExpression, containsCall);
+                }
+            }
+
+            if (orExpression != null)
+            {
+                var lambda = Expression.Lambda<Func<T, bool>>(orExpression, parameter);
+                query = query.Where(lambda);
+            }
+
+            return query;
+        }
+
+        // Virtual method for sorting - can be overridden in child services
+        protected virtual IQueryable<T> ApplySorting(IQueryable<T> query, string sortBy, bool ascending)
+        {
+            var property = typeof(T).GetProperty(sortBy,
+                System.Reflection.BindingFlags.IgnoreCase |
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.Instance);
+
+            if (property == null)
+            {
+                // Fallback to ID sorting if specified property doesn't exist
+                property = typeof(T).GetProperty("Id");
+                if (property == null) return query;
+            }
+
+            var parameter = Expression.Parameter(typeof(T), "x");
+            var propertyAccess = Expression.Property(parameter, property);
+            var orderByExpression = Expression.Lambda(propertyAccess, parameter);
+
+            string methodName = ascending ? "OrderBy" : "OrderByDescending";
+            var resultExpression = Expression.Call(
+                typeof(Queryable),
+                methodName,
+                new[] { typeof(T), property.PropertyType },
+                query.Expression,
+                Expression.Quote(orderByExpression));
+
+            return query.Provider.CreateQuery<T>(resultExpression);
         }
 
         public virtual async Task<T?> GetByIdAsync(int id, CancellationToken token = default)

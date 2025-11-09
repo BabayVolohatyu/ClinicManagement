@@ -16,11 +16,16 @@ namespace ClinicManagement.Controllers.Base
 
         // GET: /[controller]
         [HttpGet]
-        public virtual async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
+        public virtual async Task<IActionResult> Index(
+           int pageNumber = 1,
+           int pageSize = 10,
+           string? searchTerm = null,
+           string? sortBy = null,
+           bool sortAscending = true)
         {
             try
             {
-                var result = await _service.GetAllAsync(pageNumber, pageSize);
+                var result = await _service.GetAllAsync(pageNumber, pageSize, searchTerm, sortBy, sortAscending);
                 return View(result);
             }
             catch (Exception ex)
@@ -29,6 +34,7 @@ namespace ClinicManagement.Controllers.Base
                 return StatusCode(500, "An error occurred while fetching data.");
             }
         }
+
 
         // GET: /[controller]/entity/{id}
         [HttpGet]

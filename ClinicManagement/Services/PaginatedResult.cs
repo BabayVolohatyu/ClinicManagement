@@ -9,7 +9,9 @@
         public int TotalPages => (int)Math.Ceiling(TotalCount / (double)PageSize);
         public bool HasPrevious => PageNumber > 1;
         public bool HasNext => PageNumber < TotalPages;
+
+        public string? SearchTerm { get; set; }
+        public string? SortBy { get; set; }
+        public bool SortAscending { get; set; } = true;
     }
 }
-
-
