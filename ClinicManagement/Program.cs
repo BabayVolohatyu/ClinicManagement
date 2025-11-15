@@ -1,6 +1,7 @@
 using ClinicManagement.Data;
 using ClinicManagement.Models.Facilities;
 using ClinicManagement.Services;
+using ClinicManagement.Services.Auth;
 using ClinicManagement.Services.Facilities;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,10 @@ builder.Services.AddDbContext<ClinicDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IService<CabinetType>, CabinetTypeService>();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.AddScoped<IJwtService, JwtService>();
 
 //Add global model validator
 builder.Services.AddControllers(options =>
