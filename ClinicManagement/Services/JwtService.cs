@@ -184,20 +184,24 @@ namespace ClinicManagement.Services
         {
             try
             {
-                if (role.CanCreate) claims.Add(new Claim("permission", "create"));
-                if (role.CanRead) claims.Add(new Claim("permission", "read"));
-                if (role.CanUpdate) claims.Add(new Claim("permission", "update"));
-                if (role.CanDelete) claims.Add(new Claim("permission", "delete"));
-                if (role.CanExecuteRawQueries) claims.Add(new Claim("permission", "execute_raw_queries"));
-                if (role.CanAskPromotion) claims.Add(new Claim("permission", "ask_promotion"));
-                if (role.CanAcceptPromotions) claims.Add(new Claim("permission", "accept_promotions"));
-                if (role.CanViewPromotionsList) claims.Add(new Claim("permission", "view_promotions_list"));
-                if (role.CanManageUsers) claims.Add(new Claim("permission", "manage_users"));
-                if (role.CanViewUserData) claims.Add(new Claim("permission", "view_user_data"));
-                if (role.CanDownloadCsv) claims.Add(new Claim("permission", "download_csv"));
+                var permissionsMap = new Dictionary<bool, string>
+                {
+                    { role.CanCreate, "create" },
+                    { role.CanRead, "read" },
+                    { role.CanUpdate, "update" },
+                    { role.CanDelete, "delete" },
+                    { role.CanExecuteRawQueries, "execute_raw_queries" },
+                    { role.CanAskPromotion, "ask_promotion" },
+                    { role.CanAcceptPromotions, "accept_promotions" },
+                    { role.CanViewPromotionsList, "view_promotions_list" },
+                    { role.CanManageUsers, "manage_users" },
+                    { role.CanViewUserData, "view_user_data" },
+                    { role.CanDownloadCsv, "download_csv" }
+                };
 
-                _logger.LogDebug("Added {PermissionCount} permission claims for role {RoleName}",
-                    claims.Count(c => c.Type == "permission"), role.Name);
+                foreach (var p in permissionsMap.Where(x => x.Key))
+                    claims.Add(new Claim("permission", p.Value));
+
             }
             catch (Exception ex)
             {
