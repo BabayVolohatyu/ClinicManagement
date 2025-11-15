@@ -32,7 +32,7 @@
         // Static presets
         public static Role Guest => new Role
         {
-            Id = 0,
+            Id = 1,
             Name = "Guest",
             Type = RoleType.Guest,
             CanCreate = false,
@@ -50,7 +50,7 @@
 
         public static Role Authorized => new Role
         {
-            Id = 1,
+            Id = 2,
             Name = "Authorized",
             Type = RoleType.Authorized,
             CanCreate = true,
@@ -68,7 +68,7 @@
 
         public static Role Operator => new Role
         {
-            Id = 2,
+            Id = 3,
             Name = "Operator",
             Type = RoleType.Operator,
             CanCreate = true,
@@ -86,7 +86,7 @@
 
         public static Role Admin => new Role
         {
-            Id = 3,
+            Id = 4,
             Name = "Admin",
             Type = RoleType.Admin,
             CanCreate = true,

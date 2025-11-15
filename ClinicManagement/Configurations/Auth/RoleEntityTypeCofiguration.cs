@@ -43,7 +43,7 @@ namespace ClinicManagement.Configurations.Auth
             builder.HasData(
                 new Role
                 {
-                    Id = 0,
+                    Id = 1,
                     Name = "Guest",
                     Type = RoleType.Guest,
                     CanCreate = false,
@@ -60,7 +60,7 @@ namespace ClinicManagement.Configurations.Auth
                 },
                 new Role
                 {
-                    Id = 1,
+                    Id = 2,
                     Name = "Authorized",
                     Type = RoleType.Authorized,
                     CanCreate = true,
@@ -77,7 +77,7 @@ namespace ClinicManagement.Configurations.Auth
                 },
                 new Role
                 {
-                    Id = 2,
+                    Id = 3,
                     Name = "Operator",
                     Type = RoleType.Operator,
                     CanCreate = true,
@@ -94,7 +94,7 @@ namespace ClinicManagement.Configurations.Auth
                 },
                 new Role
                 {
-                    Id = 3,
+                    Id = 4,
                     Name = "Admin",
                     Type = RoleType.Admin,
                     CanCreate = true,
