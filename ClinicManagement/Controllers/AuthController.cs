@@ -18,6 +18,21 @@ namespace ClinicManagement.Controllers
         [HttpGet]
         public IActionResult Login()
         {
+            var token = Request.Cookies["jwt"];
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                var principal = _jwt.Validate(token);
+                if (principal != null)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    Response.Cookies.Delete("jwt");
+                }
+            }
+
             return View("AuthPage");
         }
 
