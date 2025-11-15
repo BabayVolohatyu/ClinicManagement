@@ -2,10 +2,10 @@
 {
     public enum RoleType
     {
-        Guest = 0,
-        Authorized = 1,
-        Operator = 2,
-        Admin = 3
+        Guest = 1,
+        Authorized = 2,
+        Operator = 3,
+        Admin = 4
     }
 
     public class Role
