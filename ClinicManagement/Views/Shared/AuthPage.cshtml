@@ -1,0 +1,51 @@
+﻿@model ClinicManagement.Models.Auth.LoginModel
+@{
+    ViewBag.Title = "Authentication";
+}
+
+<div class="auth-container">
+
+    <h2>Login</h2>
+
+    <form method="post" asp-controller="Auth" asp-action="Login">
+        <label>Email</label>
+        <input asp-for="Email" type="email" required />
+
+        <label>Password</label>
+        <input asp-for="Password" type="password" required />
+
+        <button type="submit">Login</button>
+
+        @if (ViewBag.LoginFailed != null)
+        {
+            <div class="error">Invalid credentials</div>
+            <a asp-action="ForgotPassword" asp-controller="Auth">Forgot password?</a>
+        }
+    </form>
+
+    <hr />
+
+    <h2>Register</h2>
+
+    <form method="post" asp-controller="Auth" asp-action="Register">
+        <input name="FirstName" placeholder="First name" required />
+        <input name="MiddleName" placeholder="Middle name" />
+        <input name="LastName" placeholder="Last name" />
+        <input name="Email" type="email" placeholder="Email" required />
+        <input name="Password" type="password" placeholder="Password" required />
+        <input name="ConfirmPassword" type="password" placeholder="Repeat password" required />
+
+        <button type="submit">Register</button>
+
+        @if (ViewBag.RegisterError != null)
+        {
+            <div class="error">@ViewBag.RegisterError</div>
+        }
+    </form>
+
+    <hr />
+
+    <form method="post" asp-controller="Auth" asp-action="Guest">
+        <button type="submit">Continue as guest</button>
+    </form>
+</div>

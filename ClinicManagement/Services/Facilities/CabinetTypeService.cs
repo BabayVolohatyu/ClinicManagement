@@ -5,7 +5,7 @@ namespace ClinicManagement.Services.Facilities
 {
     public class CabinetTypeService : Service<CabinetType>
     {
-        public CabinetTypeService(ClinicDbContext context, ILogger<CabinetTypeService> logger) 
+        public CabinetTypeService(ClinicDbContext context, ILogger<CabinetTypeService> logger)
             : base(context, logger) { }
     }
 

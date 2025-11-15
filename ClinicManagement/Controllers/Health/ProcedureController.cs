@@ -1,5 +1,4 @@
 ﻿using ClinicManagement.Data;
-using ClinicManagement.Models.Health;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicManagement.Controllers.Health
@@ -8,7 +7,7 @@ namespace ClinicManagement.Controllers.Health
     {
         private readonly ClinicDbContext _context;
 
-        public ProcedureController(ClinicDbContext context)  
+        public ProcedureController(ClinicDbContext context)
         {
             _context = context;
         }

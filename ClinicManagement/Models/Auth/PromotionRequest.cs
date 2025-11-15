@@ -10,7 +10,7 @@
 
         // Role that the user wants to be promoted to
         public int RequestedRoleId { get; set; }
-        public Role RequestedRole { get; set; }
+        public Role RequestedRole { get; set; } = Role.Guest;
 
         // Reason for the promotion request
         public string? Reason { get; set; }

@@ -1,6 +1,6 @@
-using System.Diagnostics;
 using ClinicManagement.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace ClinicManagement.Controllers
 {

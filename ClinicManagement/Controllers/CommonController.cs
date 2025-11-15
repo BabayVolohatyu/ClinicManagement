@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ClinicManagement.Services;
+﻿using ClinicManagement.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicManagement.Controllers.Base
 {

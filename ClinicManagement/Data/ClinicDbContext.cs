@@ -11,7 +11,7 @@ namespace ClinicManagement.Data
     public class ClinicDbContext : DbContext
     {
         public ClinicDbContext(DbContextOptions<ClinicDbContext> options) : base(options) { }
-        
+
         //Simple models(first wave)
         public DbSet<Person> People { get; set; }
         public DbSet<Specialty> Specialties { get; set; }

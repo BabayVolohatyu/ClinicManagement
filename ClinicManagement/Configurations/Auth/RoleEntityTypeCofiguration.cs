@@ -1,4 +1,5 @@
 ﻿using ClinicManagement.Models.Auth;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -14,54 +15,101 @@ namespace ClinicManagement.Configurations.Auth
                 .HasMaxLength(50)
                 .IsRequired();
 
-            // Configure all boolean properties with default values
-            builder.Property(r => r.CanCreate)
-                .IsRequired()
-                .HasDefaultValue(false);
+            builder.Property(r => r.Type)
+                .IsRequired();
 
-            builder.Property(r => r.CanRead)
-                .IsRequired()
-                .HasDefaultValue(false);
+            // Boolean permissions (clean & consistent)
+            builder.Property(r => r.CanCreate).HasDefaultValue(false).IsRequired();
+            builder.Property(r => r.CanRead).HasDefaultValue(false).IsRequired();
+            builder.Property(r => r.CanUpdate).HasDefaultValue(false).IsRequired();
+            builder.Property(r => r.CanDelete).HasDefaultValue(false).IsRequired();
+            builder.Property(r => r.CanExecuteRawQueries).HasDefaultValue(false).IsRequired();
+            builder.Property(r => r.CanAskPromotion).HasDefaultValue(false).IsRequired();
+            builder.Property(r => r.CanAcceptPromotions).HasDefaultValue(false).IsRequired();
+            builder.Property(r => r.CanViewPromotionsList).HasDefaultValue(false).IsRequired();
+            builder.Property(r => r.CanManageUsers).HasDefaultValue(false).IsRequired();
+            builder.Property(r => r.CanViewUserData).HasDefaultValue(false).IsRequired();
+            builder.Property(r => r.CanDownloadCsv).HasDefaultValue(false).IsRequired();
 
-            builder.Property(r => r.CanUpdate)
-                .IsRequired()
-                .HasDefaultValue(false);
+            builder.HasMany(r => r.Users)
+                .WithOne(u => u.Role)
+                .HasForeignKey(u => u.RoleId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Property(r => r.CanDelete)
-                .IsRequired()
-                .HasDefaultValue(false);
-
-            builder.Property(r => r.CanExecuteRawQueries)
-                .IsRequired()
-                .HasDefaultValue(false);
-
-            builder.Property(r => r.CanAskPromotion)
-                .IsRequired()
-                .HasDefaultValue(false);
-
-            builder.Property(r => r.CanAcceptPromotions)
-                .IsRequired()
-                .HasDefaultValue(false);
-
-            builder.Property(r => r.CanViewPromotionsList)
-                .IsRequired()
-                .HasDefaultValue(false);
-
-            builder.Property(r => r.CanManageUsers)
-                .IsRequired()
-                .HasDefaultValue(false);
-
-            builder.Property(r => r.CanViewUserData)
-                .IsRequired()
-                .HasDefaultValue(false);
-
-            builder.Property(r => r.CanDownloadCsv)
-                .IsRequired()
-                .HasDefaultValue(false);
-
-            // Index for role name
             builder.HasIndex(r => r.Name)
                 .IsUnique();
+
+            // SEED roles
+            builder.HasData(
+                new Role
+                {
+                    Id = 0,
+                    Name = "Guest",
+                    Type = RoleType.Guest,
+                    CanCreate = false,
+                    CanRead = true,
+                    CanUpdate = false,
+                    CanDelete = false,
+                    CanExecuteRawQueries = false,
+                    CanAskPromotion = false,
+                    CanAcceptPromotions = false,
+                    CanViewPromotionsList = false,
+                    CanManageUsers = false,
+                    CanViewUserData = false,
+                    CanDownloadCsv = false
+                },
+                new Role
+                {
+                    Id = 1,
+                    Name = "Authorized",
+                    Type = RoleType.Authorized,
+                    CanCreate = true,
+                    CanRead = true,
+                    CanUpdate = true,
+                    CanDelete = true,
+                    CanExecuteRawQueries = false,
+                    CanAskPromotion = true,
+                    CanAcceptPromotions = false,
+                    CanViewPromotionsList = false,
+                    CanManageUsers = false,
+                    CanViewUserData = false,
+                    CanDownloadCsv = false
+                },
+                new Role
+                {
+                    Id = 2,
+                    Name = "Operator",
+                    Type = RoleType.Operator,
+                    CanCreate = true,
+                    CanRead = true,
+                    CanUpdate = true,
+                    CanDelete = true,
+                    CanExecuteRawQueries = true,
+                    CanAskPromotion = true,
+                    CanAcceptPromotions = false,
+                    CanViewPromotionsList = false,
+                    CanManageUsers = false,
+                    CanViewUserData = false,
+                    CanDownloadCsv = true
+                },
+                new Role
+                {
+                    Id = 3,
+                    Name = "Admin",
+                    Type = RoleType.Admin,
+                    CanCreate = true,
+                    CanRead = true,
+                    CanUpdate = true,
+                    CanDelete = true,
+                    CanExecuteRawQueries = true,
+                    CanAskPromotion = false,
+                    CanAcceptPromotions = true,
+                    CanViewPromotionsList = true,
+                    CanManageUsers = true,
+                    CanViewUserData = true,
+                    CanDownloadCsv = true
+                }
+                );
 
         }
     }

@@ -9,7 +9,7 @@ namespace ClinicManagement.Configurations.Humans
         public void Configure(EntityTypeBuilder<Specialty> builder)
         {
             builder
-                .HasKey(s =>  s.Id);
+                .HasKey(s => s.Id);
         }
     }
 }

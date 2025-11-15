@@ -1,8 +1,8 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using ClinicManagement.Models.Auth;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using ClinicManagement.Models.Auth;
 
 namespace ClinicManagement.Services
 {
@@ -184,23 +184,26 @@ namespace ClinicManagement.Services
         {
             try
             {
-                var permissionsMap = new Dictionary<bool, string>
+                var permissions = new Dictionary<string, bool>
                 {
-                    { role.CanCreate, "create" },
-                    { role.CanRead, "read" },
-                    { role.CanUpdate, "update" },
-                    { role.CanDelete, "delete" },
-                    { role.CanExecuteRawQueries, "execute_raw_queries" },
-                    { role.CanAskPromotion, "ask_promotion" },
-                    { role.CanAcceptPromotions, "accept_promotions" },
-                    { role.CanViewPromotionsList, "view_promotions_list" },
-                    { role.CanManageUsers, "manage_users" },
-                    { role.CanViewUserData, "view_user_data" },
-                    { role.CanDownloadCsv, "download_csv" }
+                    ["create"] = role.CanCreate,
+                    ["read"] = role.CanRead,
+                    ["update"] = role.CanUpdate,
+                    ["delete"] = role.CanDelete,
+                    ["execute_raw_queries"] = role.CanExecuteRawQueries,
+                    ["ask_promotion"] = role.CanAskPromotion,
+                    ["accept_promotions"] = role.CanAcceptPromotions,
+                    ["view_promotions_list"] = role.CanViewPromotionsList,
+                    ["manage_users"] = role.CanManageUsers,
+                    ["view_user_data"] = role.CanViewUserData,
+                    ["download_csv"] = role.CanDownloadCsv
                 };
 
-                foreach (var p in permissionsMap.Where(x => x.Key))
-                    claims.Add(new Claim("permission", p.Value));
+                foreach (var p in permissions)
+                {
+                    if (p.Value)
+                        claims.Add(new Claim("permission", p.Key));
+                }
 
             }
             catch (Exception ex)
