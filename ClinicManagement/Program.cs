@@ -1,4 +1,5 @@
 using ClinicManagement.Data;
+using ClinicManagement.Middleware;
 using ClinicManagement.Models.Facilities;
 using ClinicManagement.Services;
 using ClinicManagement.Services.Auth;
@@ -51,10 +52,12 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseMiddleware<JwtMiddleware>();
+
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Auth}/{action=Login}/{id?}");
 
 app.Run();
