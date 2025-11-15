@@ -2,7 +2,6 @@ using ClinicManagement.Data;
 using ClinicManagement.Middleware;
 using ClinicManagement.Models.Facilities;
 using ClinicManagement.Services;
-using ClinicManagement.Services.Auth;
 using ClinicManagement.Services.Facilities;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +36,9 @@ builder.Services.Configure<RazorViewEngineOptions>(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddAuthentication("Jwt");
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -54,7 +56,9 @@ app.UseRouting();
 
 app.UseMiddleware<JwtMiddleware>();
 
+app.UseAuthentication();  
 app.UseAuthorization();
+
 
 app.MapControllerRoute(
     name: "default",

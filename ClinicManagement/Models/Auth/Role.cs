@@ -2,6 +2,7 @@
 {
     public enum RoleType
     {
+        Unauthorized = -1,
         Guest = 1,
         Authorized = 2,
         Operator = 3,

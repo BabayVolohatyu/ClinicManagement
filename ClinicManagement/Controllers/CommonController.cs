@@ -1,8 +1,10 @@
-﻿using ClinicManagement.Services;
+﻿using ClinicManagement.Helpers;
+using ClinicManagement.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicManagement.Controllers.Base
 {
+    [Authorize]
     public abstract class CommonController<T> : Controller where T : class
     {
         protected readonly IService<T> _service;

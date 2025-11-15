@@ -1,6 +1,5 @@
 ﻿using ClinicManagement.Models.Auth;
 using ClinicManagement.Services;
-using ClinicManagement.Services.Auth;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicManagement.Controllers
@@ -34,7 +33,13 @@ namespace ClinicManagement.Controllers
             }
 
             var token = _jwt.Generate(user);
-            Response.Cookies.Append("jwt", token);
+            Response.Cookies.Append("jwt", token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = false,
+                SameSite = SameSiteMode.Lax
+            });
+
 
             return RedirectToAction("Index", "Home");
         }
@@ -47,7 +52,13 @@ namespace ClinicManagement.Controllers
                 var user = await _auth.RegisterAsync(model);
 
                 var token = _jwt.Generate(user);
-                Response.Cookies.Append("jwt", token);
+                Response.Cookies.Append("jwt", token, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = false,
+                    SameSite = SameSiteMode.Lax
+                });
+
 
                 return RedirectToAction("Index", "Home");
             }
@@ -64,10 +75,16 @@ namespace ClinicManagement.Controllers
             var user = await _auth.GuestLoginAsync();
             var token = _jwt.Generate(user);
 
-            Response.Cookies.Append("jwt", token);
+            Response.Cookies.Append("jwt", token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = false,
+                SameSite = SameSiteMode.Lax
+            });
 
             return RedirectToAction("Index", "Home");
         }
+
 
         public IActionResult ForgotPassword()
         {

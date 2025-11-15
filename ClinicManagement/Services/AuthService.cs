@@ -5,7 +5,7 @@ using System;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace ClinicManagement.Services.Auth
+namespace ClinicManagement.Services
 {
     public interface IAuthService
     {
@@ -77,7 +77,8 @@ namespace ClinicManagement.Services.Auth
                 Email = $"guest_{Guid.NewGuid():N}@guest.local",
                 CreatedAt = DateTimeOffset.UtcNow,
                 PasswordHash = "",
-                RoleId = guestRole.Id
+                RoleId = guestRole.Id,
+                Role = guestRole
             };
 
             _context.Users.Add(user);
