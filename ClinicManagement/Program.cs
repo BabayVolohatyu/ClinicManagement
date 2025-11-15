@@ -2,7 +2,6 @@ using ClinicManagement.Data;
 using ClinicManagement.Models.Facilities;
 using ClinicManagement.Services;
 using ClinicManagement.Services.Facilities;
-using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,25 +10,34 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ClinicDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddScoped<IAuthService, AuthService>();
+
 builder.Services.AddScoped<IService<CabinetType>, CabinetTypeService>();
 
-//Add global model validator
-builder.Services.AddControllers(options =>
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddSession(options =>
 {
-    options.Filters.Add<ValidateModelFilter>();
+    options.IdleTimeout = TimeSpan.FromMinutes(60);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
 });
 
-builder.Services.Configure<RazorViewEngineOptions>(options =>
+
+//Add global model validator
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<ValidateModelFilter>();
+})
+.AddRazorOptions(options =>
 {
     options.ViewLocationFormats.Clear();
 
+    options.ViewLocationFormats.Add("/Views/{1}/{0}.cshtml");
+    options.ViewLocationFormats.Add("/Views/Auth/{0}.cshtml");
     options.ViewLocationFormats.Add("/Views/Facilities/{1}/{0}.cshtml");
     options.ViewLocationFormats.Add("/Views/Shared/{0}.cshtml");
 });
-
-
-// Add services to the container.
-builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
@@ -42,7 +50,10 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
+
+app.UseSession();
 
 app.UseRouting();
 

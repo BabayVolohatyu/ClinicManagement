@@ -3,6 +3,7 @@ using System;
 using ClinicManagement.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ClinicManagement.Migrations
 {
     [DbContext(typeof(ClinicDbContext))]
-    partial class ClinicDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251109125605_Add auth tables")]
+    partial class Addauthtables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,8 +33,8 @@ namespace ClinicManagement.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTimeOffset?>("ProcessedAt")
-                        .HasColumnType("timestamptz");
+                    b.Property<DateTime?>("ProcessedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("ProcessedByAdminId")
                         .HasColumnType("integer");
@@ -40,8 +43,8 @@ namespace ClinicManagement.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
-                    b.Property<DateTimeOffset>("RequestedAt")
-                        .HasColumnType("timestamptz");
+                    b.Property<DateTime>("RequestedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("RequestedRoleId")
                         .HasColumnType("integer");
@@ -224,8 +227,8 @@ namespace ClinicManagement.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamptz");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -266,6 +269,18 @@ namespace ClinicManagement.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2025, 11, 9, 12, 56, 2, 944, DateTimeKind.Utc).AddTicks(7206),
+                            Email = "admin@clinic.com",
+                            FirstName = "Admin",
+                            IsActive = true,
+                            PasswordHash = "hashed_password_here",
+                            RoleId = 4
+                        });
                 });
 
             modelBuilder.Entity("ClinicManagement.Models.Facilities.Cabinet", b =>

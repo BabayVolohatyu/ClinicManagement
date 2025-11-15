@@ -1,0 +1,51 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center">Login to Clinic Management System</h3>
+            </div>
+            <div class="card-body">
+
+                <!-- Guest Login -->
+                <div class="d-grid gap-2 mb-3">
+                    <a href="@Url.Action("Guest", "Login")" class="btn btn-outline-secondary btn-lg">
+                        Enter as Guest
+                    </a>
+                </div>
+
+                <hr class="my-4">
+
+                <!-- Regular Login Form -->
+                <form method="post" asp-action="Index" asp-controller="Login">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="Password" required>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">Login</button>
+                    </div>
+                </form>
+
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger mt-3">@TempData["Error"]</div>
+                }
+
+                <hr class="my-4">
+                <h5 class="text-center">Don't have an account?</h5>
+                <div class="d-grid gap-2">
+                    <a href="@Url.Action("Index", "Register")" class="btn btn-success btn-lg">Register</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

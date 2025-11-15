@@ -1,25 +1,26 @@
-using System.Diagnostics;
 using ClinicManagement.Models;
+using ClinicManagement.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace ClinicManagement.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IAuthService _authService;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IAuthService authService, ILogger<HomeController> logger)
         {
+            _authService = authService;
             _logger = logger;
         }
 
         public IActionResult Index()
         {
-            return View();
-        }
+            if (!_authService.IsAuthenticated() && !_authService.IsGuest())
+                return RedirectToAction("Index", "Login");
 
-        public IActionResult Privacy()
-        {
             return View();
         }
 
