@@ -1,51 +1,101 @@
 ﻿@model ClinicManagement.Models.Auth.LoginModel
 @{
-    ViewBag.Title = "Authentication";
+    ViewData["Title"] = "Authentication";
 }
 
-<div class="auth-container">
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Authentication</h2>
+    </div>
 
-    <h2>Login</h2>
+    <div class="row">
+        <!-- Login Section -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Login</h4>
 
-    <form method="post" asp-controller="Auth" asp-action="Login">
-        <label>Email</label>
-        <input asp-for="Email" type="email" required />
+                    <form method="post" asp-controller="Auth" asp-action="Login">
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input asp-for="Email" type="email" class="form-control" required />
+                        </div>
 
-        <label>Password</label>
-        <input asp-for="Password" type="password" required />
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input asp-for="Password" type="password" class="form-control" required />
+                        </div>
 
-        <button type="submit">Login</button>
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
 
-        @if (ViewBag.LoginFailed != null)
-        {
-            <div class="error">Invalid credentials</div>
-            <a asp-action="ForgotPassword" asp-controller="Auth">Forgot password?</a>
-        }
-    </form>
+                        @if (ViewBag.LoginFailed != null)
+                        {
+                            <div class="alert alert-danger mt-3">
+                                Invalid credentials
+                                <div class="mt-2">
+                                    <a asp-action="ForgotPassword" asp-controller="Auth" class="btn btn-outline-secondary btn-sm">Forgot password?</a>
+                                </div>
+                            </div>
+                        }
+                    </form>
+                </div>
+            </div>
+        </div>
 
-    <hr />
+        <!-- Register Section -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Register</h4>
 
-    <h2>Register</h2>
+                    <form method="post" asp-controller="Auth" asp-action="Register">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <input name="FirstName" class="form-control" placeholder="First name" required />
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <input name="MiddleName" class="form-control" placeholder="Middle name" />
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <input name="LastName" class="form-control" placeholder="Last name" />
+                            </div>
+                        </div>
 
-    <form method="post" asp-controller="Auth" asp-action="Register">
-        <input name="FirstName" placeholder="First name" required />
-        <input name="MiddleName" placeholder="Middle name" />
-        <input name="LastName" placeholder="Last name" />
-        <input name="Email" type="email" placeholder="Email" required />
-        <input name="Password" type="password" placeholder="Password" required />
-        <input name="ConfirmPassword" type="password" placeholder="Repeat password" required />
+                        <div class="mb-3">
+                            <input name="Email" type="email" class="form-control" placeholder="Email" required />
+                        </div>
 
-        <button type="submit">Register</button>
+                        <div class="mb-3">
+                            <input name="Password" type="password" class="form-control" placeholder="Password" required />
+                        </div>
 
-        @if (ViewBag.RegisterError != null)
-        {
-            <div class="error">@ViewBag.RegisterError</div>
-        }
-    </form>
+                        <div class="mb-3">
+                            <input name="ConfirmPassword" type="password" class="form-control" placeholder="Repeat password" required />
+                        </div>
 
-    <hr />
+                        <button type="submit" class="btn btn-success w-100">Register</button>
 
-    <form method="post" asp-controller="Auth" asp-action="Guest">
-        <button type="submit">Continue as guest</button>
-    </form>
+                        @if (ViewBag.RegisterError != null)
+                        {
+                            <div class="alert alert-danger mt-3">@ViewBag.RegisterError</div>
+                        }
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Guest Access -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center">
+                    <form method="post" asp-controller="Auth" asp-action="Guest">
+                        <p class="mb-3">Don't want to create an account?</p>
+                        <button type="submit" class="btn btn-outline-primary">Continue as guest</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
