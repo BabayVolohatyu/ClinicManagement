@@ -118,7 +118,9 @@
                         <div class="d-flex">
                             @if (showLogin)
                             {
-                                <a class="btn btn-outline-primary btn-sm me-2" asp-controller="Auth" asp-action="Login">Log in</a>
+                                <form method="post" asp-controller="Auth" asp-action="LoginAsGuest" class="d-inline">
+                                    <button type="submit" class="btn btn-outline-primary btn-sm me-2">Log in</button>
+                                </form>
                             }
                             @if (showLogout)
                             {

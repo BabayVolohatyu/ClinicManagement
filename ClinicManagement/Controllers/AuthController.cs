@@ -19,13 +19,7 @@ namespace ClinicManagement.Controllers
         [HttpGet]
         public IActionResult Login()
         {
-            Response.Cookies.Delete("jwt", new CookieOptions
-            {
-                Path = "/",
-                Secure = false,
-                HttpOnly = true,
-                SameSite = SameSiteMode.Lax
-            });
+            DeleteCookies();
 
             SetUnauthorizedUser();
 
@@ -44,16 +38,21 @@ namespace ClinicManagement.Controllers
             }
 
             var token = _jwt.Generate(user);
-            Response.Cookies.Append("jwt", token, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = false,
-                SameSite = SameSiteMode.Lax
-            });
 
+            AppendCookies(token);
 
             return RedirectToAction("Index", "Home");
         }
+        [HttpPost]
+        public IActionResult LoginAsGuest()
+        {
+            DeleteCookies();
+
+            SetUnauthorizedUser();
+
+            return RedirectToAction("Login", "Auth");
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> Register(RegisterModel model)
@@ -63,13 +62,7 @@ namespace ClinicManagement.Controllers
                 var user = await _auth.RegisterAsync(model);
 
                 var token = _jwt.Generate(user);
-                Response.Cookies.Append("jwt", token, new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = false,
-                    SameSite = SameSiteMode.Lax
-                });
-
+                AppendCookies(token);
 
                 return RedirectToAction("Index", "Home");
             }
@@ -86,12 +79,7 @@ namespace ClinicManagement.Controllers
             var user = await _auth.GuestLoginAsync();
             var token = _jwt.Generate(user);
 
-            Response.Cookies.Append("jwt", token, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = false,
-                SameSite = SameSiteMode.Lax
-            });
+            AppendCookies(token);
 
             return RedirectToAction("Index", "Home");
         }
@@ -99,13 +87,7 @@ namespace ClinicManagement.Controllers
         [HttpPost]
         public IActionResult Logout()
         {
-            Response.Cookies.Delete("jwt", new CookieOptions
-            {
-                Path = "/",
-                Secure = false,
-                HttpOnly = true,
-                SameSite = SameSiteMode.Lax
-            });
+            DeleteCookies();
 
             return RedirectToAction("Login", "Auth");
         }
@@ -124,6 +106,26 @@ namespace ClinicManagement.Controllers
             };
 
             HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims, "Unauthorized"));
+        }
+        private void AppendCookies(string token)
+        {
+            Response.Cookies.Append("jwt", token, new CookieOptions
+            {
+                Path = "/",
+                HttpOnly = true,
+                Secure = false,
+                SameSite = SameSiteMode.Lax
+            });
+        }
+        private void DeleteCookies()
+        {
+            Response.Cookies.Delete("jwt", new CookieOptions
+            {
+                Path = "/",
+                Secure = false,
+                HttpOnly = true,
+                SameSite = SameSiteMode.Lax
+            });
         }
     }
 }
