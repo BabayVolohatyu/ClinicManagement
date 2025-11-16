@@ -32,6 +32,7 @@ builder.Services.Configure<RazorViewEngineOptions>(options =>
 
     options.ViewLocationFormats.Add("/Views/Facilities/{1}/{0}.cshtml");
     options.ViewLocationFormats.Add("/Views/Shared/{0}.cshtml");
+    options.ViewLocationFormats.Add("/Views/Shared/_Navigation/{0}.cshtml");
 });
 
 

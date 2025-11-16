@@ -1,0 +1,14 @@
+﻿<div class="d-flex">
+    @if (ViewBag.ShowLogin)
+    {
+        <form method="post" asp-controller="Auth" asp-action="LoginAsGuest" class="d-inline">
+            <button type="submit" class="btn btn-outline-primary btn-sm me-2">Log in</button>
+        </form>
+    }
+    @if (ViewBag.ShowLogout)
+    {
+        <form method="post" asp-controller="Auth" asp-action="Logout" class="d-inline">
+            <button type="submit" class="btn btn-outline-danger btn-sm">Log out</button>
+        </form>
+    }
+</div>

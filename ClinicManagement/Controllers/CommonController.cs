@@ -1,5 +1,6 @@
 ﻿using ClinicManagement.Helpers;
 using ClinicManagement.Services;
+using ClinicManagement.Models.Auth;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicManagement.Controllers.Base
@@ -40,6 +41,7 @@ namespace ClinicManagement.Controllers.Base
 
         // GET: /[controller]/entity/{id}
         [HttpGet]
+        [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
         public virtual async Task<IActionResult> Entity(int id)
         {
             try
@@ -59,6 +61,7 @@ namespace ClinicManagement.Controllers.Base
 
         // GET: /[controller]/create
         [HttpGet]
+        [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
         public virtual IActionResult Create()
         {
             try
@@ -75,6 +78,8 @@ namespace ClinicManagement.Controllers.Base
 
         // POST: /[controller]/create
         [HttpPost]
+        [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
+
         public virtual async Task<IActionResult> Create(T entity)
         {
             if (entity == null)
@@ -94,6 +99,7 @@ namespace ClinicManagement.Controllers.Base
 
         // POST: /[controller]/update/{id}
         [HttpPost]
+        [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
         public virtual async Task<IActionResult> Update(int id, T entity)
         {
             if (entity == null)
@@ -118,6 +124,7 @@ namespace ClinicManagement.Controllers.Base
 
         // POST: /[controller]/delete/{id}
         [HttpPost]
+        [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
         public virtual async Task<IActionResult> Delete(int id)
         {
             try
