@@ -1,7 +1,6 @@
 ﻿using ClinicManagement.Data;
 using ClinicManagement.Models.Auth;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Security.Cryptography;
 using System.Text;
 
