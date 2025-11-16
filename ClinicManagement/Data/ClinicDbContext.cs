@@ -1,4 +1,5 @@
-﻿using ClinicManagement.Models.Facilities;
+﻿using ClinicManagement.Models.Auth;
+using ClinicManagement.Models.Facilities;
 using ClinicManagement.Models.Health;
 using ClinicManagement.Models.Humans;
 using ClinicManagement.Models.Info;
@@ -10,7 +11,7 @@ namespace ClinicManagement.Data
     public class ClinicDbContext : DbContext
     {
         public ClinicDbContext(DbContextOptions<ClinicDbContext> options) : base(options) { }
-        
+
         //Simple models(first wave)
         public DbSet<Person> People { get; set; }
         public DbSet<Specialty> Specialties { get; set; }
@@ -41,6 +42,12 @@ namespace ClinicManagement.Data
 
         //Models that depend only on previous ones(fifth wave)
         public DbSet<Diagnosis> Diagnoses { get; set; }
+
+        // Authentication models
+        public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<PromotionRequest> PromotionRequests { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ClinicDbContext).Assembly);

@@ -2,7 +2,7 @@
 {
     public class SicknessProcedure
     {
-        public int SicknessId {  get; set; }
+        public int SicknessId { get; set; }
 
         //One-to-many
         public Sickness Sickness { get; set; } = null!;

@@ -1,5 +1,4 @@
 ﻿using ClinicManagement.Data;
-using ClinicManagement.Models.Health;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicManagement.Controllers.Health

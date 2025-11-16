@@ -13,7 +13,7 @@ namespace ClinicManagement.Controllers.Health
         }
 
         public IActionResult Index()
-        { 
+        {
             return View();
         }
     }

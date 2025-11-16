@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ClinicManagement.Migrations
 {
     [DbContext(typeof(ClinicDbContext))]
-    [Migration("20251108122900_Initial migration")]
-    partial class Initialmigration
+    [Migration("20251115180314_Auth migration")]
+    partial class Authmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,254 @@ namespace ClinicManagement.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("ClinicManagement.Models.Auth.PromotionRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset?>("ProcessedAt")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<int?>("ProcessedByAdminId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTimeOffset>("RequestedAt")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<int>("RequestedRoleId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("UserId1")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProcessedByAdminId");
+
+                    b.HasIndex("RequestedAt");
+
+                    b.HasIndex("RequestedRoleId");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId1");
+
+                    b.ToTable("PromotionRequests");
+                });
+
+            modelBuilder.Entity("ClinicManagement.Models.Auth.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("CanAcceptPromotions")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("CanAskPromotion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("CanCreate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("CanDelete")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("CanDownloadCsv")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("CanExecuteRawQueries")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("CanManageUsers")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("CanRead")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("CanUpdate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("CanViewPromotionsList")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("CanViewUserData")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CanAcceptPromotions = false,
+                            CanAskPromotion = false,
+                            CanCreate = false,
+                            CanDelete = false,
+                            CanDownloadCsv = false,
+                            CanExecuteRawQueries = false,
+                            CanManageUsers = false,
+                            CanRead = true,
+                            CanUpdate = false,
+                            CanViewPromotionsList = false,
+                            CanViewUserData = false,
+                            Name = "Guest",
+                            Type = 0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CanAcceptPromotions = false,
+                            CanAskPromotion = true,
+                            CanCreate = true,
+                            CanDelete = true,
+                            CanDownloadCsv = false,
+                            CanExecuteRawQueries = false,
+                            CanManageUsers = false,
+                            CanRead = true,
+                            CanUpdate = true,
+                            CanViewPromotionsList = false,
+                            CanViewUserData = false,
+                            Name = "Authorized",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CanAcceptPromotions = false,
+                            CanAskPromotion = true,
+                            CanCreate = true,
+                            CanDelete = true,
+                            CanDownloadCsv = true,
+                            CanExecuteRawQueries = true,
+                            CanManageUsers = false,
+                            CanRead = true,
+                            CanUpdate = true,
+                            CanViewPromotionsList = false,
+                            CanViewUserData = false,
+                            Name = "Operator",
+                            Type = 2
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CanAcceptPromotions = true,
+                            CanAskPromotion = false,
+                            CanCreate = true,
+                            CanDelete = true,
+                            CanDownloadCsv = true,
+                            CanExecuteRawQueries = true,
+                            CanManageUsers = true,
+                            CanRead = true,
+                            CanUpdate = true,
+                            CanViewPromotionsList = true,
+                            CanViewUserData = true,
+                            Name = "Admin",
+                            Type = 3
+                        });
+                });
+
+            modelBuilder.Entity("ClinicManagement.Models.Auth.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("LastName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("MiddleName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("Users");
+                });
 
             modelBuilder.Entity("ClinicManagement.Models.Facilities.Cabinet", b =>
                 {
@@ -488,6 +736,46 @@ namespace ClinicManagement.Migrations
                     b.ToTable("Schedules");
                 });
 
+            modelBuilder.Entity("ClinicManagement.Models.Auth.PromotionRequest", b =>
+                {
+                    b.HasOne("ClinicManagement.Models.Auth.User", "ProcessedByAdmin")
+                        .WithMany()
+                        .HasForeignKey("ProcessedByAdminId");
+
+                    b.HasOne("ClinicManagement.Models.Auth.Role", "RequestedRole")
+                        .WithMany()
+                        .HasForeignKey("RequestedRoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ClinicManagement.Models.Auth.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ClinicManagement.Models.Auth.User", null)
+                        .WithMany("PromotionRequests")
+                        .HasForeignKey("UserId1");
+
+                    b.Navigation("ProcessedByAdmin");
+
+                    b.Navigation("RequestedRole");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ClinicManagement.Models.Auth.User", b =>
+                {
+                    b.HasOne("ClinicManagement.Models.Auth.Role", "Role")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+                });
+
             modelBuilder.Entity("ClinicManagement.Models.Facilities.Cabinet", b =>
                 {
                     b.HasOne("ClinicManagement.Models.Facilities.CabinetType", "Type")
@@ -717,6 +1005,16 @@ namespace ClinicManagement.Migrations
                     b.Navigation("Cabinet");
 
                     b.Navigation("Doctor");
+                });
+
+            modelBuilder.Entity("ClinicManagement.Models.Auth.Role", b =>
+                {
+                    b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("ClinicManagement.Models.Auth.User", b =>
+                {
+                    b.Navigation("PromotionRequests");
                 });
 
             modelBuilder.Entity("ClinicManagement.Models.Facilities.Cabinet", b =>

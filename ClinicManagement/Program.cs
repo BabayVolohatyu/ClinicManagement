@@ -1,7 +1,10 @@
 using ClinicManagement.Data;
+using ClinicManagement.Helpers;
+using ClinicManagement.Middleware;
 using ClinicManagement.Models.Facilities;
 using ClinicManagement.Services;
 using ClinicManagement.Services.Facilities;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +15,10 @@ builder.Services.AddDbContext<ClinicDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IService<CabinetType>, CabinetTypeService>();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.AddScoped<IJwtService, JwtService>();
 
 //Add global model validator
 builder.Services.AddControllers(options =>
@@ -31,6 +38,13 @@ builder.Services.Configure<RazorViewEngineOptions>(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddAuthentication("Jwt")
+    .AddScheme<AuthenticationSchemeOptions, JwtAuthHandler>("Jwt", options => { });
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddHttpContextAccessor();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -46,10 +60,14 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseMiddleware<JwtMiddleware>();
+
+app.UseAuthentication();  
 app.UseAuthorization();
+
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Auth}/{action=Login}/{id?}");
 
 app.Run();

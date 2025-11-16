@@ -5,7 +5,7 @@ namespace ClinicManagement.Models.Humans
     public class Patient
     {
         public int Id { get; set; }
-        public int PersonId {  get; set; }
+        public int PersonId { get; set; }
         //One-to-one
         public Person? Person { get; set; }
         public int AddressId { get; set; }

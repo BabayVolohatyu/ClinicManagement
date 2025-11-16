@@ -1,5 +1,4 @@
 ﻿using ClinicManagement.Data;
-using ClinicManagement.Models.Humans;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicManagement.Controllers.Humans

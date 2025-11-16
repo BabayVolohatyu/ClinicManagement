@@ -9,7 +9,7 @@ namespace ClinicManagement.Configurations.Health
         public void Configure(EntityTypeBuilder<SicknessSymptom> builder)
         {
             builder
-                .HasKey(ss => new {ss.SicknessId, ss.SymptomId});
+                .HasKey(ss => new { ss.SicknessId, ss.SymptomId });
 
             builder
                 .HasOne(ss => ss.Sickness)

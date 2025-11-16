@@ -2,7 +2,6 @@
 using ClinicManagement.Models.Humans;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace ClinicManagement.Controllers.Humans
 {
