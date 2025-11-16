@@ -43,6 +43,7 @@ builder.Services.AddAuthentication("Jwt")
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
