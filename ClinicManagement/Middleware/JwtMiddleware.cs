@@ -27,33 +27,41 @@ namespace ClinicManagement.Middleware
                 var principal = jwtService.Validate(token);
                 if (principal != null)
                 {
-                    context.User = principal;
+                    // valid token => authenticated user (Guest or other role from DB)
+                    var identity = new ClaimsIdentity(principal.Claims, "Jwt");
+                    context.User = new ClaimsPrincipal(identity);
                 }
                 else
                 {
-                    // Invalid token: fallback to unauthorized
-                    SetUnauthorizedUser(context);
+                    // invalid token => Unauthorized
+                    SetUnauthorized(context);
                 }
             }
             else
             {
-                // No cookie = unauthorized
-                SetUnauthorizedUser(context);
+                // no token => Unauthorized
+                SetUnauthorized(context);
             }
+
+            _logger.LogInformation("MIDDLEWARE: IsAuthenticated={Auth}, Type={Type}, RoleId={RoleId}",
+                context.User?.Identity?.IsAuthenticated,
+                context.User?.Identity?.AuthenticationType,
+                context.User?.FindFirst("roleId")?.Value);
 
             await _next(context);
         }
 
-        private void SetUnauthorizedUser(HttpContext context)
+        private static void SetUnauthorized(HttpContext context)
         {
+            // Claims only to be able to inspect roleId if needed; leave authenticationType null -> IsAuthenticated == false
             var claims = new List<Claim>
     {
         new Claim("roleId", ((int)RoleType.Unauthorized).ToString()),
         new Claim(ClaimTypes.Role, RoleType.Unauthorized.ToString())
     };
-
-            context.User = new ClaimsPrincipal(new ClaimsIdentity(claims, "Unauthorized"));
+            context.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
         }
+
 
 
     }

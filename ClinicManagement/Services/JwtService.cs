@@ -111,24 +111,14 @@ namespace ClinicManagement.Services
 
         public ClaimsPrincipal? Validate(string token)
         {
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                _logger.LogWarning("Attempted to validate null or empty token");
-                return null;
-            }
+            if (string.IsNullOrWhiteSpace(token)) return null;
 
             try
             {
-                var tokenHandler = new JwtSecurityTokenHandler();
-
-                if (!tokenHandler.CanReadToken(token))
-                {
-                    _logger.LogWarning("Invalid token format - cannot read token");
-                    return null;
-                }
+                var handler = new JwtSecurityTokenHandler();
+                if (!handler.CanReadToken(token)) return null;
 
                 var key = Encoding.UTF8.GetBytes(_secureKey);
-
                 var validationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -141,44 +131,19 @@ namespace ClinicManagement.Services
                     ClockSkew = TimeSpan.Zero
                 };
 
-                var principal = tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
+                var validatedPrincipal = handler.ValidateToken(token, validationParameters, out _);
 
-                _logger.LogDebug("JWT token validated successfully for user {UserId}",
-                    principal.FindFirstValue("id"));
-
-                return principal;
+                var identity = new ClaimsIdentity(validatedPrincipal.Claims, authenticationType: "Jwt");
+                return new ClaimsPrincipal(identity);
             }
-            catch (SecurityTokenExpiredException)
+            catch
             {
-                _logger.LogWarning("JWT token has expired");
-                return null;
-            }
-            catch (SecurityTokenInvalidIssuerException)
-            {
-                _logger.LogWarning("JWT token has invalid issuer");
-                return null;
-            }
-            catch (SecurityTokenInvalidAudienceException)
-            {
-                _logger.LogWarning("JWT token has invalid audience");
-                return null;
-            }
-            catch (SecurityTokenValidationException stvex)
-            {
-                _logger.LogWarning(stvex, "JWT token validation failed");
-                return null;
-            }
-            catch (ArgumentException aex)
-            {
-                _logger.LogError(aex, "Argument error while validating JWT token");
-                return null;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unexpected error while validating JWT token");
                 return null;
             }
         }
+
+
+
 
         private void AddPermissionClaims(List<Claim> claims, Role role)
         {

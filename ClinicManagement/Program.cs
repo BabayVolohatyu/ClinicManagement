@@ -1,8 +1,10 @@
 using ClinicManagement.Data;
+using ClinicManagement.Helpers;
 using ClinicManagement.Middleware;
 using ClinicManagement.Models.Facilities;
 using ClinicManagement.Services;
 using ClinicManagement.Services.Facilities;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,8 +38,11 @@ builder.Services.Configure<RazorViewEngineOptions>(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddAuthentication("Jwt");
+builder.Services.AddAuthentication("Jwt")
+    .AddScheme<AuthenticationSchemeOptions, JwtAuthHandler>("Jwt", options => { });
+
 builder.Services.AddAuthorization();
+
 
 var app = builder.Build();
 

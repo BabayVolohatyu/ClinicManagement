@@ -22,20 +22,12 @@ namespace ClinicManagement.Helpers
         {
             var user = context.HttpContext.User;
 
-            // Check if user is authenticated at all
             if (user?.Identity?.IsAuthenticated != true)
             {
                 context.Result = new RedirectToActionResult("Login", "Auth", null);
                 return;
             }
-
-            // If no specific roles required, allow any authenticated user
-            if (_allowedRoles.Length == 0)
-            {
-                return; // Allow access to any authenticated user
-            }
-
-            // Check if user has one of the allowed roles
+            if (_allowedRoles.Length == 0) return;
             var roleIdClaim = user.FindFirst("roleId");
             if (roleIdClaim == null || !int.TryParse(roleIdClaim.Value, out int userRoleId))
             {
@@ -50,5 +42,6 @@ namespace ClinicManagement.Helpers
                 return;
             }
         }
+
     }
 }
