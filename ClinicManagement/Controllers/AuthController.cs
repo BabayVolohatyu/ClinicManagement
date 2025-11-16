@@ -1,6 +1,7 @@
 ﻿using ClinicManagement.Models.Auth;
 using ClinicManagement.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ClinicManagement.Controllers
 {
@@ -18,20 +19,15 @@ namespace ClinicManagement.Controllers
         [HttpGet]
         public IActionResult Login()
         {
-            var token = Request.Cookies["jwt"];
-
-            if (!string.IsNullOrEmpty(token))
+            Response.Cookies.Delete("jwt", new CookieOptions
             {
-                var principal = _jwt.Validate(token);
-                if (principal != null)
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-                else
-                {
-                    Response.Cookies.Delete("jwt");
-                }
-            }
+                Path = "/",
+                Secure = false,
+                HttpOnly = true,
+                SameSite = SameSiteMode.Lax
+            });
+
+            SetUnauthorizedUser();
 
             return View("AuthPage");
         }
@@ -100,10 +96,34 @@ namespace ClinicManagement.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [HttpPost]
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("jwt", new CookieOptions
+            {
+                Path = "/",
+                Secure = false,
+                HttpOnly = true,
+                SameSite = SameSiteMode.Lax
+            });
 
+            return RedirectToAction("Login", "Auth");
+        }
         public IActionResult ForgotPassword()
         {
             throw new NotImplementedException("Not implemented yet.");
+        }
+
+
+        private void SetUnauthorizedUser()
+        {
+            var claims = new List<Claim>
+            {
+                new Claim("roleId", ((int)RoleType.Unauthorized).ToString()),
+                new Claim(ClaimTypes.Role, RoleType.Unauthorized.ToString())
+            };
+
+            HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims, "Unauthorized"));
         }
     }
 }

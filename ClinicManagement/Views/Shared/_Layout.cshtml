@@ -29,17 +29,8 @@
                     }
 
                     bool showHeader = roleId >= (int)ClinicManagement.Models.Auth.RoleType.Guest;
-                }
-                @{
-                    <pre>
-            IsAuthenticated: @Context.User?.Identity?.IsAuthenticated
-            Number of identities: @Context.User?.Identities.Count()
-            Claims:
-            @foreach (var c in Context.User?.Claims ?? Enumerable.Empty<System.Security.Claims.Claim>())
-            {
-                    @($"{c.Type} = {c.Value} <br>")
-            }
-        </pre>
+                    bool showLogout = roleId > (int)ClinicManagement.Models.Auth.RoleType.Guest;
+                    bool showLogin = roleId == (int)ClinicManagement.Models.Auth.RoleType.Guest;
                 }
 
                 @if (showHeader)
@@ -98,6 +89,18 @@
                                 </ul>
                             </li>
                         </ul>
+                        @if (showLogin)
+                        {
+                            <a class="btn btn-outline-primary btn-sm me-2" asp-controller="Auth" asp-action="Login">Log in</a>
+                        }
+                        @if (showLogout)
+                        {
+                            <div class="navbar-nav">
+                                <form method="post" asp-controller="Auth" asp-action="Logout" class="d-inline">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">Log out</button>
+                                </form>
+                            </div>
+                        }
                     </div>
                 }
             </div>
