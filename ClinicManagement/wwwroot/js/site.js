@@ -1,4 +1,17 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿function hasPermission(required) {
+    const perms = window.userPermissions || [];
+    return perms.includes(required);
+}
 
-// Write your JavaScript code.
+function applyPermissionVisibility() {
+    const elems = document.querySelectorAll("[data-permission]");
+
+    elems.forEach(el => {
+        const required = el.getAttribute("data-permission");
+        if (!hasPermission(required)) {
+            el.style.display = "none";
+        }
+    });
+}
+
+document.addEventListener("DOMContentLoaded", applyPermissionVisibility);

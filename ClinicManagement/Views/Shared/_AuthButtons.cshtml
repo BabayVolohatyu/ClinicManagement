@@ -1,11 +1,39 @@
-﻿<div class="d-flex">
-    @if (ViewBag.ShowLogin)
+﻿@using ClinicManagement.Models.Auth
+@using System.IdentityModel.Tokens.Jwt
+
+<div class="d-flex">
+    @functions {
+        private int GetRoleIdFromJwt()
+        {
+            var token = Context.Request.Cookies["jwt"];
+            if (string.IsNullOrEmpty(token))
+                return (int)RoleType.Unauthorized;
+
+            var handler = new JwtSecurityTokenHandler();
+            if (!handler.CanReadToken(token))
+                return (int)RoleType.Unauthorized;
+
+            var jwt = handler.ReadJwtToken(token);
+            var roleIdClaim = jwt.Claims.FirstOrDefault(c => c.Type == "roleId")?.Value;
+
+            if (int.TryParse(roleIdClaim, out int roleId))
+                return roleId;
+
+            return (int)RoleType.Unauthorized;
+        }
+    }
+    @{
+        int roleId = GetRoleIdFromJwt();
+        bool showLogin = roleId == (int)RoleType.Guest;
+        bool showLogout = roleId > (int)RoleType.Guest;
+    }
+    @if (showLogin)
     {
         <form method="post" asp-controller="Auth" asp-action="LoginAsGuest" class="d-inline">
             <button type="submit" class="btn btn-outline-primary btn-sm me-2">Log in</button>
         </form>
     }
-    @if (ViewBag.ShowLogout)
+    @if (showLogout)
     {
         <form method="post" asp-controller="Auth" asp-action="Logout" class="d-inline">
             <button type="submit" class="btn btn-outline-danger btn-sm">Log out</button>
