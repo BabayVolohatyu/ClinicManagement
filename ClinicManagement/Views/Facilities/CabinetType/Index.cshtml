@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Cabinet Types";
+    ViewData["Entity"] = ViewContext.RouteData.Values["controller"]?.ToString().ToLower();
     var sortAscending = Model.SortAscending;
     var currentSortBy = Model.SortBy ?? "Id";
 }
@@ -14,7 +15,6 @@
         <div class="card mb-4">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
-                    <a asp-action="Create" class="btn btn-success">+</a>
                     
                     <form method="get" class="d-flex gap-2 align-items-center">
                         <input type="hidden" name="pageNumber" value="1" />

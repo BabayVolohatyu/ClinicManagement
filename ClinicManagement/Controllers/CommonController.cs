@@ -28,6 +28,7 @@ namespace ClinicManagement.Controllers.Base
         {
             try
             {
+                ViewData["Entity"] = RouteData.Values["controller"]?.ToString().ToLower();
                 var result = await _service.GetAllAsync(pageNumber, pageSize, searchTerm, sortBy, sortAscending);
                 return View(result);
             }

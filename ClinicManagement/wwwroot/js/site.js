@@ -3,15 +3,65 @@
     return perms.includes(required);
 }
 
-function applyPermissionVisibility() {
-    const elems = document.querySelectorAll("[data-permission]");
+document.addEventListener("DOMContentLoaded", function () {
+    applyPermissionVisibility();
+    applyEntityActions();
+});
 
-    elems.forEach(el => {
+function applyPermissionVisibility() {
+    document.querySelectorAll("[data-permission]").forEach(el => {
         const required = el.getAttribute("data-permission");
-        if (!hasPermission(required)) {
-            el.style.display = "none";
-        }
+        const hasPerm = hasPermission(required);
+        el.style.display = hasPerm ? "" : "none";
     });
 }
 
-document.addEventListener("DOMContentLoaded", applyPermissionVisibility);
+
+
+function applyEntityActions() {
+    const pageInfo = document.getElementById("page-info");
+    const actions = document.getElementById("entity-actions");
+    if (!pageInfo || !actions) return;
+
+    const entity = pageInfo.dataset.entity;
+    if (!entity || entity.trim() === "") {
+        actions.style.display = "none";
+        return;
+    }
+
+    const entityButtons = actions.querySelectorAll("[data-entity-action]");
+
+    entityButtons.forEach(btn => {
+        const perm = btn.getAttribute("data-permission");
+
+        if (!hasPermission(perm)) {
+            btn.style.display = "none";
+            return;
+        }
+
+        if (btn.tagName.toLowerCase() === "a") {
+            const routes = {
+                create: "Create",
+                download_csv: "DownloadCsv",
+                execute_raw_queries: "QueryBuilder",
+                view_promotions_list: "Promotions",
+                ask_promotion: "AskPromotion"
+            };
+
+            const action = routes[perm];
+            if (action) {
+                btn.setAttribute("href", `/${entity}/${action}`);
+                btn.style.display = "inline-flex";
+            } else {
+                btn.style.display = "none";
+            }
+        } else {
+            btn.style.display = "inline-flex";
+        }
+    });
+
+    const anyVisible = Array.from(entityButtons).some(b => b.style.display !== "none");
+    actions.style.display = anyVisible ? "flex" : "none";
+}
+
+
