@@ -4,13 +4,13 @@
     ViewData["Title"] = "Cabinet Type Details";
 }
 
-<div class="row justify-content-center">
+<div class="row justify-content-center" data-permission="read">
     <div class="col-lg-6 col-md-8">
         <h2 class="mb-4">Cabinet Type Details</h2>
 
         <div class="card">
             <div class="card-body">
-                <form asp-action="Update" asp-route-id="@Model.Id" method="post" id="editForm">
+                <form asp-action="Update" asp-route-id="@Model.Id" method="post" id="editForm" data-permission="update">
                     <div class="table-responsive">
                         <table class="table table-bordered mb-0">
                             <tbody>
@@ -32,15 +32,15 @@
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center mt-4">
-                        <a asp-action="Index" class="btn btn-outline-secondary">Back</a>
+                        <a asp-action="Index" class="btn btn-outline-secondary" data-permission="read">Back</a>
                         <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-success">Save</button>
-                            <button type="button" class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+                            <button type="submit" class="btn btn-success" data-permission="update">Save</button>
+                            <button type="button" class="btn btn-danger" onclick="submit" data-permission="delete">Delete</button>
                         </div>
                     </div>
                 </form>
 
-                <form id="deleteForm" asp-action="Delete" asp-route-id="@Model.Id" method="post" style="display: none">
+                <form id="deleteForm" asp-action="Delete" asp-route-id="@Model.Id" method="post" style="display: none" data-permission="delete">
                 </form>
             </div>
         </div>
