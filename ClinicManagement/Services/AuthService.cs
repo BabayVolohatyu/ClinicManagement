@@ -80,9 +80,6 @@ namespace ClinicManagement.Services
                 Role = guestRole
             };
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
             return user;
         }
 
