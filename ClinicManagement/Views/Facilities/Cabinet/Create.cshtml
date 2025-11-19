@@ -1,0 +1,55 @@
+﻿@model ClinicManagement.Models.Facilities.Cabinet
+
+@{
+    ViewData["Title"] = "Create Cabinet";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+        <h2 class="mb-4">Create Cabinet</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div class="mb-3">
+                        <label asp-for="Building" class="form-label"></label>
+                        <input asp-for="Building" class="form-control" type="number" />
+                        <span asp-validation-for="Building" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Floor" class="form-label"></label>
+                        <input asp-for="Floor" class="form-control" type="number" />
+                        <span asp-validation-for="Floor" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Number" class="form-label"></label>
+                        <input asp-for="Number" class="form-control" type="number" />
+                        <span asp-validation-for="Number" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="TypeId" class="form-label">Cabinet Type</label>
+                        <select asp-for="TypeId" class="form-control" asp-items="ViewBag.CabinetTypes">
+                            <option value="">-- Select Cabinet Type --</option>
+                        </select>
+                        <span asp-validation-for="TypeId" class="text-danger"></span>
+                        <div class="text-muted mt-1">
+                            <small>Can't find the type? <a asp-action="Create" asp-controller="CabinetType">Create a new cabinet type</a></small>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-success">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

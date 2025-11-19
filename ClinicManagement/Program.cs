@@ -15,16 +15,12 @@ builder.Services.AddDbContext<ClinicDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IService<CabinetType>, CabinetTypeService>();
+builder.Services.AddScoped<IService<Cabinet>, CabinetService>();
+builder.Services.AddScoped<ICabinetService, CabinetService>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddScoped<IJwtService, JwtService>();
-
-//Add global model validator
-builder.Services.AddControllers(options =>
-{
-    options.Filters.Add<ValidateModelFilter>();
-});
 
 builder.Services.Configure<RazorViewEngineOptions>(options =>
 {

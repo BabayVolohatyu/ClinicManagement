@@ -63,16 +63,16 @@ namespace ClinicManagement.Controllers.Base
         // GET: /[controller]/create
         [HttpGet]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
-        public virtual IActionResult Create()
+        public virtual Task<IActionResult> Create()
         {
             try
             {
-                return View();
+                return Task.FromResult<IActionResult>(View());
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error loading create form for {EntityName}", typeof(T).Name);
-                return StatusCode(500, "An error occurred while loading the create form.");
+                return Task.FromResult<IActionResult>(StatusCode(500, "An error occurred while loading the create form."));
             }
         }
 
@@ -80,21 +80,42 @@ namespace ClinicManagement.Controllers.Base
         // POST: /[controller]/create
         [HttpPost]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
-
         public virtual async Task<IActionResult> Create(T entity)
         {
             if (entity == null)
                 return BadRequest("Entity cannot be null.");
 
+            if (!ModelState.IsValid)
+            {
+                return View(entity);
+            }
+
             try
             {
                 await _service.AddAsync(entity);
-                return RedirectToAction(nameof(Entity), new { id = entity?.GetType().GetProperty("Id")?.GetValue(entity) });
+                
+                // Get the Id property value after save (EF Core populates it)
+                var idProperty = typeof(T).GetProperty("Id");
+                if (idProperty == null)
+                {
+                    _logger.LogWarning("Entity {EntityName} does not have an Id property", typeof(T).Name);
+                    return RedirectToAction(nameof(Index));
+                }
+                
+                var id = idProperty.GetValue(entity);
+                if (id == null || (id is int intId && intId == 0))
+                {
+                    _logger.LogWarning("Entity {EntityName} Id was not populated after save", typeof(T).Name);
+                    return RedirectToAction(nameof(Index));
+                }
+                
+                return RedirectToAction(nameof(Entity), new { id = id });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error creating {EntityName}", typeof(T).Name);
-                return StatusCode(500, "An error occurred while creating entity.");
+                ModelState.AddModelError("", "An error occurred while creating the entity.");
+                return View(entity);
             }
         }
 

@@ -1,0 +1,143 @@
+﻿@model ClinicManagement.Models.Facilities.Cabinet
+
+@{
+    ViewData["Title"] = "Cabinet Details";
+}
+
+<div class="row justify-content-center" data-permission="read">
+    <div class="col-lg-6 col-md-8">
+        <h2 class="mb-4">Cabinet Details</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Update" asp-route-id="@Model.Id" method="post" id="editForm" data-permission="update">
+                    <div class="table-responsive">
+                        <table class="table table-bordered mb-0">
+                            <tbody>
+                                <tr>
+                                    <th class="w-25">ID</th>
+                                    <td>
+                                        <input asp-for="Id" class="form-control-plaintext" readonly />
+                                    </td>
+                                </tr>
+                                <tr onclick="makeEditable(this)" style="cursor: pointer;">
+                                    <th>Building</th>
+                                    <td>
+                                        <input asp-for="Building" class="form-control-plaintext" readonly />
+                                        <span asp-validation-for="Building" class="text-danger"></span>
+                                    </td>
+                                </tr>
+                                <tr onclick="makeEditable(this)" style="cursor: pointer;">
+                                    <th>Floor</th>
+                                    <td>
+                                        <input asp-for="Floor" class="form-control-plaintext" readonly />
+                                        <span asp-validation-for="Floor" class="text-danger"></span>
+                                    </td>
+                                </tr>
+                                <tr onclick="makeEditable(this)" style="cursor: pointer;">
+                                    <th>Number</th>
+                                    <td>
+                                        <input asp-for="Number" class="form-control-plaintext" readonly />
+                                        <span asp-validation-for="Number" class="text-danger"></span>
+                                    </td>
+                                </tr>
+                                <tr onclick="makeEditableType(this)" style="cursor: pointer;">
+                                    <th>Type</th>
+                                    <td>
+                                        <input type="text" 
+                                               id="typeName" 
+                                               name="typeName" 
+                                               class="form-control-plaintext" 
+                                               readonly
+                                               value="@(Model.Type?.Type ?? "")"
+                                               list="cabinetTypesList" 
+                                               autocomplete="off"
+                                               placeholder="Type or select a cabinet type"
+                                               required />
+                                        <datalist id="cabinetTypesList">
+                                            @if (ViewBag.CabinetTypes != null)
+                                            {
+                                                @foreach (var type in ViewBag.CabinetTypes)
+                                                {
+                                                    <option value="@type.Type">@type.Type</option>
+                                                }
+                                            }
+                                        </datalist>
+                                        <input type="hidden" asp-for="TypeId" id="typeId" />
+                                        <span asp-validation-for="TypeId" class="text-danger"></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <a asp-action="Index" class="btn btn-outline-secondary" data-permission="read">Back</a>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success" data-permission="update">Save</button>
+                            <button type="button" class="btn btn-danger" onclick="submit" data-permission="delete">Delete</button>
+                        </div>
+                    </div>
+                </form>
+
+                <form id="deleteForm" asp-action="Delete" asp-route-id="@Model.Id" method="post" style="display: none" data-permission="delete">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function makeEditable(row) {
+            const input = row.querySelector("input");
+            if (input && input.hasAttribute("readonly")) {
+                input.removeAttribute("readonly");
+                input.classList.remove("form-control-plaintext");
+                input.classList.add("form-control");
+            }
+        }
+
+        function makeEditableType(row) {
+            const input = row.querySelector("#typeName");
+            if (input && input.hasAttribute("readonly")) {
+                input.removeAttribute("readonly");
+                input.classList.remove("form-control-plaintext");
+                input.classList.add("form-control");
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const typeNameInput = document.getElementById("typeName");
+            const typeIdInput = document.getElementById("typeId");
+            const cabinetTypes = @Html.Raw(Json.Serialize(ViewBag.CabinetTypes ?? new List<object>()));
+
+            function updateTypeId() {
+                const typedValue = typeNameInput.value.trim();
+                if (typedValue) {
+                    const matchingType = cabinetTypes.find(t => 
+                        (t.Type || t.type || "").toLowerCase() === typedValue.toLowerCase()
+                    );
+                    if (matchingType) {
+                        typeIdInput.value = matchingType.Id || matchingType.id || "";
+                    } else {
+                        typeIdInput.value = "0";
+                    }
+                } else {
+                    typeIdInput.value = "";
+                }
+            }
+
+            if (typeNameInput && typeIdInput) {
+                typeNameInput.addEventListener("input", updateTypeId);
+                typeNameInput.addEventListener("change", updateTypeId);
+                
+                if (typeNameInput.value) {
+                    updateTypeId();
+                }
+            }
+        });
+    </script>
+}
