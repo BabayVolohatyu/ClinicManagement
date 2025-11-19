@@ -22,6 +22,12 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddScoped<IJwtService, JwtService>();
 
+//Add global model validator
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ValidateModelFilter>();
+});
+
 builder.Services.Configure<RazorViewEngineOptions>(options =>
 {
     options.ViewLocationFormats.Clear();
