@@ -44,8 +44,8 @@ namespace ClinicManagement.Controllers.Facilities
             if (entity == null)
                 return BadRequest("Entity cannot be null.");
 
-            var typeName = Request.Form["typeName"].FirstOrDefault();
-            if (string.IsNullOrWhiteSpace(typeName))
+            // Validate TypeId directly from the model binding
+            if (entity.TypeId == 0)
             {
                 ModelState.AddModelError("TypeId", "Cabinet Type is required.");
             }
@@ -58,10 +58,7 @@ namespace ClinicManagement.Controllers.Facilities
 
             try
             {
-                entity.TypeId = await _cabinetService.GetOrCreateTypeIdAsync(typeName);
                 await _service.AddAsync(entity);
-
-                // Redirect using populated Id
                 return RedirectToAction(nameof(Entity), new { id = entity.Id });
             }
             catch (Exception ex)
@@ -100,8 +97,8 @@ namespace ClinicManagement.Controllers.Facilities
             if (entity == null)
                 return BadRequest("Entity cannot be null.");
 
-            var typeName = Request.Form["typeName"].FirstOrDefault();
-            if (string.IsNullOrWhiteSpace(typeName))
+            // Validate TypeId directly from the model binding
+            if (entity.TypeId == 0)
             {
                 ModelState.AddModelError("TypeId", "Cabinet Type is required.");
             }
@@ -116,7 +113,6 @@ namespace ClinicManagement.Controllers.Facilities
 
             try
             {
-                entity.TypeId = await _cabinetService.GetOrCreateTypeIdAsync(typeName);
                 await _service.UpdateAsync(id, entity);
                 return RedirectToAction(nameof(Entity), new { id });
             }

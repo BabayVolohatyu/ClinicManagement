@@ -14,7 +14,9 @@ namespace ClinicManagement.Configurations.Facilities
             builder
                 .HasOne(c => c.Type)
                 .WithMany(ct => ct.Cabinets)
-                .HasForeignKey(c => c.TypeId)
+                .HasForeignKey(c => c.TypeId);
+
+            builder.Property(c => c.TypeId)
                 .IsRequired();
         }
     }

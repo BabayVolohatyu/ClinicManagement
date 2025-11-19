@@ -10,7 +10,7 @@
 
         <div class="card">
             <div class="card-body">
-                <form asp-action="Create" method="post">
+                <form asp-action="Create" method="post" id="cabinetCreateForm">
                     <div class="mb-3">
                         <label asp-for="Building" class="form-label"></label>
                         <input asp-for="Building" class="form-control" type="number" />
@@ -31,7 +31,11 @@
 
                     <div class="mb-3">
                         <label asp-for="TypeId" class="form-label">Cabinet Type</label>
+                        <div class="text-danger">
+                            CabinetTypes is null: @(ViewBag.CabinetTypes == null)
+                        </div>
                         <select asp-for="TypeId" class="form-control" asp-items="ViewBag.CabinetTypes">
+                            
                             <option value="">-- Select Cabinet Type --</option>
                         </select>
                         <span asp-validation-for="TypeId" class="text-danger"></span>
