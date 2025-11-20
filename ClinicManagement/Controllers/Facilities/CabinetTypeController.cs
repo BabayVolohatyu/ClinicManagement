@@ -1,5 +1,4 @@
-﻿using ClinicManagement.Controllers.Base;
-using ClinicManagement.Models.Facilities;
+﻿using ClinicManagement.Models.Facilities;
 using ClinicManagement.Services;
 
 namespace ClinicManagement.Controllers.Facilities

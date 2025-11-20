@@ -3,7 +3,7 @@ using ClinicManagement.Services;
 using ClinicManagement.Models.Auth;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ClinicManagement.Controllers.Base
+namespace ClinicManagement.Controllers
 {
     [Authorize]
     public abstract class CommonController<T> : Controller where T : class

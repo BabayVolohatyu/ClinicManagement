@@ -1,0 +1,92 @@
+﻿@model ClinicManagement.Models.Humans.Person
+
+@{
+    ViewData["Title"] = "Person Details";
+}
+
+<div class="row justify-content-center" data-permission="read">
+    <div class="col-lg-6 col-md-8">
+        <h2 class="mb-4">Person Details</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Update" asp-route-id="@Model.Id" method="post" id="editForm" data-permission="update">
+                    <div class="table-responsive">
+                        <table class="table table-bordered mb-0">
+                            <tbody>
+                                <tr>
+                                    <th class="w-25">ID</th>
+                                    <td>
+                                        <input asp-for="Id" class="form-control-plaintext" readonly />
+                                    </td>
+                                </tr>
+
+                                <tr onclick="makeEditable(this)" style="cursor: pointer;">
+                                    <th>First Name</th>
+                                    <td>
+                                        <input asp-for="FirstName" class="form-control-plaintext" readonly />
+                                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                                    </td>
+                                </tr>
+
+                                <tr onclick="makeEditable(this)" style="cursor: pointer;">
+                                    <th>Last Name</th>
+                                    <td>
+                                        <input asp-for="LastName" class="form-control-plaintext" readonly />
+                                        <span asp-validation-for="LastName" class="text-danger"></span>
+                                    </td>
+                                </tr>
+
+                                <tr onclick="makeEditable(this)" style="cursor: pointer;">
+                                    <th>Patronymic</th>
+                                    <td>
+                                        <input asp-for="Patronymic" class="form-control-plaintext" readonly />
+                                        <span asp-validation-for="Patronymic" class="text-danger"></span>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <a asp-action="Index" class="btn btn-outline-secondary" data-permission="read">Back</a>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success" data-permission="update">Save</button>
+                            <button type="button"
+                                    class="btn btn-danger"
+                                    onclick="document.getElementById('deleteForm').submit()"
+                                    data-permission="delete">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <form id="deleteForm"
+                      asp-action="Delete"
+                      asp-route-id="@Model.Id"
+                      method="post"
+                      style="display: none"
+                      data-permission="delete">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function makeEditable(row) {
+            const input = row.querySelector("input");
+            if (input && input.hasAttribute("readonly")) {
+                input.removeAttribute("readonly");
+                input.classList.remove("form-control-plaintext");
+                input.classList.add("form-control");
+            }
+        }
+    </script>
+}

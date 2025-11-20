@@ -1,5 +1,4 @@
-﻿using ClinicManagement.Controllers.Base;
-using ClinicManagement.Helpers;
+﻿using ClinicManagement.Helpers;
 using ClinicManagement.Models.Auth;
 using ClinicManagement.Models.Facilities;
 using ClinicManagement.Validators.Facilites;

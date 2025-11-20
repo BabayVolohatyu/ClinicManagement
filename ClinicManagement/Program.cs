@@ -2,8 +2,10 @@ using ClinicManagement.Data;
 using ClinicManagement.Helpers;
 using ClinicManagement.Middleware;
 using ClinicManagement.Models.Facilities;
+using ClinicManagement.Models.Humans;
 using ClinicManagement.Services;
 using ClinicManagement.Services.Facilities;
+using ClinicManagement.Services.Humans;
 using ClinicManagement.Validators.Facilites;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.Razor;
@@ -18,6 +20,8 @@ builder.Services.AddDbContext<ClinicDbContext>(options =>
 builder.Services.AddScoped<IService<CabinetType>, CabinetTypeService>();
 builder.Services.AddScoped<IService<Cabinet>, CabinetService>();
 builder.Services.AddScoped<ICabinetService, CabinetService>();
+
+builder.Services.AddScoped<IService<Person>, PersonService>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 
@@ -34,6 +38,9 @@ builder.Services.Configure<RazorViewEngineOptions>(options =>
     options.ViewLocationFormats.Clear();
 
     options.ViewLocationFormats.Add("/Views/Facilities/{1}/{0}.cshtml");
+    options.ViewLocationFormats.Add("/Views/Health/{1}/{0}.cshtml");
+    options.ViewLocationFormats.Add("/Views/Humans/{1}/{0}.cshtml");
+    options.ViewLocationFormats.Add("/Views/Info/{1}/{0}.cshtml");
     options.ViewLocationFormats.Add("/Views/Shared/{0}.cshtml");
     options.ViewLocationFormats.Add("/Views/Shared/_Navigation/{0}.cshtml");
 });
