@@ -29,7 +29,6 @@
     <Folder Include="Views\Health\Procedure\" />
     <Folder Include="Views\Humans\DistrictDoctor\" />
     <Folder Include="Views\Humans\Doctor\" />
-    <Folder Include="Views\Humans\Specialty\" />
     <Folder Include="Views\Humans\Patient\" />
     <Folder Include="Views\Info\Address\" />
     <Folder Include="Views\Info\Appointment\" />

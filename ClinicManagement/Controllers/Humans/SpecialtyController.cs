@@ -1,20 +1,11 @@
-﻿using ClinicManagement.Data;
-using Microsoft.AspNetCore.Mvc;
+﻿using ClinicManagement.Models.Humans;
+using ClinicManagement.Services;
 
 namespace ClinicManagement.Controllers.Humans
 {
-    public class SpecialtyController : Controller
+    public class SpecialtyController : CommonController<Specialty>
     {
-        private readonly ClinicDbContext _context;
-
-        public SpecialtyController(ClinicDbContext context)
-        {
-            _context = context;
-        }
-
-        public IActionResult Index()
-        {
-            return View();
-        }
+        public SpecialtyController(IService<Specialty> service, ILogger<SpecialtyController> logger)
+           : base(service, logger) { }
     }
 }

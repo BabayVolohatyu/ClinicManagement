@@ -22,6 +22,7 @@ builder.Services.AddScoped<IService<Cabinet>, CabinetService>();
 builder.Services.AddScoped<ICabinetService, CabinetService>();
 
 builder.Services.AddScoped<IService<Person>, PersonService>();
+builder.Services.AddScoped<IService<Specialty>, SpecialtyService>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 
