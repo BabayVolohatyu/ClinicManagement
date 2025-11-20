@@ -4,6 +4,7 @@ using ClinicManagement.Middleware;
 using ClinicManagement.Models.Facilities;
 using ClinicManagement.Services;
 using ClinicManagement.Services.Facilities;
+using ClinicManagement.Validators.Facilites;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +26,7 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 //Add global model validator
 builder.Services.AddControllers(options =>
 {
-    options.Filters.Add<ValidateModelFilter>();
+    options.Filters.Add<CabinetModelValidator>();
 });
 
 builder.Services.Configure<RazorViewEngineOptions>(options =>

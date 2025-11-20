@@ -2,6 +2,7 @@
 using ClinicManagement.Helpers;
 using ClinicManagement.Models.Auth;
 using ClinicManagement.Models.Facilities;
+using ClinicManagement.Validators.Facilites;
 using ClinicManagement.Services;
 using ClinicManagement.Services.Facilities;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ClinicManagement.Controllers.Facilities
 {
+    [CabinetModelValidator]
     public class CabinetController : CommonController<Cabinet>
     {
         private readonly ICabinetService _cabinetService;
