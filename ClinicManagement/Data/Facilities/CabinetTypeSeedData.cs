@@ -17,9 +17,18 @@ namespace ClinicManagement.Data.Facilities
                 new CabinetType { Id = 7, Type = "Ultrasound Room" },
                 new CabinetType { Id = 8, Type = "Reception" },
                 new CabinetType { Id = 9, Type = "Waiting Room" },
-                new CabinetType { Id = 10, Type = "Administration" }
+                new CabinetType { Id = 10, Type = "Administration" },
+                new CabinetType { Id = 11, Type = "Pharmacy" },
+                new CabinetType { Id = 12, Type = "Physical Therapy Room" },
+                new CabinetType { Id = 13, Type = "Cardiology Lab" },
+                new CabinetType { Id = 14, Type = "MRI Room" },
+                new CabinetType { Id = 15, Type = "CT Scan Room" },
+                new CabinetType { Id = 16, Type = "Emergency Room" },
+                new CabinetType { Id = 17, Type = "Intensive Care Unit" },
+                new CabinetType { Id = 18, Type = "Maternity Ward" },
+                new CabinetType { Id = 19, Type = "Pediatric Ward" },
+                new CabinetType { Id = 20, Type = "Medical Records" }
             };
         }
     }
 }
-

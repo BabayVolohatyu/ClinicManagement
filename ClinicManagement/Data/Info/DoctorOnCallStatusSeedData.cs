@@ -7,44 +7,46 @@ namespace ClinicManagement.Data.Info
         public static List<DoctorOnCallStatus> GetSeedData()
         {
             var baseDate = DateTimeOffset.UtcNow.Date;
+            var data = new List<DoctorOnCallStatus>();
             
-            return new List<DoctorOnCallStatus>
+            // District doctors on call status - past week, current week, and next week
+            for (int i = 0; i < 20; i++) // 20 district doctors
             {
-                // District doctors on call status
-                new DoctorOnCallStatus 
+                var doctorId = i + 1;
+                var addressId = 6 + (i % 50); // Rotate through patient addresses
+                
+                // Past week
+                data.Add(new DoctorOnCallStatus 
                 { 
-                    Id = 1, 
-                    DoctorId = 1, 
-                    AddressId = 4, 
-                    StartTime = baseDate.AddDays(-2).AddHours(8), 
-                    EndTime = baseDate.AddDays(-2).AddHours(20) 
-                },
-                new DoctorOnCallStatus 
+                    Id = i * 3 + 1, 
+                    DoctorId = doctorId, 
+                    AddressId = addressId, 
+                    StartTime = baseDate.AddDays(-7 + i % 7).AddHours(8), 
+                    EndTime = baseDate.AddDays(-7 + i % 7).AddHours(20) 
+                });
+                
+                // Current week
+                data.Add(new DoctorOnCallStatus 
                 { 
-                    Id = 2, 
-                    DoctorId = 2, 
-                    AddressId = 5, 
-                    StartTime = baseDate.AddDays(-1).AddHours(8), 
-                    EndTime = baseDate.AddDays(-1).AddHours(20) 
-                },
-                new DoctorOnCallStatus 
+                    Id = i * 3 + 2, 
+                    DoctorId = doctorId, 
+                    AddressId = addressId + 1, 
+                    StartTime = baseDate.AddDays(i % 7).AddHours(8), 
+                    EndTime = baseDate.AddDays(i % 7).AddHours(20) 
+                });
+                
+                // Next week
+                data.Add(new DoctorOnCallStatus 
                 { 
-                    Id = 3, 
-                    DoctorId = 3, 
-                    AddressId = 6, 
-                    StartTime = baseDate.AddHours(8), 
-                    EndTime = baseDate.AddHours(20) 
-                },
-                new DoctorOnCallStatus 
-                { 
-                    Id = 4, 
-                    DoctorId = 4, 
-                    AddressId = 7, 
-                    StartTime = baseDate.AddDays(1).AddHours(8), 
-                    EndTime = baseDate.AddDays(1).AddHours(20) 
-                }
-            };
+                    Id = i * 3 + 3, 
+                    DoctorId = doctorId, 
+                    AddressId = addressId + 2, 
+                    StartTime = baseDate.AddDays(7 + i % 7).AddHours(8), 
+                    EndTime = baseDate.AddDays(7 + i % 7).AddHours(20) 
+                });
+            }
+            
+            return data;
         }
     }
 }
-
