@@ -1,4 +1,5 @@
-﻿using ClinicManagement.Models.Info;
+﻿using ClinicManagement.Data.Info;
+using ClinicManagement.Models.Info;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -34,6 +35,9 @@ namespace ClinicManagement.Configurations.Info
                 .Property(s => s.EndTime)
                 .HasColumnType("timestamptz")
                 .IsRequired();
+
+            // SEED data
+            builder.HasData(ScheduleSeedData.GetSeedData());
         }
     }
 }

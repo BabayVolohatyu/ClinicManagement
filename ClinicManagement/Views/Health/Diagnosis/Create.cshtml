@@ -1,0 +1,46 @@
+@model ClinicManagement.Models.Health.Diagnosis
+
+@{
+    ViewData["Title"] = "Create Diagnosis";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+        <h2 class="mb-4">Create Diagnosis</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+
+                    <div class="mb-3">
+                        <label asp-for="AppointmentId" class="form-label">Appointment</label>
+                        <select asp-for="AppointmentId" class="form-control" asp-items="ViewBag.Appointments">
+                            <option value="">-- Select Appointment --</option>
+                        </select>
+                        <span asp-validation-for="AppointmentId" class="text-danger"></span>
+                        <div class="text-muted mt-1">
+                            <small>Only appointments without a diagnosis are shown.</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Prescription" class="form-label"></label>
+                        <textarea asp-for="Prescription" class="form-control" rows="5"></textarea>
+                        <span asp-validation-for="Prescription" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-success">Save</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

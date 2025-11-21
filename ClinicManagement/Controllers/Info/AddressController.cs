@@ -1,20 +1,11 @@
-﻿using ClinicManagement.Data;
-using Microsoft.AspNetCore.Mvc;
+﻿using ClinicManagement.Models.Info;
+using ClinicManagement.Services;
 
 namespace ClinicManagement.Controllers.Info
 {
-    public class AddressController : Controller
+    public class AddressController : CommonController<Address>
     {
-        private readonly ClinicDbContext _context;
-
-        public AddressController(ClinicDbContext context)
-        {
-            _context = context;
-        }
-
-        public IActionResult Index()
-        {
-            return View();
-        }
+        public AddressController(IService<Address> service, ILogger<AddressController> logger)
+            : base(service, logger) { }
     }
 }

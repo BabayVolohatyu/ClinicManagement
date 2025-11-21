@@ -1,0 +1,89 @@
+@model ClinicManagement.Models.Health.Diagnosis
+
+@{
+    ViewData["Title"] = "Diagnosis Details";
+}
+
+<div class="row justify-content-center" data-permission="read">
+    <div class="col-lg-6 col-md-8">
+        <h2 class="mb-4">Diagnosis Details</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Update" asp-route-id="@Model.Id" method="post" id="editForm" data-permission="update">
+                    <div class="table-responsive">
+                        <table class="table table-bordered mb-0">
+                            <tbody>
+                                <tr>
+                                    <th class="w-25">ID</th>
+                                    <td>
+                                        <input asp-for="Id" class="form-control-plaintext" readonly />
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th>Appointment</th>
+                                    <td>
+                                        @if (Model.Appointment != null)
+                                        {
+                                            <a href="@Url.Action("Entity", "Appointment", new { id = Model.Appointment.Id })">
+                                                Appointment @Model.Appointment.Id
+                                            </a>
+                                            @if (Model.Appointment.Patient != null && Model.Appointment.Patient.Person != null)
+                                            {
+                                                <span> - @Model.Appointment.Patient.Person.LastName, @Model.Appointment.Patient.Person.FirstName</span>
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+
+                                <tr onclick="makeEditable(this)" style="cursor: pointer;">
+                                    <th>Prescription</th>
+                                    <td>
+                                        <textarea asp-for="Prescription" class="form-control-plaintext" readonly rows="5"></textarea>
+                                        <span asp-validation-for="Prescription" class="text-danger"></span>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <a asp-action="Index" class="btn btn-outline-secondary" data-permission="read">Back</a>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success" data-permission="update">Save</button>
+                            <button type="button" class="btn btn-danger" onclick="submitDelete()" data-permission="delete">Delete</button>
+                        </div>
+                    </div>
+                </form>
+
+                <form id="deleteForm" asp-action="Delete" asp-route-id="@Model.Id" method="post" style="display: none" data-permission="delete">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function makeEditable(row) {
+            const textarea = row.querySelector("textarea");
+            if (textarea && textarea.hasAttribute("readonly")) {
+                textarea.removeAttribute("readonly");
+                textarea.classList.remove("form-control-plaintext");
+                textarea.classList.add("form-control");
+            }
+        }
+
+        function submitDelete() {
+            if (confirm('Are you sure you want to delete this diagnosis?')) {
+                document.getElementById('deleteForm').submit();
+            }
+        }
+    </script>
+}
+

@@ -1,0 +1,51 @@
+@model ClinicManagement.Models.Humans.Doctor
+
+@{
+    ViewData["Title"] = "Create Doctor";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+        <h2 class="mb-4">Create Doctor</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+
+                    <div class="mb-3">
+                        <label asp-for="PersonId" class="form-label">Person</label>
+                        <select asp-for="PersonId" class="form-control" asp-items="ViewBag.People">
+                            <option value="">-- Select Person --</option>
+                        </select>
+                        <span asp-validation-for="PersonId" class="text-danger"></span>
+                        <div class="text-muted mt-1">
+                            <small>Can't find the person? <a asp-action="Create" asp-controller="Person">Create a new person</a></small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="SpecialtyId" class="form-label">Specialty</label>
+                        <select asp-for="SpecialtyId" class="form-control" asp-items="ViewBag.Specialties">
+                            <option value="">-- Select Specialty --</option>
+                        </select>
+                        <span asp-validation-for="SpecialtyId" class="text-danger"></span>
+                        <div class="text-muted mt-1">
+                            <small>Can't find the specialty? <a asp-action="Create" asp-controller="Specialty">Create a new specialty</a></small>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-success">Save</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

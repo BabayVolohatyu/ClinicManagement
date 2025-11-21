@@ -1,4 +1,5 @@
-﻿using ClinicManagement.Models.Health;
+﻿using ClinicManagement.Data.Health;
+using ClinicManagement.Models.Health;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -24,6 +25,9 @@ namespace ClinicManagement.Configurations.Health
                 .HasForeignKey(sp => sp.ProcedureId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // SEED data
+            builder.HasData(SicknessProcedureSeedData.GetSeedData());
         }
     }
 }

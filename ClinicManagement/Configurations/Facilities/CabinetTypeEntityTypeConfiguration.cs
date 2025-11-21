@@ -1,4 +1,5 @@
-﻿using ClinicManagement.Models.Facilities;
+﻿using ClinicManagement.Data.Facilities;
+using ClinicManagement.Models.Facilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,6 +11,9 @@ namespace ClinicManagement.Configurations.Facilities
         {
             builder
                 .HasKey(ct => ct.Id);
+
+            // SEED data
+            builder.HasData(CabinetTypeSeedData.GetSeedData());
         }
     }
 }

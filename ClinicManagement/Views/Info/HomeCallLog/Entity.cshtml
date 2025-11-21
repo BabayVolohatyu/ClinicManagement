@@ -1,0 +1,102 @@
+@model ClinicManagement.Models.Info.HomeCallLog
+
+@{
+    ViewData["Title"] = "Home Call Log Details";
+}
+
+<div class="row justify-content-center" data-permission="read">
+    <div class="col-lg-6 col-md-8">
+        <h2 class="mb-4">Home Call Log Details</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Update" asp-route-id="@Model.Id" method="post" id="editForm" data-permission="update">
+                    <div class="table-responsive">
+                        <table class="table table-bordered mb-0">
+                            <tbody>
+                                <tr>
+                                    <th class="w-25">ID</th>
+                                    <td>
+                                        <input asp-for="Id" class="form-control-plaintext" readonly />
+                                    </td>
+                                </tr>
+
+                                <tr onclick="makeEditableSelect(this)" style="cursor: pointer;">
+                                    <th>Doctor</th>
+                                    <td>
+                                        <select asp-for="DoctorId" class="form-control-plaintext" readonly asp-items="ViewBag.Doctors">
+                                            <option value="">-- Select Doctor --</option>
+                                        </select>
+                                        <span asp-validation-for="DoctorId" class="text-danger"></span>
+                                    </td>
+                                </tr>
+
+                                <tr onclick="makeEditableSelect(this)" style="cursor: pointer;">
+                                    <th>Address</th>
+                                    <td>
+                                        <select asp-for="AddressId" class="form-control-plaintext" readonly asp-items="ViewBag.Addresses">
+                                            <option value="">-- Select Address --</option>
+                                        </select>
+                                        <span asp-validation-for="AddressId" class="text-danger"></span>
+                                    </td>
+                                </tr>
+
+                                <tr onclick="makeEditable(this)" style="cursor: pointer;">
+                                    <th>Date Time</th>
+                                    <td>
+                                        <input asp-for="DateTime" class="form-control-plaintext" readonly type="datetime-local" />
+                                        <span asp-validation-for="DateTime" class="text-danger"></span>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <a asp-action="Index" class="btn btn-outline-secondary" data-permission="read">Back</a>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success" data-permission="update">Save</button>
+                            <button type="button" class="btn btn-danger" onclick="submitDelete()" data-permission="delete">Delete</button>
+                        </div>
+                    </div>
+                </form>
+
+                <form id="deleteForm" asp-action="Delete" asp-route-id="@Model.Id" method="post" style="display: none" data-permission="delete">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function makeEditable(row) {
+            const input = row.querySelector("input");
+            if (input && input.hasAttribute("readonly")) {
+                input.removeAttribute("readonly");
+                input.classList.remove("form-control-plaintext");
+                input.classList.add("form-control");
+            }
+        }
+
+        function makeEditableSelect(row) {
+            const select = row.querySelector("select");
+            if (select && select.hasAttribute("readonly")) {
+                select.removeAttribute("readonly");
+                select.classList.remove("form-control-plaintext");
+                select.classList.add("form-control");
+            }
+        }
+
+        function submitDelete() {
+            if (confirm('Are you sure you want to delete this home call log?')) {
+                document.getElementById('deleteForm').submit();
+            }
+        }
+    </script>
+}
+

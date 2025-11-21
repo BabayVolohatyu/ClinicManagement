@@ -1,4 +1,5 @@
-﻿using ClinicManagement.Models.Humans;
+﻿using ClinicManagement.Data.Humans;
+using ClinicManagement.Models.Humans;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -17,6 +18,9 @@ namespace ClinicManagement.Configurations.Humans
                 .HasForeignKey<DistrictDoctor>(dd => dd.DoctorId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // SEED data
+            builder.HasData(DistrictDoctorSeedData.GetSeedData());
         }
     }
 }

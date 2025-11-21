@@ -2,11 +2,17 @@ using ClinicManagement.Data;
 using ClinicManagement.Helpers;
 using ClinicManagement.Middleware;
 using ClinicManagement.Models.Facilities;
+using ClinicManagement.Models.Health;
 using ClinicManagement.Models.Humans;
+using ClinicManagement.Models.Info;
 using ClinicManagement.Services;
 using ClinicManagement.Services.Facilities;
+using ClinicManagement.Services.Health;
 using ClinicManagement.Services.Humans;
+using ClinicManagement.Services.Info;
+using ClinicManagement.Validators.Info;
 using ClinicManagement.Validators.Facilites;
+using ClinicManagement.Validators.Health;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +29,36 @@ builder.Services.AddScoped<ICabinetService, CabinetService>();
 
 builder.Services.AddScoped<IService<Person>, PersonService>();
 builder.Services.AddScoped<IService<Specialty>, SpecialtyService>();
+
+builder.Services.AddScoped<IService<Address>, AddressService>();
+builder.Services.AddScoped<IService<Symptom>, SymptomService>();
+builder.Services.AddScoped<IService<Sickness>, SicknessService>();
+builder.Services.AddScoped<IService<Treatment>, TreatmentService>();
+builder.Services.AddScoped<IService<Procedure>, ProcedureService>();
+
+builder.Services.AddScoped<IService<Patient>, PatientService>();
+builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddScoped<IService<Doctor>, DoctorService>();
+builder.Services.AddScoped<IDoctorService, DoctorService>();
+
+builder.Services.AddScoped<ISicknessSymptomService, SicknessSymptomService>();
+builder.Services.AddScoped<ISicknessTreatmentService, SicknessTreatmentService>();
+builder.Services.AddScoped<ISicknessProcedureService, SicknessProcedureService>();
+
+builder.Services.AddScoped<IDistrictDoctorService, DistrictDoctorService>();
+builder.Services.AddScoped<IService<DoctorOnCallStatus>, DoctorOnCallStatusService>();
+builder.Services.AddScoped<IDoctorOnCallStatusService, DoctorOnCallStatusService>();
+builder.Services.AddScoped<IService<DoctorProcedure>, DoctorProcedureService>();
+builder.Services.AddScoped<IDoctorProcedureService, DoctorProcedureService>();
+builder.Services.AddScoped<IService<Schedule>, ScheduleService>();
+builder.Services.AddScoped<IScheduleService, ScheduleService>();
+
+builder.Services.AddScoped<IService<Appointment>, AppointmentService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<IService<HomeCallLog>, HomeCallLogService>();
+builder.Services.AddScoped<IHomeCallLogService, HomeCallLogService>();
+builder.Services.AddScoped<IService<Diagnosis>, DiagnosisService>();
+builder.Services.AddScoped<IDiagnosisService, DiagnosisService>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 

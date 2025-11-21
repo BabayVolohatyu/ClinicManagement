@@ -1,4 +1,5 @@
-﻿using ClinicManagement.Models.Health;
+﻿using ClinicManagement.Data.Health;
+using ClinicManagement.Models.Health;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -16,6 +17,9 @@ namespace ClinicManagement.Configurations.Health
                 .WithOne(a => a.Diagnosis)
                 .HasForeignKey<Diagnosis>(d => d.AppointmentId)
                 .IsRequired();
+
+            // SEED data
+            builder.HasData(DiagnosisSeedData.GetSeedData());
         }
     }
 }

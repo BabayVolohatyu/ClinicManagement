@@ -1,20 +1,148 @@
-﻿using ClinicManagement.Data;
+﻿using ClinicManagement.Helpers;
+using ClinicManagement.Models.Auth;
+using ClinicManagement.Models.Humans;
+using ClinicManagement.Services;
+using ClinicManagement.Services.Humans;
+using ClinicManagement.Validators.Humans;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ClinicManagement.Controllers.Humans
 {
-    public class PatientController : Controller
+    [PatientModelValidator]
+    public class PatientController : CommonController<Patient>
     {
-        private readonly ClinicDbContext _context;
+        private readonly IPatientService _patientService;
 
-        public PatientController(ClinicDbContext context)
+        public PatientController(IService<Patient> service, IPatientService patientService, ILogger<PatientController> logger)
+            : base(service, logger)
         {
-            _context = context;
+            _patientService = patientService;
         }
 
-        public IActionResult Index()
+        [HttpGet]
+        [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
+        public override async Task<IActionResult> Create()
         {
-            return View();
+            try
+            {
+                await LoadDropdownsAsync();
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading create form for Patient");
+                return StatusCode(500, "An error occurred while loading the create form.");
+            }
+        }
+
+        [HttpPost]
+        [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
+        public override async Task<IActionResult> Create(Patient entity)
+        {
+            if (entity == null)
+                return BadRequest("Entity cannot be null.");
+
+            if (entity.PersonId == 0)
+                ModelState.AddModelError("PersonId", "Person is required.");
+
+            if (entity.AddressId == 0)
+                ModelState.AddModelError("AddressId", "Address is required.");
+
+            if (!ModelState.IsValid)
+            {
+                await LoadDropdownsAsync();
+                return View(entity);
+            }
+
+            try
+            {
+                await _service.AddAsync(entity);
+                return RedirectToAction(nameof(Entity), new { id = entity.Id });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating Patient");
+                await LoadDropdownsAsync();
+                ModelState.AddModelError("", "An error occurred while creating the patient.");
+                return View(entity);
+            }
+        }
+
+        public override async Task<IActionResult> Entity(int id)
+        {
+            try
+            {
+                var entity = await _service.GetByIdAsync(id);
+                if (entity == null)
+                    return NotFound($"Patient with id {id} not found.");
+
+                await LoadDropdownsAsync();
+                return View(entity);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching Patient with id {Id}", id);
+                return StatusCode(500, "An error occurred while fetching entity.");
+            }
+        }
+
+        [HttpPost]
+        [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
+        public override async Task<IActionResult> Update(int id, Patient entity)
+        {
+            if (entity == null)
+                return BadRequest("Entity cannot be null.");
+
+            if (entity.PersonId == 0)
+                ModelState.AddModelError("PersonId", "Person is required.");
+
+            if (entity.AddressId == 0)
+                ModelState.AddModelError("AddressId", "Address is required.");
+
+            if (!ModelState.IsValid)
+            {
+                await LoadDropdownsAsync();
+                var currentEntity = await _service.GetByIdAsync(id) ?? entity;
+                return View("Entity", currentEntity);
+            }
+
+            try
+            {
+                await _service.UpdateAsync(id, entity);
+                return RedirectToAction(nameof(Entity), new { id });
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogWarning(ex, "Patient with id {Id} not found for update", id);
+                await LoadDropdownsAsync();
+                var currentEntity = await _service.GetByIdAsync(id) ?? entity;
+                ModelState.AddModelError("", ex.Message);
+                return View("Entity", currentEntity);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating Patient with id {Id}", id);
+                await LoadDropdownsAsync();
+                var currentEntity = await _service.GetByIdAsync(id) ?? entity;
+                ModelState.AddModelError("", "An error occurred while updating the patient.");
+                return View("Entity", currentEntity);
+            }
+        }
+
+        private async Task LoadDropdownsAsync()
+        {
+            var people = await _patientService.GetAllPeopleAsync();
+            ViewBag.People = new SelectList(people.Select(p => new { 
+                Id = p.Id, 
+                DisplayName = $"{p.LastName}, {p.FirstName}" + (string.IsNullOrEmpty(p.Patronymic) ? "" : $" {p.Patronymic}")
+            }), "Id", "DisplayName");
+
+            var addresses = await _patientService.GetAllAddressesAsync();
+            ViewBag.Addresses = new SelectList(addresses.Select(a => new { 
+                Id = a.Id, 
+                DisplayName = $"{a.StreetName} {a.StreetNumber}, {a.Locality}, {a.State}, {a.Country}"
+            }), "Id", "DisplayName");
         }
     }
 }

@@ -1,0 +1,45 @@
+@model ClinicManagement.Models.Health.SicknessProcedure
+
+@{
+    ViewData["Title"] = "Create Sickness Procedure";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+        <h2 class="mb-4">Create Sickness Procedure</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+
+                    <div class="mb-3">
+                        <label asp-for="SicknessId" class="form-label">Sickness</label>
+                        <select asp-for="SicknessId" class="form-control" asp-items="ViewBag.Sicknesses">
+                            <option value="">-- Select Sickness --</option>
+                        </select>
+                        <span asp-validation-for="SicknessId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ProcedureId" class="form-label">Procedure</label>
+                        <select asp-for="ProcedureId" class="form-control" asp-items="ViewBag.Procedures">
+                            <option value="">-- Select Procedure --</option>
+                        </select>
+                        <span asp-validation-for="ProcedureId" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-success">Save</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

@@ -1,0 +1,89 @@
+@model ClinicManagement.Models.Health.Procedure
+
+@{
+    ViewData["Title"] = "Procedure Details";
+}
+
+<div class="row justify-content-center" data-permission="read">
+    <div class="col-lg-6 col-md-8">
+        <h2 class="mb-4">Procedure Details</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Update" asp-route-id="@Model.Id" method="post" id="editForm" data-permission="update">
+                    <div class="table-responsive">
+                        <table class="table table-bordered mb-0">
+                            <tbody>
+                                <tr>
+                                    <th class="w-25">ID</th>
+                                    <td>
+                                        <input asp-for="Id" class="form-control-plaintext" readonly />
+                                    </td>
+                                </tr>
+
+                                <tr onclick="makeEditable(this)" style="cursor: pointer;">
+                                    <th>Name</th>
+                                    <td>
+                                        <input asp-for="Name" class="form-control-plaintext" readonly />
+                                        <span asp-validation-for="Name" class="text-danger"></span>
+                                    </td>
+                                </tr>
+
+                                <tr onclick="makeEditable(this)" style="cursor: pointer;">
+                                    <th>Description</th>
+                                    <td>
+                                        <textarea asp-for="Description" class="form-control-plaintext" readonly rows="4"></textarea>
+                                        <span asp-validation-for="Description" class="text-danger"></span>
+                                    </td>
+                                </tr>
+
+                                <tr onclick="makeEditable(this)" style="cursor: pointer;">
+                                    <th>Price</th>
+                                    <td>
+                                        <input asp-for="Price" class="form-control-plaintext" readonly type="number" step="0.01" />
+                                        <span asp-validation-for="Price" class="text-danger"></span>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <a asp-action="Index" class="btn btn-outline-secondary" data-permission="read">Back</a>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success" data-permission="update">Save</button>
+                            <button type="button" class="btn btn-danger" onclick="submitDelete()" data-permission="delete">Delete</button>
+                        </div>
+                    </div>
+                </form>
+
+                <form id="deleteForm" asp-action="Delete" asp-route-id="@Model.Id" method="post" style="display: none" data-permission="delete">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function makeEditable(row) {
+            const input = row.querySelector("input, textarea");
+            if (input && input.hasAttribute("readonly")) {
+                input.removeAttribute("readonly");
+                input.classList.remove("form-control-plaintext");
+                input.classList.add("form-control");
+            }
+        }
+
+        function submitDelete() {
+            if (confirm('Are you sure you want to delete this procedure?')) {
+                document.getElementById('deleteForm').submit();
+            }
+        }
+    </script>
+}
+
