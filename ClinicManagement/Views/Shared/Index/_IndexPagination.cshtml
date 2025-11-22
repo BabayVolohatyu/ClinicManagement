@@ -2,6 +2,7 @@
 @{
     var sortAscending = Model.SortAscending;
     var currentSortBy = Model.SortBy ?? "Id";
+    var statusFilter = ViewData["StatusFilter"]?.ToString();
 }
 
 <div class="d-flex justify-content-between align-items-center mt-3">
@@ -14,14 +15,22 @@
     <nav>
         <ul class="pagination mb-0">
             <li class="page-item @(!Model.HasPrevious ? "disabled" : "")">
+                @{
+                    var prevRouteValues = new Dictionary<string, object?>
+                    {
+                        { "pageNumber", Model.PageNumber - 1 },
+                        { "pageSize", Model.PageSize },
+                        { "searchTerm", Model.SearchTerm },
+                        { "sortBy", currentSortBy },
+                        { "sortAscending", sortAscending }
+                    };
+                    if (!string.IsNullOrEmpty(statusFilter))
+                    {
+                        prevRouteValues["status"] = statusFilter;
+                    }
+                }
                 <a class="page-link"
-                   href="@Url.Action("Index", new {
-                       pageNumber = Model.PageNumber - 1,
-                       pageSize = Model.PageSize,
-                       searchTerm = Model.SearchTerm,
-                       sortBy = currentSortBy,
-                       sortAscending = sortAscending
-                   })">
+                   href="@Url.Action("Index", prevRouteValues)">
                     &laquo;
                 </a>
             </li>
@@ -37,14 +46,22 @@
                     for (int i = 1; i <= totalPages; i++)
                     {
                         <li class="page-item @(i == currentPage ? "active" : "")">
+                            @{
+                                var pageRouteValues = new Dictionary<string, object?>
+                                {
+                                    { "pageNumber", i },
+                                    { "pageSize", Model.PageSize },
+                                    { "searchTerm", Model.SearchTerm },
+                                    { "sortBy", currentSortBy },
+                                    { "sortAscending", sortAscending }
+                                };
+                                if (!string.IsNullOrEmpty(statusFilter))
+                                {
+                                    pageRouteValues["status"] = statusFilter;
+                                }
+                            }
                             <a class="page-link"
-                               href="@Url.Action("Index", new {
-                                   pageNumber = i,
-                                   pageSize = Model.PageSize,
-                                   searchTerm = Model.SearchTerm,
-                                   sortBy = currentSortBy,
-                                   sortAscending = sortAscending
-                               })">
+                               href="@Url.Action("Index", pageRouteValues)">
                                 @i
                             </a>
                         </li>
@@ -82,14 +99,22 @@
                     
                     // Always show first page
                     <li class="page-item @(1 == currentPage ? "active" : "")">
+                        @{
+                            var firstRouteValues = new Dictionary<string, object?>
+                            {
+                                { "pageNumber", 1 },
+                                { "pageSize", Model.PageSize },
+                                { "searchTerm", Model.SearchTerm },
+                                { "sortBy", currentSortBy },
+                                { "sortAscending", sortAscending }
+                            };
+                            if (!string.IsNullOrEmpty(statusFilter))
+                            {
+                                firstRouteValues["status"] = statusFilter;
+                            }
+                        }
                         <a class="page-link"
-                           href="@Url.Action("Index", new {
-                               pageNumber = 1,
-                               pageSize = Model.PageSize,
-                               searchTerm = Model.SearchTerm,
-                               sortBy = currentSortBy,
-                               sortAscending = sortAscending
-                           })">
+                           href="@Url.Action("Index", firstRouteValues)">
                             1
                         </a>
                     </li>
@@ -132,14 +157,22 @@
                     
                     // Always show last page
                     <li class="page-item @(totalPages == currentPage ? "active" : "")">
+                        @{
+                            var lastRouteValues = new Dictionary<string, object?>
+                            {
+                                { "pageNumber", totalPages },
+                                { "pageSize", Model.PageSize },
+                                { "searchTerm", Model.SearchTerm },
+                                { "sortBy", currentSortBy },
+                                { "sortAscending", sortAscending }
+                            };
+                            if (!string.IsNullOrEmpty(statusFilter))
+                            {
+                                lastRouteValues["status"] = statusFilter;
+                            }
+                        }
                         <a class="page-link"
-                           href="@Url.Action("Index", new {
-                               pageNumber = totalPages,
-                               pageSize = Model.PageSize,
-                               searchTerm = Model.SearchTerm,
-                               sortBy = currentSortBy,
-                               sortAscending = sortAscending
-                           })">
+                           href="@Url.Action("Index", lastRouteValues)">
                             @totalPages
                         </a>
                     </li>
@@ -147,14 +180,22 @@
             }
 
             <li class="page-item @(!Model.HasNext ? "disabled" : "")">
+                @{
+                    var nextRouteValues = new Dictionary<string, object?>
+                    {
+                        { "pageNumber", Model.PageNumber + 1 },
+                        { "pageSize", Model.PageSize },
+                        { "searchTerm", Model.SearchTerm },
+                        { "sortBy", currentSortBy },
+                        { "sortAscending", sortAscending }
+                    };
+                    if (!string.IsNullOrEmpty(statusFilter))
+                    {
+                        nextRouteValues["status"] = statusFilter;
+                    }
+                }
                 <a class="page-link"
-                   href="@Url.Action("Index", new {
-                       pageNumber = Model.PageNumber + 1,
-                       pageSize = Model.PageSize,
-                       searchTerm = Model.SearchTerm,
-                       sortBy = currentSortBy,
-                       sortAscending = sortAscending
-                   })">
+                   href="@Url.Action("Index", nextRouteValues)">
                     &raquo;
                 </a>
             </li>

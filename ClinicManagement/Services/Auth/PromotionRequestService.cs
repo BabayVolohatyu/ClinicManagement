@@ -1,34 +1,30 @@
 using ClinicManagement.Data;
 using ClinicManagement.Models.Auth;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace ClinicManagement.Services.Auth
 {
     public interface IPromotionRequestService : IService<PromotionRequest>
     {
-        Task ApprovePromotionRequestAsync(int requestId, int adminId, CancellationToken token = default);
-        Task RejectPromotionRequestAsync(int requestId, int adminId, CancellationToken token = default);
-        Task<IEnumerable<Role>> GetAvailableRolesAsync(int userId, CancellationToken token = default);
-        Task<PaginatedResult<PromotionRequest>> GetByUserIdAsync(
-            int userId,
-            int pageNumber = 1,
-            int pageSize = 10,
-            string? searchTerm = null,
-            string? sortBy = null,
-            bool sortAscending = true,
-            CancellationToken token = default);
+        Task<IEnumerable<User>> GetAllUsersAsync(CancellationToken token = default);
+        Task<IEnumerable<Role>> GetAllRolesAsync(CancellationToken token = default);
+        Task<User?> GetCurrentUserAsync(CancellationToken token = default);
+        bool IsCurrentUserAdmin();
     }
 
     public class PromotionRequestService : Service<PromotionRequest>, IPromotionRequestService
     {
         private readonly DbSet<User> _users;
         private readonly DbSet<Role> _roles;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public PromotionRequestService(ClinicDbContext context, ILogger<PromotionRequestService> logger)
+        public PromotionRequestService(ClinicDbContext context, ILogger<PromotionRequestService> logger, IHttpContextAccessor httpContextAccessor)
             : base(context, logger)
         {
             _users = _context.Set<User>();
             _roles = _context.Set<Role>();
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public override async Task<PaginatedResult<PromotionRequest>> GetAllAsync(
@@ -52,17 +48,7 @@ namespace ClinicManagement.Services.Auth
 
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
-                    query = query.Where(pr =>
-                        (pr.User != null && (
-                            pr.User.FirstName.ToLower().Contains(searchTerm.ToLower()) ||
-                            (pr.User.MiddleName != null && pr.User.MiddleName.ToLower().Contains(searchTerm.ToLower())) ||
-                            (pr.User.LastName != null && pr.User.LastName.ToLower().Contains(searchTerm.ToLower())) ||
-                            pr.User.Email.ToLower().Contains(searchTerm.ToLower())
-                        )) ||
-                        (pr.RequestedRole != null && pr.RequestedRole.Name.ToLower().Contains(searchTerm.ToLower())) ||
-                        (pr.Reason != null && pr.Reason.ToLower().Contains(searchTerm.ToLower())) ||
-                        pr.Status.ToString().ToLower().Contains(searchTerm.ToLower())
-                    );
+                    query = ApplySearchFilter(query, searchTerm);
                 }
 
                 if (!string.IsNullOrWhiteSpace(sortBy))
@@ -71,7 +57,7 @@ namespace ClinicManagement.Services.Auth
                 }
                 else
                 {
-                    query = ApplySorting(query, "RequestedAt", false); // Default: newest first
+                    query = ApplySorting(query, "RequestedAt", false);
                 }
 
                 var items = await query
@@ -94,12 +80,12 @@ namespace ClinicManagement.Services.Auth
             }
             catch (OperationCanceledException)
             {
-                _logger.LogWarning("GetAllAsync operation for PromotionRequest was canceled");
+                _logger.LogWarning("GetAllAsync operation for {Entity} was canceled", typeof(PromotionRequest).Name);
                 throw;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while getting PromotionRequest list");
+                _logger.LogError(ex, "Error while getting {Entity} list", typeof(PromotionRequest).Name);
                 throw;
             }
         }
@@ -116,12 +102,12 @@ namespace ClinicManagement.Services.Auth
             }
             catch (OperationCanceledException)
             {
-                _logger.LogWarning("GetByIdAsync for PromotionRequest with id {Id} was canceled", id);
+                _logger.LogWarning("GetByIdAsync for {Entity} with id {Id} was canceled", typeof(PromotionRequest).Name, id);
                 throw;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while retrieving PromotionRequest with id {Id}", id);
+                _logger.LogError(ex, "Error while retrieving {Entity} with id {Id}", typeof(PromotionRequest).Name, id);
                 throw;
             }
         }
@@ -133,206 +119,191 @@ namespace ClinicManagement.Services.Auth
 
             try
             {
-                // Validate user exists
-                var user = await _users.FindAsync([entity.UserId], token);
-                if (user == null)
-                    throw new ArgumentException("User not found.");
-
-                // Validate requested role exists
-                var role = await _roles.FindAsync([entity.RequestedRoleId], token);
-                if (role == null)
-                    throw new ArgumentException("Requested role not found.");
-
-                // Check if user already has a pending request
-                var existingPendingRequest = await _dbSet
-                    .FirstOrDefaultAsync(pr => pr.UserId == entity.UserId && pr.Status == PromotionStatus.Pending, token);
-                
-                if (existingPendingRequest != null)
-                    throw new ArgumentException("You already have a pending promotion request.");
-
-                // Check if user is already at or above the requested role
-                if (user.RoleId >= entity.RequestedRoleId)
-                    throw new ArgumentException("You cannot request a role that is equal to or lower than your current role.");
+                // If user is not admin, automatically set UserId to current user
+                if (!IsCurrentUserAdmin())
+                {
+                    var currentUser = await GetCurrentUserAsync(token);
+                    if (currentUser != null)
+                    {
+                        entity.UserId = currentUser.Id;
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Unable to determine current user.");
+                    }
+                }
 
                 entity.RequestedAt = DateTimeOffset.UtcNow;
                 entity.Status = PromotionStatus.Pending;
-                entity.ProcessedByAdminId = null;
-                entity.ProcessedAt = null;
+                await _dbSet.AddAsync(entity, token);
+                await _context.SaveChangesAsync(token);
 
-                await base.AddAsync(entity, token);
+                _logger.LogInformation("Added new {Entity}", typeof(PromotionRequest).Name);
             }
             catch (OperationCanceledException)
             {
-                _logger.LogWarning("AddAsync for PromotionRequest was canceled");
+                _logger.LogWarning("AddAsync for {Entity} was canceled", typeof(PromotionRequest).Name);
                 throw;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while adding PromotionRequest");
+                _logger.LogError(ex, "Error while adding {Entity}", typeof(PromotionRequest).Name);
                 throw;
             }
         }
 
-        public async Task ApprovePromotionRequestAsync(int requestId, int adminId, CancellationToken token = default)
+        public override async Task UpdateAsync(int id, PromotionRequest entity, CancellationToken token = default)
         {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
             try
             {
-                var request = await _dbSet
-                    .Include(pr => pr.User)
-                    .FirstOrDefaultAsync(pr => pr.Id == requestId, token);
+                var existingEntity = await GetByIdAsync(id, token);
+                if (existingEntity == null)
+                    throw new KeyNotFoundException($"{typeof(PromotionRequest).Name} with id {id} not found");
 
-                if (request == null)
-                    throw new KeyNotFoundException($"PromotionRequest with id {requestId} not found");
-
-                if (request.Status != PromotionStatus.Pending)
-                    throw new InvalidOperationException("Only pending promotion requests can be approved.");
-
-                // Update user's role
-                if (request.User != null)
+                // If admin is processing the promotion (status changed from Pending), set ProcessedByAdminId and ProcessedAt
+                if (IsCurrentUserAdmin() && existingEntity.Status == PromotionStatus.Pending && entity.Status != PromotionStatus.Pending)
                 {
-                    request.User.RoleId = request.RequestedRoleId;
+                    var currentUser = await GetCurrentUserAsync(token);
+                    if (currentUser != null)
+                    {
+                        entity.ProcessedByAdminId = currentUser.Id;
+                        entity.ProcessedAt = DateTimeOffset.UtcNow;
+                    }
                 }
 
-                // Update request status
-                request.Status = PromotionStatus.Approved;
-                request.ProcessedByAdminId = adminId;
-                request.ProcessedAt = DateTimeOffset.UtcNow;
+                // Preserve RequestedAt
+                entity.RequestedAt = existingEntity.RequestedAt;
+
+                _context.Entry(existingEntity).CurrentValues.SetValues(entity);
+                _context.Entry(existingEntity).State = EntityState.Modified;
 
                 await _context.SaveChangesAsync(token);
 
-                _logger.LogInformation("Approved PromotionRequest with id {RequestId} by Admin {AdminId}", requestId, adminId);
+                _logger.LogInformation("Updated {Entity} with id {Id}", typeof(PromotionRequest).Name, id);
             }
             catch (OperationCanceledException)
             {
-                _logger.LogWarning("ApprovePromotionRequestAsync for request {RequestId} was canceled", requestId);
+                _logger.LogWarning("UpdateAsync for {Entity} with id {Id} was canceled", typeof(PromotionRequest).Name, id);
                 throw;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while approving PromotionRequest with id {RequestId}", requestId);
+                _logger.LogError(ex, "Error while updating {Entity} with id {Id}", typeof(PromotionRequest).Name, id);
                 throw;
             }
         }
 
-        public async Task RejectPromotionRequestAsync(int requestId, int adminId, CancellationToken token = default)
+        protected override IQueryable<PromotionRequest> ApplySearchFilter(IQueryable<PromotionRequest> query, string searchTerm)
+        {
+            return query.Where(pr =>
+                (pr.User != null && (
+                    pr.User.FirstName.Contains(searchTerm) ||
+                    (pr.User.MiddleName != null && pr.User.MiddleName.Contains(searchTerm)) ||
+                    (pr.User.LastName != null && pr.User.LastName.Contains(searchTerm)) ||
+                    pr.User.Email.Contains(searchTerm)
+                )) ||
+                (pr.RequestedRole != null && pr.RequestedRole.Name.Contains(searchTerm)) ||
+                (pr.Reason != null && pr.Reason.Contains(searchTerm)) ||
+                pr.Status.ToString().Contains(searchTerm)
+            );
+        }
+
+        protected override IQueryable<PromotionRequest> ApplySorting(IQueryable<PromotionRequest> query, string sortBy, bool ascending)
+        {
+            if (sortBy == "User.Email" || sortBy == "UserId")
+            {
+                query = ascending ? query.OrderBy(pr => pr.User != null ? pr.User.Email : "") 
+                    : query.OrderByDescending(pr => pr.User != null ? pr.User.Email : "");
+                return query;
+            }
+            if (sortBy == "RequestedRole.Name" || sortBy == "RequestedRoleId")
+            {
+                query = ascending ? query.OrderBy(pr => pr.RequestedRole != null ? pr.RequestedRole.Name : "") 
+                    : query.OrderByDescending(pr => pr.RequestedRole != null ? pr.RequestedRole.Name : "");
+                return query;
+            }
+            if (sortBy == "Status")
+            {
+                query = ascending ? query.OrderBy(pr => pr.Status) 
+                    : query.OrderByDescending(pr => pr.Status);
+                return query;
+            }
+            return base.ApplySorting(query, sortBy, ascending);
+        }
+
+        public async Task<IEnumerable<User>> GetAllUsersAsync(CancellationToken token = default)
         {
             try
             {
-                var request = await _dbSet.FindAsync([requestId], token);
-                if (request == null)
-                    throw new KeyNotFoundException($"PromotionRequest with id {requestId} not found");
-
-                if (request.Status != PromotionStatus.Pending)
-                    throw new InvalidOperationException("Only pending promotion requests can be rejected.");
-
-                request.Status = PromotionStatus.Rejected;
-                request.ProcessedByAdminId = adminId;
-                request.ProcessedAt = DateTimeOffset.UtcNow;
-
-                await _context.SaveChangesAsync(token);
-
-                _logger.LogInformation("Rejected PromotionRequest with id {RequestId} by Admin {AdminId}", requestId, adminId);
-            }
-            catch (OperationCanceledException)
-            {
-                _logger.LogWarning("RejectPromotionRequestAsync for request {RequestId} was canceled", requestId);
-                throw;
+                return await _users
+                    .OrderBy(u => u.LastName)
+                    .ThenBy(u => u.FirstName)
+                    .ToListAsync(token);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while rejecting PromotionRequest with id {RequestId}", requestId);
+                _logger.LogError(ex, "Error while getting User list");
                 throw;
             }
         }
 
-        public async Task<IEnumerable<Role>> GetAvailableRolesAsync(int userId, CancellationToken token = default)
+        public async Task<IEnumerable<Role>> GetAllRolesAsync(CancellationToken token = default)
         {
             try
             {
-                var user = await _users.FindAsync([userId], token);
-                if (user == null)
-                    throw new KeyNotFoundException($"User with id {userId} not found");
-
-                // Return roles that are higher than the user's current role
                 return await _roles
-                    .AsNoTracking()
-                    .Where(r => r.Id > user.RoleId)
-                    .OrderBy(r => r.Id)
+                    .OrderBy(r => r.Name)
                     .ToListAsync(token);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while retrieving available roles for User with id {UserId}", userId);
+                _logger.LogError(ex, "Error while getting Role list");
                 throw;
             }
         }
 
-        public async Task<PaginatedResult<PromotionRequest>> GetByUserIdAsync(
-            int userId,
-            int pageNumber = 1,
-            int pageSize = 10,
-            string? searchTerm = null,
-            string? sortBy = null,
-            bool sortAscending = true,
-            CancellationToken token = default)
+        public async Task<User?> GetCurrentUserAsync(CancellationToken token = default)
         {
-            if (pageNumber < 1) pageNumber = 1;
-            if (pageSize < 1 || pageSize > 100) pageSize = 10;
-
             try
             {
-                var query = _dbSet
-                    .Include(pr => pr.User)
-                    .Include(pr => pr.RequestedRole)
-                    .Include(pr => pr.ProcessedByAdmin)
-                    .Where(pr => pr.UserId == userId)
-                    .AsNoTracking();
+                var user = _httpContextAccessor.HttpContext?.User;
+                if (user == null)
+                    return null;
 
-                if (!string.IsNullOrWhiteSpace(searchTerm))
-                {
-                    query = query.Where(pr =>
-                        (pr.RequestedRole != null && pr.RequestedRole.Name.ToLower().Contains(searchTerm.ToLower())) ||
-                        (pr.Reason != null && pr.Reason.ToLower().Contains(searchTerm.ToLower())) ||
-                        pr.Status.ToString().ToLower().Contains(searchTerm.ToLower())
-                    );
-                }
+                var userIdClaim = user.FindFirst("id") ?? user.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+                    return null;
 
-                if (!string.IsNullOrWhiteSpace(sortBy))
-                {
-                    query = ApplySorting(query, sortBy, sortAscending);
-                }
-                else
-                {
-                    query = ApplySorting(query, "RequestedAt", false); // Default: newest first
-                }
-
-                var items = await query
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToListAsync(token);
-
-                var totalCount = await query.CountAsync(token);
-
-                return new PaginatedResult<PromotionRequest>
-                {
-                    Items = items,
-                    PageNumber = pageNumber,
-                    PageSize = pageSize,
-                    TotalCount = totalCount,
-                    SearchTerm = searchTerm,
-                    SortBy = sortBy,
-                    SortAscending = sortAscending
-                };
-            }
-            catch (OperationCanceledException)
-            {
-                _logger.LogWarning("GetByUserIdAsync operation for PromotionRequest was canceled");
-                throw;
+                return await _users.FirstOrDefaultAsync(u => u.Id == userId, token);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while getting PromotionRequest list for User {UserId}", userId);
-                throw;
+                _logger.LogError(ex, "Error while getting current user");
+                return null;
+            }
+        }
+
+        public bool IsCurrentUserAdmin()
+        {
+            try
+            {
+                var user = _httpContextAccessor.HttpContext?.User;
+                if (user == null)
+                    return false;
+
+                var roleIdClaim = user.FindFirst("roleId");
+                if (roleIdClaim == null || !int.TryParse(roleIdClaim.Value, out int roleId))
+                    return false;
+
+                return roleId == (int)RoleType.Admin;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while checking if current user is admin");
+                return false;
             }
         }
     }

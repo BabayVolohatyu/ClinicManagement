@@ -10,7 +10,6 @@ using ClinicManagement.Services.Facilities;
 using ClinicManagement.Services.Health;
 using ClinicManagement.Services.Humans;
 using ClinicManagement.Services.Info;
-using ClinicManagement.Validators.Facilites;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
@@ -75,7 +74,7 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 //Add global model validator
 builder.Services.AddControllers(options =>
 {
-    options.Filters.Add<CabinetModelValidator>();
+    // Validators are applied per-controller using attributes, not globally
 });
 
 builder.Services.Configure<RazorViewEngineOptions>(options =>

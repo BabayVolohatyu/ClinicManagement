@@ -18,6 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Controllers\Auth\" />
+    <Folder Include="Services\Auth\" />
+    <Folder Include="Validators\Auth\" />
     <Folder Include="Views\Facilities\Cabinet\" />
     <Folder Include="Views\Health\Diagnosis\" />
     <Folder Include="Views\Health\Treatment\" />

@@ -9,8 +9,6 @@ namespace ClinicManagement.Services.Auth
     public interface IUserService : IService<User>
     {
         Task<IEnumerable<Role>> GetAllRolesAsync(CancellationToken token = default);
-        Task UpdateUserRoleAsync(int userId, int roleId, CancellationToken token = default);
-        Task UpdateUserPasswordAsync(int userId, string newPassword, CancellationToken token = default);
     }
 
     public class UserService : Service<User>, IUserService
@@ -40,13 +38,7 @@ namespace ClinicManagement.Services.Auth
 
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
-                    query = query.Where(u =>
-                        u.FirstName.ToLower().Contains(searchTerm.ToLower()) ||
-                        (u.MiddleName != null && u.MiddleName.ToLower().Contains(searchTerm.ToLower())) ||
-                        (u.LastName != null && u.LastName.ToLower().Contains(searchTerm.ToLower())) ||
-                        u.Email.ToLower().Contains(searchTerm.ToLower()) ||
-                        (u.Role != null && u.Role.Name.ToLower().Contains(searchTerm.ToLower()))
-                    );
+                    query = ApplySearchFilter(query, searchTerm);
                 }
 
                 if (!string.IsNullOrWhiteSpace(sortBy))
@@ -78,12 +70,12 @@ namespace ClinicManagement.Services.Auth
             }
             catch (OperationCanceledException)
             {
-                _logger.LogWarning("GetAllAsync operation for User was canceled");
+                _logger.LogWarning("GetAllAsync operation for {Entity} was canceled", typeof(User).Name);
                 throw;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while getting User list");
+                _logger.LogError(ex, "Error while getting {Entity} list", typeof(User).Name);
                 throw;
             }
         }
@@ -94,16 +86,118 @@ namespace ClinicManagement.Services.Auth
             {
                 return await _dbSet
                     .Include(u => u.Role)
+                    .Include(u => u.PromotionRequests)
                     .FirstOrDefaultAsync(u => u.Id == id, token);
             }
             catch (OperationCanceledException)
             {
-                _logger.LogWarning("GetByIdAsync for User with id {Id} was canceled", id);
+                _logger.LogWarning("GetByIdAsync for {Entity} with id {Id} was canceled", typeof(User).Name, id);
                 throw;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while retrieving User with id {Id}", id);
+                _logger.LogError(ex, "Error while retrieving {Entity} with id {Id}", typeof(User).Name, id);
+                throw;
+            }
+        }
+
+        protected override IQueryable<User> ApplySearchFilter(IQueryable<User> query, string searchTerm)
+        {
+            return query.Where(u =>
+                u.FirstName.Contains(searchTerm) ||
+                (u.MiddleName != null && u.MiddleName.Contains(searchTerm)) ||
+                (u.LastName != null && u.LastName.Contains(searchTerm)) ||
+                u.Email.Contains(searchTerm) ||
+                (u.Role != null && u.Role.Name.Contains(searchTerm))
+            );
+        }
+
+        protected override IQueryable<User> ApplySorting(IQueryable<User> query, string sortBy, bool ascending)
+        {
+            if (sortBy == "Role.Name" || sortBy == "RoleId")
+            {
+                query = ascending ? query.OrderBy(u => u.Role != null ? u.Role.Name : "") 
+                    : query.OrderByDescending(u => u.Role != null ? u.Role.Name : "");
+                return query;
+            }
+            return base.ApplySorting(query, sortBy, ascending);
+        }
+
+        public override async Task AddAsync(User entity, CancellationToken token = default)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            try
+            {
+                // Hash password if provided
+                if (!string.IsNullOrWhiteSpace(entity.PasswordHash))
+                {
+                    entity.PasswordHash = HashPassword(entity.PasswordHash);
+                }
+
+                entity.CreatedAt = DateTimeOffset.UtcNow;
+                await _dbSet.AddAsync(entity, token);
+                await _context.SaveChangesAsync(token);
+
+                _logger.LogInformation("Added new {Entity}", typeof(User).Name);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("AddAsync for {Entity} was canceled", typeof(User).Name);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while adding {Entity}", typeof(User).Name);
+                throw;
+            }
+        }
+
+        public override async Task UpdateAsync(int id, User entity, CancellationToken token = default)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            try
+            {
+                var existingEntity = await GetByIdAsync(id, token);
+                if (existingEntity == null)
+                    throw new KeyNotFoundException($"{typeof(User).Name} with id {id} not found");
+
+                // Store the original password hash
+                var originalPasswordHash = existingEntity.PasswordHash;
+
+                // Preserve CreatedAt
+                entity.CreatedAt = existingEntity.CreatedAt;
+
+                // Only update password if a new one is provided
+                if (!string.IsNullOrWhiteSpace(entity.PasswordHash))
+                {
+                    // Hash the new password
+                    entity.PasswordHash = HashPassword(entity.PasswordHash);
+                }
+                else
+                {
+                    // Keep the existing password hash
+                    entity.PasswordHash = originalPasswordHash;
+                }
+
+                _context.Entry(existingEntity).CurrentValues.SetValues(entity);
+                _context.Entry(existingEntity).State = EntityState.Modified;
+
+                await _context.SaveChangesAsync(token);
+
+                _logger.LogInformation("Updated {Entity} with id {Id}", typeof(User).Name, id);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("UpdateAsync for {Entity} with id {Id} was canceled", typeof(User).Name, id);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while updating {Entity} with id {Id}", typeof(User).Name, id);
                 throw;
             }
         }
@@ -113,91 +207,14 @@ namespace ClinicManagement.Services.Auth
             try
             {
                 return await _roles
-                    .AsNoTracking()
-                    .OrderBy(r => r.Id)
+                    .OrderBy(r => r.Name)
                     .ToListAsync(token);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while retrieving roles");
+                _logger.LogError(ex, "Error while getting Role list");
                 throw;
             }
-        }
-
-        public async Task UpdateUserRoleAsync(int userId, int roleId, CancellationToken token = default)
-        {
-            try
-            {
-                var user = await _dbSet.FindAsync([userId], token);
-                if (user == null)
-                    throw new KeyNotFoundException($"User with id {userId} not found");
-
-                var role = await _roles.FindAsync([roleId], token);
-                if (role == null)
-                    throw new KeyNotFoundException($"Role with id {roleId} not found");
-
-                user.RoleId = roleId;
-                await _context.SaveChangesAsync(token);
-
-                _logger.LogInformation("Updated role for User with id {UserId} to Role {RoleId}", userId, roleId);
-            }
-            catch (OperationCanceledException)
-            {
-                _logger.LogWarning("UpdateUserRoleAsync for User with id {UserId} was canceled", userId);
-                throw;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error while updating role for User with id {UserId}", userId);
-                throw;
-            }
-        }
-
-        public async Task UpdateUserPasswordAsync(int userId, string newPassword, CancellationToken token = default)
-        {
-            try
-            {
-                var user = await _dbSet.FindAsync([userId], token);
-                if (user == null)
-                    throw new KeyNotFoundException($"User with id {userId} not found");
-
-                user.PasswordHash = HashPassword(newPassword);
-                await _context.SaveChangesAsync(token);
-
-                _logger.LogInformation("Updated password for User with id {UserId}", userId);
-            }
-            catch (OperationCanceledException)
-            {
-                _logger.LogWarning("UpdateUserPasswordAsync for User with id {UserId} was canceled", userId);
-                throw;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error while updating password for User with id {UserId}", userId);
-                throw;
-            }
-        }
-
-        public override async Task AddAsync(User entity, CancellationToken token = default)
-        {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
-
-            if (await _context.Users.AnyAsync(u => u.Email == entity.Email, token))
-                throw new ArgumentException("Email already exists.");
-
-            if (string.IsNullOrWhiteSpace(entity.PasswordHash))
-                throw new ArgumentException("Password is required.");
-
-            // Hash the password if it's not already hashed
-            if (!entity.PasswordHash.Contains("=") || entity.PasswordHash.Length < 40)
-            {
-                entity.PasswordHash = HashPassword(entity.PasswordHash);
-            }
-
-            entity.CreatedAt = DateTimeOffset.UtcNow;
-
-            await base.AddAsync(entity, token);
         }
 
         private string HashPassword(string password)

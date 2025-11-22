@@ -29,7 +29,7 @@ namespace ClinicManagement.Validators
                             continue;
                         }
 
-                        if (IsForeignKeyProperty(key) && entry.Errors.Any(e => e.ErrorMessage.Contains("required")))
+                        if (IsForeignKeyProperty(key) && entry.Errors.Any(e => e.ErrorMessage.Contains("required") || e.ErrorMessage.Contains("invalid")))
                         {
                             var cleanErrorMessage = GetForeignKeyErrorMessage(key);
                             modelErrors.Add(cleanErrorMessage);

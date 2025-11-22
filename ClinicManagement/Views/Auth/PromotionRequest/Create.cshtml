@@ -1,0 +1,49 @@
+@model ClinicManagement.Models.Auth.PromotionRequest
+
+@{
+    ViewData["Title"] = "Create Promotion Request";
+}
+
+<div class="row justify-content-center" data-permission="ask_promotion">
+    <div class="col-lg-6 col-md-8">
+        <h2 class="mb-4">Create Promotion Request</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Create" method="post" data-permission="ask_promotion">
+                    <div class="mb-3" data-permission="manage_users">
+                        <label asp-for="UserId" class="form-label">User</label>
+                        <select asp-for="UserId" class="form-control" asp-items="ViewBag.Users">
+                            <option value="">-- Select User --</option>
+                        </select>
+                        <span asp-validation-for="UserId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="RequestedRoleId" class="form-label">Requested Role</label>
+                        <select asp-for="RequestedRoleId" class="form-control" asp-items="ViewBag.Roles">
+                            <option value="">-- Select Role --</option>
+                        </select>
+                        <span asp-validation-for="RequestedRoleId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Reason" class="form-label">Reason</label>
+                        <textarea asp-for="Reason" class="form-control" rows="4"></textarea>
+                        <span asp-validation-for="Reason" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary" data-permission="ask_promotion">Cancel</a>
+                        <button type="submit" class="btn btn-success" data-permission="ask_promotion">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

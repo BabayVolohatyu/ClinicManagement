@@ -13,8 +13,8 @@ namespace ClinicManagement.Validators.Auth
             ["UserId"] = "User",
             ["RequestedRoleId"] = "Requested Role",
             ["Reason"] = "Reason",
-            ["RequestedAt"] = "Requested At",
             ["Status"] = "Status",
+            ["RequestedAt"] = "Requested At",
             ["ProcessedByAdminId"] = "Processed By Admin",
             ["ProcessedAt"] = "Processed At"
         };

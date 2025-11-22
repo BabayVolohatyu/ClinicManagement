@@ -7,7 +7,7 @@
     var currentSortBy = Model.SortBy ?? "RequestedAt";
 }
 
-<div class="row justify-content-center">
+<div class="row justify-content-center" data-permission="view_promotions_list">
     <div class="col-lg-10 col-md-12">
         <h2 class="mb-4">Promotion Requests</h2>
 
@@ -49,11 +49,11 @@
                                             pageNumber = 1,
                                             pageSize = Model.PageSize,
                                             searchTerm = Model.SearchTerm,
-                                            sortBy = "UserId",
-                                            sortAscending = currentSortBy == "UserId" ? !sortAscending : true
+                                            sortBy = "User.Email",
+                                            sortAscending = currentSortBy == "User.Email" ? !sortAscending : true
                                         })" class="text-decoration-none">
                                             User
-                                            @if (currentSortBy == "UserId")
+                                            @if (currentSortBy == "User.Email")
                                             {
                                                 <span>@(sortAscending ? "↑" : "↓")</span>
                                             }
@@ -66,11 +66,11 @@
                                             pageNumber = 1,
                                             pageSize = Model.PageSize,
                                             searchTerm = Model.SearchTerm,
-                                            sortBy = "RequestedRoleId",
-                                            sortAscending = currentSortBy == "RequestedRoleId" ? !sortAscending : true
+                                            sortBy = "RequestedRole.Name",
+                                            sortAscending = currentSortBy == "RequestedRole.Name" ? !sortAscending : true
                                         })" class="text-decoration-none">
                                             Requested Role
-                                            @if (currentSortBy == "RequestedRoleId")
+                                            @if (currentSortBy == "RequestedRole.Name")
                                             {
                                                 <span>@(sortAscending ? "↑" : "↓")</span>
                                             }
@@ -111,23 +111,6 @@
                                             else { <span class="text-muted">↕</span> }
                                         </a>
                                     </th>
-
-                                    <th>
-                                        <a href="@Url.Action("Index", new {
-                                            pageNumber = 1,
-                                            pageSize = Model.PageSize,
-                                            searchTerm = Model.SearchTerm,
-                                            sortBy = "ProcessedAt",
-                                            sortAscending = currentSortBy == "ProcessedAt" ? !sortAscending : true
-                                        })" class="text-decoration-none">
-                                            Processed At
-                                            @if (currentSortBy == "ProcessedAt")
-                                            {
-                                                <span>@(sortAscending ? "↑" : "↓")</span>
-                                            }
-                                            else { <span class="text-muted">↕</span> }
-                                        </a>
-                                    </th>
                                 </tr>
                             </thead>
 
@@ -139,41 +122,29 @@
                                         <td>
                                             @if (request.User != null)
                                             {
-                                                @($"{request.User.FirstName} {request.User.LastName}".Trim())
-                                                <br />
-                                                <small class="text-muted">@request.User.Email</small>
+                                                <a href="@Url.Action("Entity", "User", new { id = request.User.Id })" onclick="event.stopPropagation()">
+                                                    @request.User.FirstName @(request.User.LastName ?? "") (@request.User.Email)
+                                                </a>
+                                            }
+                                        </td>
+                                        <td>
+                                            @(request.RequestedRole?.Name ?? "-")
+                                        </td>
+                                        <td>
+                                            @if (request.Status == ClinicManagement.Models.Auth.PromotionStatus.Pending)
+                                            {
+                                                <span class="badge bg-warning">Pending</span>
+                                            }
+                                            else if (request.Status == ClinicManagement.Models.Auth.PromotionStatus.Approved)
+                                            {
+                                                <span class="badge bg-success">Approved</span>
                                             }
                                             else
                                             {
-                                                <text>Unknown</text>
-                                            }
-                                        </td>
-                                        <td>@(request.RequestedRole?.Name ?? "Unknown")</td>
-                                        <td>
-                                            @switch (request.Status)
-                                            {
-                                                case ClinicManagement.Models.Auth.PromotionStatus.Pending:
-                                                    <span class="badge bg-warning">Pending</span>
-                                                    break;
-                                                case ClinicManagement.Models.Auth.PromotionStatus.Approved:
-                                                    <span class="badge bg-success">Approved</span>
-                                                    break;
-                                                case ClinicManagement.Models.Auth.PromotionStatus.Rejected:
-                                                    <span class="badge bg-danger">Rejected</span>
-                                                    break;
+                                                <span class="badge bg-danger">Rejected</span>
                                             }
                                         </td>
                                         <td>@request.RequestedAt.ToString("yyyy-MM-dd HH:mm")</td>
-                                        <td>
-                                            @if (request.ProcessedAt.HasValue)
-                                            {
-                                                @request.ProcessedAt.Value.ToString("yyyy-MM-dd HH:mm")
-                                            }
-                                            else
-                                            {
-                                                <text>-</text>
-                                            }
-                                        </td>
                                     </tr>
                                 }
                             </tbody>
