@@ -1,0 +1,131 @@
+@model ClinicManagement.Models.Auth.PromotionRequest
+
+@{
+    ViewData["Title"] = "Promotion Request Details";
+}
+
+<div class="row justify-content-center" data-permission="read">
+    <div class="col-lg-8 col-md-10">
+        <h2 class="mb-4">Promotion Request Details</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered mb-0">
+                        <tbody>
+                            <tr>
+                                <th class="w-25">ID</th>
+                                <td>@Model.Id</td>
+                            </tr>
+
+                            <tr>
+                                <th>User</th>
+                                <td>
+                                    @if (Model.User != null)
+                                    {
+                                        <div>
+                                            <strong>@($"{Model.User.FirstName} {Model.User.MiddleName} {Model.User.LastName}".Trim())</strong>
+                                            <br />
+                                            <small class="text-muted">@Model.User.Email</small>
+                                            <br />
+                                            <small>Current Role: <span class="badge bg-secondary">@(Model.User.Role?.Name ?? "Unknown")</span></small>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <text>Unknown User</text>
+                                    }
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Requested Role</th>
+                                <td>
+                                    <span class="badge bg-primary">@(Model.RequestedRole?.Name ?? "Unknown")</span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Status</th>
+                                <td>
+                                    @switch (Model.Status)
+                                    {
+                                        case ClinicManagement.Models.Auth.PromotionStatus.Pending:
+                                            <span class="badge bg-warning">Pending</span>
+                                            break;
+                                        case ClinicManagement.Models.Auth.PromotionStatus.Approved:
+                                            <span class="badge bg-success">Approved</span>
+                                            break;
+                                        case ClinicManagement.Models.Auth.PromotionStatus.Rejected:
+                                            <span class="badge bg-danger">Rejected</span>
+                                            break;
+                                    }
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Reason</th>
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(Model.Reason))
+                                    {
+                                        <p class="mb-0">@Model.Reason</p>
+                                    }
+                                    else
+                                    {
+                                        <text>No reason provided</text>
+                                    }
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Requested At</th>
+                                <td>@Model.RequestedAt.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                            </tr>
+
+                            @if (Model.ProcessedAt.HasValue)
+                            {
+                                <tr>
+                                    <th>Processed At</th>
+                                    <td>@Model.ProcessedAt.Value.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                </tr>
+                            }
+
+                            @if (Model.ProcessedByAdmin != null)
+                            {
+                                <tr>
+                                    <th>Processed By</th>
+                                    <td>
+                                        @($"{Model.ProcessedByAdmin.FirstName} {Model.ProcessedByAdmin.LastName}".Trim())
+                                        <br />
+                                        <small class="text-muted">@Model.ProcessedByAdmin.Email</small>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <a asp-action="Index" class="btn btn-outline-secondary" data-permission="read">Back</a>
+
+                    @if (Model.Status == ClinicManagement.Models.Auth.PromotionStatus.Pending)
+                    {
+                        <div class="d-flex gap-2" data-permission="accept_promotions">
+                            <form asp-action="Approve" asp-route-id="@Model.Id" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-success" onclick="return confirm('Are you sure you want to approve this promotion request? This will update the user\'s role immediately.');">
+                                    Approve
+                                </button>
+                            </form>
+                            <form asp-action="Reject" asp-route-id="@Model.Id" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to reject this promotion request?');">
+                                    Reject
+                                </button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

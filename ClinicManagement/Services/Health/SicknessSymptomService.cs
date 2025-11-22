@@ -83,9 +83,9 @@ namespace ClinicManagement.Services.Health
             }
         }
 
-        public override async Task<SicknessSymptom?> GetByIdAsync(int id, CancellationToken token = default)
+        public override Task<SicknessSymptom?> GetByIdAsync(int id, CancellationToken token = default)
         {
-            throw new NotSupportedException("SicknessSymptom uses composite key. Use GetByIdAsync(int sicknessId, int symptomId) instead.");
+            return Task.FromException<SicknessSymptom?>(new NotSupportedException("SicknessSymptom uses composite key. Use GetByIdAsync(int sicknessId, int symptomId) instead."));
         }
 
         public async Task<SicknessSymptom?> GetByIdAsync(int sicknessId, int symptomId, CancellationToken token = default)
@@ -135,14 +135,14 @@ namespace ClinicManagement.Services.Health
             }
         }
 
-        public override async Task UpdateAsync(int id, SicknessSymptom entity, CancellationToken token = default)
+        public override Task UpdateAsync(int id, SicknessSymptom entity, CancellationToken token = default)
         {
-            throw new NotSupportedException("SicknessSymptom uses composite key. Updates are not supported for relationship entities.");
+            return Task.FromException(new NotSupportedException("SicknessSymptom uses composite key. Updates are not supported for relationship entities."));
         }
 
-        public override async Task RemoveAsync(int id, CancellationToken token = default)
+        public override Task RemoveAsync(int id, CancellationToken token = default)
         {
-            throw new NotSupportedException("SicknessSymptom uses composite key. Use RemoveAsync(int sicknessId, int symptomId) instead.");
+            return Task.FromException(new NotSupportedException("SicknessSymptom uses composite key. Use RemoveAsync(int sicknessId, int symptomId) instead."));
         }
 
         public async Task RemoveAsync(int sicknessId, int symptomId, CancellationToken token = default)

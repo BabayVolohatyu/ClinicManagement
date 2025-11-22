@@ -10,12 +10,12 @@ using ClinicManagement.Services.Facilities;
 using ClinicManagement.Services.Health;
 using ClinicManagement.Services.Humans;
 using ClinicManagement.Services.Info;
-using ClinicManagement.Validators.Info;
 using ClinicManagement.Validators.Facilites;
-using ClinicManagement.Validators.Health;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
+using ClinicManagement.Services.Auth;
+using ClinicManagement.Models.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,6 +65,10 @@ builder.Services.AddScoped<IService<Diagnosis>, DiagnosisService>();
 builder.Services.AddScoped<IDiagnosisService, DiagnosisService>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IService<User>, UserService>();
+builder.Services.AddScoped<IPromotionRequestService, PromotionRequestService>();
+builder.Services.AddScoped<IService<PromotionRequest>, PromotionRequestService>();
 
 builder.Services.AddScoped<IJwtService, JwtService>();
 
@@ -82,6 +86,7 @@ builder.Services.Configure<RazorViewEngineOptions>(options =>
     options.ViewLocationFormats.Add("/Views/Health/{1}/{0}.cshtml");
     options.ViewLocationFormats.Add("/Views/Humans/{1}/{0}.cshtml");
     options.ViewLocationFormats.Add("/Views/Info/{1}/{0}.cshtml");
+    options.ViewLocationFormats.Add("/Views/Auth/{1}/{0}.cshtml");
     options.ViewLocationFormats.Add("/Views/Shared/{0}.cshtml");
     options.ViewLocationFormats.Add("/Views/Shared/_Navigation/{0}.cshtml");
 });

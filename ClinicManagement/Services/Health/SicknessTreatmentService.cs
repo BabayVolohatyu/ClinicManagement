@@ -83,9 +83,9 @@ namespace ClinicManagement.Services.Health
             }
         }
 
-        public override async Task<SicknessTreatment?> GetByIdAsync(int id, CancellationToken token = default)
+        public override Task<SicknessTreatment?> GetByIdAsync(int id, CancellationToken token = default)
         {
-            throw new NotSupportedException("SicknessTreatment uses composite key. Use GetByIdAsync(int sicknessId, int treatmentId) instead.");
+            return Task.FromException<SicknessTreatment?>(new NotSupportedException("SicknessTreatment uses composite key. Use GetByIdAsync(int sicknessId, int treatmentId) instead."));
         }
 
         public async Task<SicknessTreatment?> GetByIdAsync(int sicknessId, int treatmentId, CancellationToken token = default)
@@ -134,14 +134,14 @@ namespace ClinicManagement.Services.Health
             }
         }
 
-        public override async Task UpdateAsync(int id, SicknessTreatment entity, CancellationToken token = default)
+        public override Task UpdateAsync(int id, SicknessTreatment entity, CancellationToken token = default)
         {
-            throw new NotSupportedException("SicknessTreatment uses composite key. Updates are not supported for relationship entities.");
+            return Task.FromException(new NotSupportedException("SicknessTreatment uses composite key. Updates are not supported for relationship entities."));
         }
 
-        public override async Task RemoveAsync(int id, CancellationToken token = default)
+        public override Task RemoveAsync(int id, CancellationToken token = default)
         {
-            throw new NotSupportedException("SicknessTreatment uses composite key. Use RemoveAsync(int sicknessId, int treatmentId) instead.");
+            return Task.FromException(new NotSupportedException("SicknessTreatment uses composite key. Use RemoveAsync(int sicknessId, int treatmentId) instead."));
         }
 
         public async Task RemoveAsync(int sicknessId, int treatmentId, CancellationToken token = default)

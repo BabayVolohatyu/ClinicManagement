@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ClinicManagement.Migrations
 {
     [DbContext(typeof(ClinicDbContext))]
-    [Migration("20251122131013_FixDoctorOnCallStatusUniqueIndex")]
-    partial class FixDoctorOnCallStatusUniqueIndex
+    [Migration("20251122152042_AddAuth")]
+    partial class AddAuth
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -271,6 +271,38 @@ namespace ClinicManagement.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Email = "admin@clinic.local",
+                            FirstName = "Admin",
+                            LastName = "User",
+                            PasswordHash = "mvFbM25qlhmShTffMLLmojdlafz51+dz7M7eZWBlKaA=",
+                            RoleId = 4
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Email = "authorized@clinic.local",
+                            FirstName = "Authorized",
+                            LastName = "User",
+                            PasswordHash = "mvFbM25qlhmShTffMLLmojdlafz51+dz7M7eZWBlKaA=",
+                            RoleId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Email = "operator@clinic.local",
+                            FirstName = "Operator",
+                            LastName = "User",
+                            PasswordHash = "mvFbM25qlhmShTffMLLmojdlafz51+dz7M7eZWBlKaA=",
+                            RoleId = 3
+                        });
                 });
 
             modelBuilder.Entity("ClinicManagement.Models.Facilities.Cabinet", b =>
@@ -16856,160 +16888,160 @@ namespace ClinicManagement.Migrations
                             Id = 1,
                             AddressId = 6,
                             DoctorId = 1,
-                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 21, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 21, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 22, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
+                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 22, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0))
                         },
                         new
                         {
                             Id = 2,
                             AddressId = 7,
                             DoctorId = 2,
-                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 22, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 22, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 23, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
+                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 23, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0))
                         },
                         new
                         {
                             Id = 3,
                             AddressId = 8,
                             DoctorId = 3,
-                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 23, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 23, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 24, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
+                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 24, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0))
                         },
                         new
                         {
                             Id = 4,
                             AddressId = 9,
                             DoctorId = 4,
-                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 24, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 24, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 25, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
+                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 25, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0))
                         },
                         new
                         {
                             Id = 5,
                             AddressId = 10,
                             DoctorId = 5,
-                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 25, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 25, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 26, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
+                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 26, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0))
                         },
                         new
                         {
                             Id = 6,
                             AddressId = 11,
                             DoctorId = 6,
-                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 26, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 26, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 27, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
+                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 27, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0))
                         },
                         new
                         {
                             Id = 7,
                             AddressId = 12,
                             DoctorId = 7,
-                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 27, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 27, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 28, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
+                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 28, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0))
                         },
                         new
                         {
                             Id = 8,
                             AddressId = 13,
                             DoctorId = 8,
-                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 21, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 21, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 22, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
+                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 22, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0))
                         },
                         new
                         {
                             Id = 9,
                             AddressId = 14,
                             DoctorId = 9,
-                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 22, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 22, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 23, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
+                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 23, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0))
                         },
                         new
                         {
                             Id = 10,
                             AddressId = 15,
                             DoctorId = 10,
-                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 23, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 23, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 24, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
+                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 24, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0))
                         },
                         new
                         {
                             Id = 11,
                             AddressId = 16,
                             DoctorId = 11,
-                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 24, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 24, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 25, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
+                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 25, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0))
                         },
                         new
                         {
                             Id = 12,
                             AddressId = 17,
                             DoctorId = 12,
-                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 25, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 25, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 26, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
+                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 26, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0))
                         },
                         new
                         {
                             Id = 13,
                             AddressId = 18,
                             DoctorId = 13,
-                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 26, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 26, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 27, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
+                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 27, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0))
                         },
                         new
                         {
                             Id = 14,
                             AddressId = 19,
                             DoctorId = 14,
-                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 27, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 27, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 28, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
+                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 28, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0))
                         },
                         new
                         {
                             Id = 15,
                             AddressId = 20,
                             DoctorId = 15,
-                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 21, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 21, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 22, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
+                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 22, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0))
                         },
                         new
                         {
                             Id = 16,
                             AddressId = 21,
                             DoctorId = 16,
-                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 22, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 22, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 23, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
+                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 23, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0))
                         },
                         new
                         {
                             Id = 17,
                             AddressId = 22,
                             DoctorId = 17,
-                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 23, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 23, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 24, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
+                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 24, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0))
                         },
                         new
                         {
                             Id = 18,
                             AddressId = 23,
                             DoctorId = 18,
-                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 24, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 24, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 25, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
+                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 25, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0))
                         },
                         new
                         {
                             Id = 19,
                             AddressId = 24,
                             DoctorId = 19,
-                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 25, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 25, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 26, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
+                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 26, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0))
                         },
                         new
                         {
                             Id = 20,
                             AddressId = 25,
                             DoctorId = 20,
-                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 26, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 26, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                            EndTime = new DateTimeOffset(new DateTime(2025, 11, 27, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
+                            StartTime = new DateTimeOffset(new DateTime(2025, 11, 27, 8, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0))
                         });
                 });
 

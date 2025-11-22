@@ -7,6 +7,9 @@
         @await Html.PartialAsync("_Health")
         @await Html.PartialAsync("_Humans")
         @await Html.PartialAsync("_Info")
+        <li class="nav-item" data-permission="manage_users">
+            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">Users</a>
+        </li>
     </ul>
 
     @await Html.PartialAsync("_EntityButtons")

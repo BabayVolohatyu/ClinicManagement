@@ -1,0 +1,189 @@
+@model ClinicManagement.Services.PaginatedResult<ClinicManagement.Models.Auth.PromotionRequest>
+
+@{
+    ViewData["Title"] = "Promotion Requests";
+    ViewData["Entity"] = ViewContext.RouteData.Values["controller"]?.ToString().ToLower();
+    var sortAscending = Model.SortAscending;
+    var currentSortBy = Model.SortBy ?? "RequestedAt";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-10 col-md-12">
+        <h2 class="mb-4">Promotion Requests</h2>
+
+        @await Html.PartialAsync("Index/_IndexSearchForm", Model)
+
+        @{
+            ViewData["EntityNamePlural"] = "promotion requests";
+            ViewData["EntityNameSingular"] = "promotion request";
+        }
+        @await Html.PartialAsync("Index/_IndexEmptyState", Model, ViewData)
+
+        @if (Model.Items.Any())
+        {
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <a href="@Url.Action("Index", new {
+                                            pageNumber = 1,
+                                            pageSize = Model.PageSize,
+                                            searchTerm = Model.SearchTerm,
+                                            sortBy = "Id",
+                                            sortAscending = currentSortBy == "Id" ? !sortAscending : true
+                                        })" class="text-decoration-none">
+                                            ID
+                                            @if (currentSortBy == "Id")
+                                            {
+                                                <span>@(sortAscending ? "↑" : "↓")</span>
+                                            }
+                                            else { <span class="text-muted">↕</span> }
+                                        </a>
+                                    </th>
+
+                                    <th>
+                                        <a href="@Url.Action("Index", new {
+                                            pageNumber = 1,
+                                            pageSize = Model.PageSize,
+                                            searchTerm = Model.SearchTerm,
+                                            sortBy = "UserId",
+                                            sortAscending = currentSortBy == "UserId" ? !sortAscending : true
+                                        })" class="text-decoration-none">
+                                            User
+                                            @if (currentSortBy == "UserId")
+                                            {
+                                                <span>@(sortAscending ? "↑" : "↓")</span>
+                                            }
+                                            else { <span class="text-muted">↕</span> }
+                                        </a>
+                                    </th>
+
+                                    <th>
+                                        <a href="@Url.Action("Index", new {
+                                            pageNumber = 1,
+                                            pageSize = Model.PageSize,
+                                            searchTerm = Model.SearchTerm,
+                                            sortBy = "RequestedRoleId",
+                                            sortAscending = currentSortBy == "RequestedRoleId" ? !sortAscending : true
+                                        })" class="text-decoration-none">
+                                            Requested Role
+                                            @if (currentSortBy == "RequestedRoleId")
+                                            {
+                                                <span>@(sortAscending ? "↑" : "↓")</span>
+                                            }
+                                            else { <span class="text-muted">↕</span> }
+                                        </a>
+                                    </th>
+
+                                    <th>
+                                        <a href="@Url.Action("Index", new {
+                                            pageNumber = 1,
+                                            pageSize = Model.PageSize,
+                                            searchTerm = Model.SearchTerm,
+                                            sortBy = "Status",
+                                            sortAscending = currentSortBy == "Status" ? !sortAscending : true
+                                        })" class="text-decoration-none">
+                                            Status
+                                            @if (currentSortBy == "Status")
+                                            {
+                                                <span>@(sortAscending ? "↑" : "↓")</span>
+                                            }
+                                            else { <span class="text-muted">↕</span> }
+                                        </a>
+                                    </th>
+
+                                    <th>
+                                        <a href="@Url.Action("Index", new {
+                                            pageNumber = 1,
+                                            pageSize = Model.PageSize,
+                                            searchTerm = Model.SearchTerm,
+                                            sortBy = "RequestedAt",
+                                            sortAscending = currentSortBy == "RequestedAt" ? !sortAscending : true
+                                        })" class="text-decoration-none">
+                                            Requested At
+                                            @if (currentSortBy == "RequestedAt")
+                                            {
+                                                <span>@(sortAscending ? "↑" : "↓")</span>
+                                            }
+                                            else { <span class="text-muted">↕</span> }
+                                        </a>
+                                    </th>
+
+                                    <th>
+                                        <a href="@Url.Action("Index", new {
+                                            pageNumber = 1,
+                                            pageSize = Model.PageSize,
+                                            searchTerm = Model.SearchTerm,
+                                            sortBy = "ProcessedAt",
+                                            sortAscending = currentSortBy == "ProcessedAt" ? !sortAscending : true
+                                        })" class="text-decoration-none">
+                                            Processed At
+                                            @if (currentSortBy == "ProcessedAt")
+                                            {
+                                                <span>@(sortAscending ? "↑" : "↓")</span>
+                                            }
+                                            else { <span class="text-muted">↕</span> }
+                                        </a>
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var request in Model.Items)
+                                {
+                                    <tr class="clickable-row" data-href="@Url.Action("Entity", new { id = request.Id })">
+                                        <td>@request.Id</td>
+                                        <td>
+                                            @if (request.User != null)
+                                            {
+                                                @($"{request.User.FirstName} {request.User.LastName}".Trim())
+                                                <br />
+                                                <small class="text-muted">@request.User.Email</small>
+                                            }
+                                            else
+                                            {
+                                                <text>Unknown</text>
+                                            }
+                                        </td>
+                                        <td>@(request.RequestedRole?.Name ?? "Unknown")</td>
+                                        <td>
+                                            @switch (request.Status)
+                                            {
+                                                case ClinicManagement.Models.Auth.PromotionStatus.Pending:
+                                                    <span class="badge bg-warning">Pending</span>
+                                                    break;
+                                                case ClinicManagement.Models.Auth.PromotionStatus.Approved:
+                                                    <span class="badge bg-success">Approved</span>
+                                                    break;
+                                                case ClinicManagement.Models.Auth.PromotionStatus.Rejected:
+                                                    <span class="badge bg-danger">Rejected</span>
+                                                    break;
+                                            }
+                                        </td>
+                                        <td>@request.RequestedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                        <td>
+                                            @if (request.ProcessedAt.HasValue)
+                                            {
+                                                @request.ProcessedAt.Value.ToString("yyyy-MM-dd HH:mm")
+                                            }
+                                            else
+                                            {
+                                                <text>-</text>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            @await Html.PartialAsync("Index/_IndexPagination", Model)
+        }
+    </div>
+</div>
+

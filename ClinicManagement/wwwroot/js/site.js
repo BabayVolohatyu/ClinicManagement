@@ -41,6 +41,12 @@ function applyEntityActions() {
         }
 
         if (btn.tagName.toLowerCase() === "a") {
+            // If href is already set, don't override it (for promotion buttons)
+            if (btn.hasAttribute("href") && btn.getAttribute("href") !== "") {
+                btn.style.display = "inline-flex";
+                return;
+            }
+
             const routes = {
                 create: "Create",
                 download_csv: "DownloadCsv",
