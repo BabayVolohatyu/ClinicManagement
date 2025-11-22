@@ -253,6 +253,17 @@ tr[onclick]:hover {
     text-shadow: 0 0 5px var(--accent);
 }
 
+/* Prevent pagination overflow */
+.pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.pagination .page-item {
+    margin: 2px;
+}
 
 .form-select {
     color: var(--text-light);

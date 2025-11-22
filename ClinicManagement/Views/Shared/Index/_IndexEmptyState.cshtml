@@ -1,0 +1,19 @@
+@model dynamic
+@using System.Linq
+@{
+    var entityName = ViewData["EntityName"]?.ToString() ?? "items";
+    var entityNamePlural = ViewData["EntityNamePlural"]?.ToString() ?? entityName;
+    var entityNameSingular = ViewData["EntityNameSingular"]?.ToString() ?? entityName;
+    var items = Model.Items as System.Collections.IEnumerable ?? Enumerable.Empty<object>();
+    var hasItems = items.Cast<object>().Any();
+}
+
+@if (!hasItems)
+{
+    <div class="alert alert-info text-center">
+        @(string.IsNullOrEmpty(Model.SearchTerm?.ToString()) 
+            ? $"No {entityNamePlural} found." 
+            : $"No {entityNameSingular} matches your search.")
+    </div>
+}
+

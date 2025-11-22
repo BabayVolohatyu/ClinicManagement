@@ -124,6 +124,41 @@ namespace ClinicManagement.Services.Info
             );
         }
 
+        protected override IQueryable<Appointment> ApplySorting(IQueryable<Appointment> query, string sortBy, bool ascending)
+        {
+            if (sortBy == "DoctorProcedure.Doctor.Person.LastName")
+            {
+                query = ascending ? query.OrderBy(a => a.DoctorProcedure.Doctor.Person.LastName) 
+                    : query.OrderByDescending(a => a.DoctorProcedure.Doctor.Person.LastName);
+                return query;
+            }
+            if (sortBy == "Patient.Person.LastName")
+            {
+                query = ascending ? query.OrderBy(a => a.Patient.Person.LastName) 
+                    : query.OrderByDescending(a => a.Patient.Person.LastName);
+                return query;
+            }
+            if (sortBy == "Cabinet.Building")
+            {
+                query = ascending ? query.OrderBy(a => a.Cabinet.Building) 
+                    : query.OrderByDescending(a => a.Cabinet.Building);
+                return query;
+            }
+            if (sortBy == "Cabinet.Floor")
+            {
+                query = ascending ? query.OrderBy(a => a.Cabinet.Floor) 
+                    : query.OrderByDescending(a => a.Cabinet.Floor);
+                return query;
+            }
+            if (sortBy == "Cabinet.Number")
+            {
+                query = ascending ? query.OrderBy(a => a.Cabinet.Number) 
+                    : query.OrderByDescending(a => a.Cabinet.Number);
+                return query;
+            }
+            return base.ApplySorting(query, sortBy, ascending);
+        }
+
         public async Task<IEnumerable<DoctorProcedure>> GetAllDoctorProceduresAsync(CancellationToken token = default)
         {
             try

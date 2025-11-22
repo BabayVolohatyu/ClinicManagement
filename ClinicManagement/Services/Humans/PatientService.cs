@@ -119,6 +119,47 @@ namespace ClinicManagement.Services.Humans
             );
         }
 
+        protected override IQueryable<Patient> ApplySorting(IQueryable<Patient> query, string sortBy, bool ascending)
+        {
+            if (sortBy == "Person.LastName")
+            {
+                query = ascending ? query.OrderBy(p => p.Person != null ? p.Person.LastName : "") 
+                    : query.OrderByDescending(p => p.Person != null ? p.Person.LastName : "");
+                return query;
+            }
+            if (sortBy == "Person.FirstName")
+            {
+                query = ascending ? query.OrderBy(p => p.Person != null ? p.Person.FirstName : "") 
+                    : query.OrderByDescending(p => p.Person != null ? p.Person.FirstName : "");
+                return query;
+            }
+            if (sortBy == "Address.Locality")
+            {
+                query = ascending ? query.OrderBy(p => p.Address != null ? p.Address.Locality : "") 
+                    : query.OrderByDescending(p => p.Address != null ? p.Address.Locality : "");
+                return query;
+            }
+            if (sortBy == "Address.Country")
+            {
+                query = ascending ? query.OrderBy(p => p.Address != null ? p.Address.Country : "") 
+                    : query.OrderByDescending(p => p.Address != null ? p.Address.Country : "");
+                return query;
+            }
+            if (sortBy == "Address.State")
+            {
+                query = ascending ? query.OrderBy(p => p.Address != null ? p.Address.State : "") 
+                    : query.OrderByDescending(p => p.Address != null ? p.Address.State : "");
+                return query;
+            }
+            if (sortBy == "Address.StreetName")
+            {
+                query = ascending ? query.OrderBy(p => p.Address != null ? p.Address.StreetName : "") 
+                    : query.OrderByDescending(p => p.Address != null ? p.Address.StreetName : "");
+                return query;
+            }
+            return base.ApplySorting(query, sortBy, ascending);
+        }
+
         public async Task<IEnumerable<Person>> GetAllPeopleAsync(CancellationToken token = default)
         {
             try

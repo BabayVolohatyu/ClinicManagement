@@ -113,6 +113,23 @@ namespace ClinicManagement.Services.Health
             );
         }
 
+        protected override IQueryable<Diagnosis> ApplySorting(IQueryable<Diagnosis> query, string sortBy, bool ascending)
+        {
+            if (sortBy == "Appointment.Patient.Person.LastName")
+            {
+                query = ascending ? query.OrderBy(d => d.Appointment.Patient.Person.LastName) 
+                    : query.OrderByDescending(d => d.Appointment.Patient.Person.LastName);
+                return query;
+            }
+            if (sortBy == "Appointment.DoctorProcedure.Doctor.Person.LastName")
+            {
+                query = ascending ? query.OrderBy(d => d.Appointment.DoctorProcedure.Doctor.Person.LastName) 
+                    : query.OrderByDescending(d => d.Appointment.DoctorProcedure.Doctor.Person.LastName);
+                return query;
+            }
+            return base.ApplySorting(query, sortBy, ascending);
+        }
+
         public async Task<IEnumerable<Models.Info.Appointment>> GetAllAppointmentsAsync(CancellationToken token = default)
         {
             try

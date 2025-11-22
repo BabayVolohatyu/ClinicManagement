@@ -109,6 +109,41 @@ namespace ClinicManagement.Services.Info
             );
         }
 
+        protected override IQueryable<DoctorOnCallStatus> ApplySorting(IQueryable<DoctorOnCallStatus> query, string sortBy, bool ascending)
+        {
+            if (sortBy == "Doctor.Person.LastName")
+            {
+                query = ascending ? query.OrderBy(d => d.Doctor.Person.LastName) 
+                    : query.OrderByDescending(d => d.Doctor.Person.LastName);
+                return query;
+            }
+            if (sortBy == "Address.Locality")
+            {
+                query = ascending ? query.OrderBy(d => d.Address.Locality) 
+                    : query.OrderByDescending(d => d.Address.Locality);
+                return query;
+            }
+            if (sortBy == "Address.Country")
+            {
+                query = ascending ? query.OrderBy(d => d.Address.Country) 
+                    : query.OrderByDescending(d => d.Address.Country);
+                return query;
+            }
+            if (sortBy == "Address.State")
+            {
+                query = ascending ? query.OrderBy(d => d.Address.State) 
+                    : query.OrderByDescending(d => d.Address.State);
+                return query;
+            }
+            if (sortBy == "Address.StreetName")
+            {
+                query = ascending ? query.OrderBy(d => d.Address.StreetName) 
+                    : query.OrderByDescending(d => d.Address.StreetName);
+                return query;
+            }
+            return base.ApplySorting(query, sortBy, ascending);
+        }
+
         public async Task<IEnumerable<Models.Humans.Doctor>> GetAllDoctorsAsync(CancellationToken token = default)
         {
             try

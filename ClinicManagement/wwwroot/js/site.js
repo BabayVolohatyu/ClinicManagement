@@ -6,6 +6,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     applyPermissionVisibility();
     applyEntityActions();
+    applyClickableRows();
 });
 
 function applyPermissionVisibility() {
@@ -64,4 +65,12 @@ function applyEntityActions() {
     actions.style.display = anyVisible ? "flex" : "none";
 }
 
+function applyClickableRows() {
+    document.querySelectorAll(".clickable-row").forEach(row => {
+        row.addEventListener("click", () => {
+            const url = row.dataset.href;
+            if (url) window.location.href = url;
+        });
+    });
+}
 

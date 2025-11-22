@@ -41,10 +41,14 @@ builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IService<Doctor>, DoctorService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 
+builder.Services.AddScoped<IService<SicknessSymptom>, SicknessSymptomService>();
 builder.Services.AddScoped<ISicknessSymptomService, SicknessSymptomService>();
+builder.Services.AddScoped<IService<SicknessTreatment>, SicknessTreatmentService>();
 builder.Services.AddScoped<ISicknessTreatmentService, SicknessTreatmentService>();
+builder.Services.AddScoped<IService<SicknessProcedure>, SicknessProcedureService>();
 builder.Services.AddScoped<ISicknessProcedureService, SicknessProcedureService>();
 
+builder.Services.AddScoped<IService<DistrictDoctor>, DistrictDoctorService>();
 builder.Services.AddScoped<IDistrictDoctorService, DistrictDoctorService>();
 builder.Services.AddScoped<IService<DoctorOnCallStatus>, DoctorOnCallStatusService>();
 builder.Services.AddScoped<IDoctorOnCallStatusService, DoctorOnCallStatusService>();

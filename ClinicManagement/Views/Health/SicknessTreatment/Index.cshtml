@@ -11,44 +11,15 @@
     <div class="col-lg-10 col-md-12">
         <h2 class="mb-4">Sickness Treatments</h2>
 
-        <div class="card mb-4">
-            <div class="card-body">
-                <form method="get" class="d-flex gap-2 align-items-center">
-                    <input type="hidden" name="pageNumber" value="1" />
-                    <input type="hidden" name="sortBy" value="@currentSortBy" />
-                    <input type="hidden" name="sortAscending" value="@sortAscending.ToString().ToLower()" />
+        @await Html.PartialAsync("Index/_IndexSearchForm", Model)
 
-                    <div class="input-group">
-                        <input type="text"
-                               class="form-control"
-                               placeholder="Search..."
-                               name="searchTerm"
-                               value="@Model.SearchTerm" />
-                        <button type="submit" class="btn btn-primary">Search</button>
-                        @if (!string.IsNullOrEmpty(Model.SearchTerm))
-                        {
-                            <a href="@Url.Action("Index", new { pageNumber = 1, pageSize = Model.PageSize })"
-                               class="btn btn-outline-secondary">Clear</a>
-                        }
-                    </div>
-
-                    <select class="form-select" name="pageSize" onchange="this.form.submit()" style="width:auto;">
-                        <option value="5" selected="@(Model.PageSize == 5)">5 per page</option>
-                        <option value="10" selected="@(Model.PageSize == 10)">10 per page</option>
-                        <option value="25" selected="@(Model.PageSize == 25)">25 per page</option>
-                        <option value="50" selected="@(Model.PageSize == 50)">50 per page</option>
-                    </select>
-                </form>
-            </div>
-        </div>
-
-        @if (!Model.Items.Any())
-        {
-            <div class="alert alert-info text-center">
-                @(string.IsNullOrEmpty(Model.SearchTerm) ? "No sickness treatments found." : "No sickness treatment matches your search.")
-            </div>
+        @{
+            ViewData["EntityNamePlural"] = "sickness treatments";
+            ViewData["EntityNameSingular"] = "sickness treatment";
         }
-        else
+        @await Html.PartialAsync("Index/_IndexEmptyState", Model, ViewData)
+
+        @if (Model.Items.Any())
         {
             <div class="card">
                 <div class="card-body p-0">
@@ -56,8 +27,38 @@
                         <table class="table table-striped table-hover mb-0">
                             <thead>
                                 <tr>
-                                    <th>Sickness</th>
-                                    <th>Treatment</th>
+                                    <th>
+                                        <a href="@Url.Action("Index", new {
+                                            pageNumber = 1,
+                                            pageSize = Model.PageSize,
+                                            searchTerm = Model.SearchTerm,
+                                            sortBy = "Sickness.Name",
+                                            sortAscending = currentSortBy == "Sickness.Name" ? !sortAscending : true
+                                        })" class="text-decoration-none">
+                                            Sickness
+                                            @if (currentSortBy == "Sickness.Name")
+                                            {
+                                                <span>@(sortAscending ? "↑" : "↓")</span>
+                                            }
+                                            else { <span class="text-muted">↕</span> }
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a href="@Url.Action("Index", new {
+                                            pageNumber = 1,
+                                            pageSize = Model.PageSize,
+                                            searchTerm = Model.SearchTerm,
+                                            sortBy = "Treatment.Name",
+                                            sortAscending = currentSortBy == "Treatment.Name" ? !sortAscending : true
+                                        })" class="text-decoration-none">
+                                            Treatment
+                                            @if (currentSortBy == "Treatment.Name")
+                                            {
+                                                <span>@(sortAscending ? "↑" : "↓")</span>
+                                            }
+                                            else { <span class="text-muted">↕</span> }
+                                        </a>
+                                    </th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -93,59 +94,7 @@
                 </div>
             </div>
 
-            <div class="d-flex justify-content-between align-items-center mt-3">
-                <small class="text-muted">
-                    Showing @((Model.PageNumber - 1) * Model.PageSize + 1) to
-                    @Math.Min(Model.PageNumber * Model.PageSize, Model.TotalCount)
-                    of @Model.TotalCount entries
-                </small>
-
-                <nav>
-                    <ul class="pagination mb-0">
-                        <li class="page-item @(!Model.HasPrevious ? "disabled" : "")">
-                            <a class="page-link"
-                               href="@Url.Action("Index", new {
-                                   pageNumber = Model.PageNumber - 1,
-                                   pageSize = Model.PageSize,
-                                   searchTerm = Model.SearchTerm,
-                                   sortBy = currentSortBy,
-                                   sortAscending = sortAscending
-                               })">
-                                &laquo;
-                            </a>
-                        </li>
-
-                        @for (int i = 1; i <= Model.TotalPages; i++)
-                        {
-                            <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                                <a class="page-link"
-                                   href="@Url.Action("Index", new {
-                                       pageNumber = i,
-                                       pageSize = Model.PageSize,
-                                       searchTerm = Model.SearchTerm,
-                                       sortBy = currentSortBy,
-                                       sortAscending = sortAscending
-                                   })">
-                                    @i
-                                </a>
-                            </li>
-                        }
-
-                        <li class="page-item @(!Model.HasNext ? "disabled" : "")">
-                            <a class="page-link"
-                               href="@Url.Action("Index", new {
-                                   pageNumber = Model.PageNumber + 1,
-                                   pageSize = Model.PageSize,
-                                   searchTerm = Model.SearchTerm,
-                                   sortBy = currentSortBy,
-                                   sortAscending = sortAscending
-                               })">
-                                &raquo;
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+            @await Html.PartialAsync("Index/_IndexPagination", Model)
         }
     </div>
 </div>

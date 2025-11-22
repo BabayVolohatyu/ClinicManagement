@@ -4,40 +4,27 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ClinicManagement.Services.Health
 {
-    public interface ISicknessTreatmentService
+    public interface ISicknessTreatmentService : IService<SicknessTreatment>
     {
-        Task AddAsync(SicknessTreatment entity, CancellationToken token = default);
         Task RemoveAsync(int sicknessId, int treatmentId, CancellationToken token = default);
         Task<SicknessTreatment?> GetByIdAsync(int sicknessId, int treatmentId, CancellationToken token = default);
-        Task<PaginatedResult<SicknessTreatment>> GetAllAsync(
-            int pageNumber = 1,
-            int pageSize = 10,
-            string? searchTerm = null,
-            string? sortBy = null,
-            bool sortAscending = true,
-            CancellationToken token = default);
         Task<IEnumerable<Sickness>> GetAllSicknessesAsync(CancellationToken token = default);
         Task<IEnumerable<Treatment>> GetAllTreatmentsAsync(CancellationToken token = default);
     }
 
-    public class SicknessTreatmentService : ISicknessTreatmentService
+    public class SicknessTreatmentService : Service<SicknessTreatment>, ISicknessTreatmentService
     {
-        protected readonly ClinicDbContext _context;
-        protected readonly DbSet<SicknessTreatment> _dbSet;
-        protected readonly ILogger<SicknessTreatmentService> _logger;
         private readonly DbSet<Sickness> _sicknesses;
         private readonly DbSet<Treatment> _treatments;
 
         public SicknessTreatmentService(ClinicDbContext context, ILogger<SicknessTreatmentService> logger)
+            : base(context, logger)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _dbSet = _context.Set<SicknessTreatment>();
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _sicknesses = _context.Set<Sickness>();
             _treatments = _context.Set<Treatment>();
         }
 
-        public async Task<PaginatedResult<SicknessTreatment>> GetAllAsync(
+        public override async Task<PaginatedResult<SicknessTreatment>> GetAllAsync(
             int pageNumber = 1,
             int pageSize = 10,
             string? searchTerm = null,
@@ -54,26 +41,16 @@ namespace ClinicManagement.Services.Health
 
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
-                    query = query.Where(st =>
-                        (st.Sickness != null && st.Sickness.Name.Contains(searchTerm)) ||
-                        (st.Treatment != null && st.Treatment.Name.Contains(searchTerm))
-                    );
+                    query = ApplySearchFilter(query, searchTerm);
                 }
 
                 if (!string.IsNullOrWhiteSpace(sortBy))
                 {
-                    if (sortBy == "Sickness.Name")
-                    {
-                        query = sortAscending ? query.OrderBy(st => st.Sickness != null ? st.Sickness.Name : "") : query.OrderByDescending(st => st.Sickness != null ? st.Sickness.Name : "");
-                    }
-                    else if (sortBy == "Treatment.Name")
-                    {
-                        query = sortAscending ? query.OrderBy(st => st.Treatment != null ? st.Treatment.Name : "") : query.OrderByDescending(st => st.Treatment != null ? st.Treatment.Name : "");
-                    }
+                    query = ApplySorting(query, sortBy, sortAscending);
                 }
                 else
                 {
-                    query = query.OrderBy(st => st.SicknessId).ThenBy(st => st.TreatmentId);
+                    query = ApplySorting(query, "SicknessId", true);
                 }
 
                 var items = await query
@@ -94,11 +71,21 @@ namespace ClinicManagement.Services.Health
                     SortAscending = sortAscending
                 };
             }
-            catch (Exception ex)
+            catch (OperationCanceledException)
             {
-                _logger.LogError(ex, "Error while getting SicknessTreatment list");
+                _logger.LogWarning("GetAllAsync operation for {Entity} was canceled", typeof(SicknessTreatment).Name);
                 throw;
             }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while getting {Entity} list", typeof(SicknessTreatment).Name);
+                throw;
+            }
+        }
+
+        public override async Task<SicknessTreatment?> GetByIdAsync(int id, CancellationToken token = default)
+        {
+            throw new NotSupportedException("SicknessTreatment uses composite key. Use GetByIdAsync(int sicknessId, int treatmentId) instead.");
         }
 
         public async Task<SicknessTreatment?> GetByIdAsync(int sicknessId, int treatmentId, CancellationToken token = default)
@@ -110,14 +97,19 @@ namespace ClinicManagement.Services.Health
                     .Include(st => st.Treatment)
                     .FirstOrDefaultAsync(st => st.SicknessId == sicknessId && st.TreatmentId == treatmentId, token);
             }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetByIdAsync for {Entity} was canceled", typeof(SicknessTreatment).Name);
+                throw;
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while retrieving SicknessTreatment");
+                _logger.LogError(ex, "Error while retrieving {Entity}", typeof(SicknessTreatment).Name);
                 throw;
             }
         }
 
-        public async Task AddAsync(SicknessTreatment entity, CancellationToken token = default)
+        public override async Task AddAsync(SicknessTreatment entity, CancellationToken token = default)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
@@ -128,15 +120,28 @@ namespace ClinicManagement.Services.Health
                 if (exists)
                     throw new InvalidOperationException("This relationship already exists.");
 
-                await _dbSet.AddAsync(entity, token);
-                await _context.SaveChangesAsync(token);
-                _logger.LogInformation("Added new SicknessTreatment");
+                await base.AddAsync(entity, token);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("AddAsync for {Entity} was canceled", typeof(SicknessTreatment).Name);
+                throw;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while adding SicknessTreatment");
+                _logger.LogError(ex, "Error while adding {Entity}", typeof(SicknessTreatment).Name);
                 throw;
             }
+        }
+
+        public override async Task UpdateAsync(int id, SicknessTreatment entity, CancellationToken token = default)
+        {
+            throw new NotSupportedException("SicknessTreatment uses composite key. Updates are not supported for relationship entities.");
+        }
+
+        public override async Task RemoveAsync(int id, CancellationToken token = default)
+        {
+            throw new NotSupportedException("SicknessTreatment uses composite key. Use RemoveAsync(int sicknessId, int treatmentId) instead.");
         }
 
         public async Task RemoveAsync(int sicknessId, int treatmentId, CancellationToken token = default)
@@ -149,13 +154,43 @@ namespace ClinicManagement.Services.Health
 
                 _dbSet.Remove(entity);
                 await _context.SaveChangesAsync(token);
-                _logger.LogInformation("Removed SicknessTreatment");
+                _logger.LogInformation("Removed {Entity}", typeof(SicknessTreatment).Name);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("RemoveAsync for {Entity} was canceled", typeof(SicknessTreatment).Name);
+                throw;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while removing SicknessTreatment");
+                _logger.LogError(ex, "Error while removing {Entity}", typeof(SicknessTreatment).Name);
                 throw;
             }
+        }
+
+        protected override IQueryable<SicknessTreatment> ApplySearchFilter(IQueryable<SicknessTreatment> query, string searchTerm)
+        {
+            return query.Where(st =>
+                (st.Sickness != null && st.Sickness.Name.Contains(searchTerm)) ||
+                (st.Treatment != null && st.Treatment.Name.Contains(searchTerm))
+            );
+        }
+
+        protected override IQueryable<SicknessTreatment> ApplySorting(IQueryable<SicknessTreatment> query, string sortBy, bool ascending)
+        {
+            if (sortBy == "Sickness.Name")
+            {
+                query = ascending ? query.OrderBy(st => st.Sickness != null ? st.Sickness.Name : "") 
+                    : query.OrderByDescending(st => st.Sickness != null ? st.Sickness.Name : "");
+                return query;
+            }
+            if (sortBy == "Treatment.Name")
+            {
+                query = ascending ? query.OrderBy(st => st.Treatment != null ? st.Treatment.Name : "") 
+                    : query.OrderByDescending(st => st.Treatment != null ? st.Treatment.Name : "");
+                return query;
+            }
+            return base.ApplySorting(query, sortBy, ascending);
         }
 
         public async Task<IEnumerable<Sickness>> GetAllSicknessesAsync(CancellationToken token = default)
@@ -163,6 +198,11 @@ namespace ClinicManagement.Services.Health
             try
             {
                 return await _sicknesses.OrderBy(s => s.Name).ToListAsync(token);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetAllSicknessesAsync operation was canceled");
+                throw;
             }
             catch (Exception ex)
             {
@@ -176,6 +216,11 @@ namespace ClinicManagement.Services.Health
             try
             {
                 return await _treatments.OrderBy(t => t.Name).ToListAsync(token);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetAllTreatmentsAsync operation was canceled");
+                throw;
             }
             catch (Exception ex)
             {

@@ -27,7 +27,7 @@ namespace ClinicManagement.Data.Info
                         var hour = 8 + (i * 2) % 8; // 8 AM to 4 PM
                         var minute = (i % 2) * 30; // :00 or :30
                         
-                        var doctorProcedureId = random.Next(1, 200); // Random doctor procedure
+                        var doctorProcedureId = random.Next(1, 297); // Random doctor procedure (1-296 valid)
                         var cabinetId = random.Next(1, 81); // Random cabinet
                         var patientId = random.Next(1, 201); // Random patient
                         
@@ -49,7 +49,7 @@ namespace ClinicManagement.Data.Info
             for (int day = 0; day < 7; day++)
             {
                 var appointmentDate = baseDate.AddDays(day);
-                var isPast = day < DateTimeOffset.UtcNow.DayOfWeek;
+                var isPast = appointmentDate.Date < DateTimeOffset.UtcNow.Date;
                 
                 // 8-12 appointments per day
                 for (int i = 0; i < 10; i++)

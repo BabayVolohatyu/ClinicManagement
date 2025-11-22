@@ -109,6 +109,35 @@ namespace ClinicManagement.Services.Info
             );
         }
 
+        protected override IQueryable<Schedule> ApplySorting(IQueryable<Schedule> query, string sortBy, bool ascending)
+        {
+            if (sortBy == "Doctor.Person.LastName")
+            {
+                query = ascending ? query.OrderBy(s => s.Doctor.Person.LastName) 
+                    : query.OrderByDescending(s => s.Doctor.Person.LastName);
+                return query;
+            }
+            if (sortBy == "Cabinet.Building")
+            {
+                query = ascending ? query.OrderBy(s => s.Cabinet.Building) 
+                    : query.OrderByDescending(s => s.Cabinet.Building);
+                return query;
+            }
+            if (sortBy == "Cabinet.Floor")
+            {
+                query = ascending ? query.OrderBy(s => s.Cabinet.Floor) 
+                    : query.OrderByDescending(s => s.Cabinet.Floor);
+                return query;
+            }
+            if (sortBy == "Cabinet.Number")
+            {
+                query = ascending ? query.OrderBy(s => s.Cabinet.Number) 
+                    : query.OrderByDescending(s => s.Cabinet.Number);
+                return query;
+            }
+            return base.ApplySorting(query, sortBy, ascending);
+        }
+
         public async Task<IEnumerable<Models.Humans.Doctor>> GetAllDoctorsAsync(CancellationToken token = default)
         {
             try

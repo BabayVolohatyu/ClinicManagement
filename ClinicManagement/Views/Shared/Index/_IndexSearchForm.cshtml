@@ -1,0 +1,37 @@
+@model dynamic
+@{
+    var sortAscending = Model.SortAscending;
+    var currentSortBy = Model.SortBy ?? "Id";
+}
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="d-flex gap-2 align-items-center">
+            <input type="hidden" name="pageNumber" value="1" />
+            <input type="hidden" name="sortBy" value="@currentSortBy" />
+            <input type="hidden" name="sortAscending" value="@sortAscending.ToString().ToLower()" />
+
+            <div class="input-group">
+                <input type="text"
+                       class="form-control"
+                       placeholder="Search..."
+                       name="searchTerm"
+                       value="@Model.SearchTerm" />
+                <button type="submit" class="btn btn-primary">Search</button>
+                @if (!string.IsNullOrEmpty(Model.SearchTerm))
+                {
+                    <a href="@Url.Action("Index", new { pageNumber = 1, pageSize = Model.PageSize })"
+                       class="btn btn-outline-secondary">Clear</a>
+                }
+            </div>
+
+            <select class="form-select" name="pageSize" onchange="this.form.submit()" style="width:auto;">
+                <option value="5" selected="@(Model.PageSize == 5)">5 per page</option>
+                <option value="10" selected="@(Model.PageSize == 10)">10 per page</option>
+                <option value="25" selected="@(Model.PageSize == 25)">25 per page</option>
+                <option value="50" selected="@(Model.PageSize == 50)">50 per page</option>
+            </select>
+        </form>
+    </div>
+</div>
+
