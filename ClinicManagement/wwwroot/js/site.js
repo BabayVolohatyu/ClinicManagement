@@ -22,52 +22,77 @@ function applyPermissionVisibility() {
 function applyEntityActions() {
     const pageInfo = document.getElementById("page-info");
     const actions = document.getElementById("entity-actions");
-    if (!pageInfo || !actions) return;
+    if (!actions) return;
 
-    const entity = pageInfo.dataset.entity;
-    if (!entity || entity.trim() === "") {
-        actions.style.display = "none";
-        return;
-    }
+    const entity = pageInfo?.dataset.entity;
+    const hasEntity = entity && entity.trim() !== "";
 
+    // Process entity-specific buttons (require entity context)
     const entityButtons = actions.querySelectorAll("[data-entity-action]");
+    
+    if (hasEntity) {
+        entityButtons.forEach(btn => {
+            const perm = btn.getAttribute("data-permission");
 
-    entityButtons.forEach(btn => {
-        const perm = btn.getAttribute("data-permission");
-
-        if (!hasPermission(perm)) {
-            btn.style.display = "none";
-            return;
-        }
-
-        if (btn.tagName.toLowerCase() === "a") {
-            // If href is already set, don't override it (for promotion buttons)
-            if (btn.hasAttribute("href") && btn.getAttribute("href") !== "") {
-                btn.style.display = "inline-flex";
+            if (!hasPermission(perm)) {
+                btn.style.display = "none";
                 return;
             }
 
-            const routes = {
-                create: "Create",
-                download_csv: "DownloadCsv",
-                execute_raw_queries: "QueryBuilder",
-                view_promotions_list: "Promotions",
-                ask_promotion: "AskPromotion"
-            };
+            if (btn.tagName.toLowerCase() === "a") {
+                // If href is already set, don't override it (for promotion buttons)
+                if (btn.hasAttribute("href") && btn.getAttribute("href") !== "") {
+                    btn.style.display = "inline-flex";
+                    return;
+                }
 
-            const action = routes[perm];
-            if (action) {
-                btn.setAttribute("href", `/${entity}/${action}`);
+                const routes = {
+                    create: "Create",
+                    download_csv: "DownloadCsv",
+                    view_promotions_list: "Promotions",
+                    ask_promotion: "AskPromotion"
+                };
+
+                const action = routes[perm];
+                if (action) {
+                    btn.setAttribute("href", `/${entity}/${action}`);
+                    btn.style.display = "inline-flex";
+                } else {
+                    btn.style.display = "none";
+                }
+            } else {
+                btn.style.display = "inline-flex";
+            }
+        });
+    } else {
+        // Hide entity-specific buttons when no entity context
+        entityButtons.forEach(btn => {
+            btn.style.display = "none";
+        });
+    }
+
+    const allButtons = actions.querySelectorAll("a[data-permission]");
+    allButtons.forEach(btn => {
+        if (!btn.hasAttribute("data-entity-action")) {
+            const perm = btn.getAttribute("data-permission");
+            if (hasPermission(perm)) {
+                // Set href from data-route attribute if present
+                const route = btn.getAttribute("data-route");
+                if (route && !btn.hasAttribute("href")) {
+                    btn.setAttribute("href", route);
+                }
                 btn.style.display = "inline-flex";
             } else {
                 btn.style.display = "none";
             }
-        } else {
-            btn.style.display = "inline-flex";
         }
     });
 
-    const anyVisible = Array.from(entityButtons).some(b => b.style.display !== "none");
+    // Show actions container if any button is visible
+    const anyVisible = Array.from(allButtons).some(b => {
+        const display = b.style.display;
+        return display !== "none" && display !== "";
+    });
     actions.style.display = anyVisible ? "flex" : "none";
 }
 

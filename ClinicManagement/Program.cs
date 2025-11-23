@@ -70,6 +70,8 @@ builder.Services.AddScoped<IPromotionRequestService, PromotionRequestService>();
 builder.Services.AddScoped<IService<PromotionRequest>, PromotionRequestService>();
 
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<PredefinedQueriesService>();
+
 
 //Add global model validator
 builder.Services.AddControllers(options =>
@@ -81,12 +83,15 @@ builder.Services.Configure<RazorViewEngineOptions>(options =>
 {
     options.ViewLocationFormats.Clear();
 
+    // Standard controller-specific views (most specific first)
+    options.ViewLocationFormats.Add("/Views/{1}/{0}.cshtml");
     options.ViewLocationFormats.Add("/Views/Facilities/{1}/{0}.cshtml");
     options.ViewLocationFormats.Add("/Views/Health/{1}/{0}.cshtml");
     options.ViewLocationFormats.Add("/Views/Humans/{1}/{0}.cshtml");
     options.ViewLocationFormats.Add("/Views/Info/{1}/{0}.cshtml");
     options.ViewLocationFormats.Add("/Views/Auth/{1}/{0}.cshtml");
     options.ViewLocationFormats.Add("/Views/Shared/{0}.cshtml");
+    options.ViewLocationFormats.Add("/Views/Shared/{1}/{0}.cshtml");
     options.ViewLocationFormats.Add("/Views/Shared/_Navigation/{0}.cshtml");
 });
 

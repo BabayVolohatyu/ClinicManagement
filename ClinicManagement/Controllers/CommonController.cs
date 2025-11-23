@@ -183,5 +183,6 @@ namespace ClinicManagement.Controllers
                 return StatusCode(500, "An error occurred while generating the CSV file.");
             }
         }
+
     }
 }
