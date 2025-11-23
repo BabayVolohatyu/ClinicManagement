@@ -60,6 +60,13 @@ namespace ClinicManagement.Controllers.Info
                 await _service.AddAsync(entity);
                 return RedirectToAction(nameof(Entity), new { id = entity.Id });
             }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning(ex, "Validation error creating DoctorOnCallStatus");
+                await LoadDropdownsAsync();
+                ModelState.AddModelError("DoctorId", ex.Message);
+                return View(entity);
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error creating DoctorOnCallStatus");
@@ -111,6 +118,14 @@ namespace ClinicManagement.Controllers.Info
             {
                 await _service.UpdateAsync(id, entity);
                 return RedirectToAction(nameof(Entity), new { id });
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning(ex, "Validation error updating DoctorOnCallStatus with id {Id}", id);
+                await LoadDropdownsAsync();
+                var currentEntity = await _service.GetByIdAsync(id) ?? entity;
+                ModelState.AddModelError("DoctorId", ex.Message);
+                return View("Entity", currentEntity);
             }
             catch (ArgumentException ex)
             {

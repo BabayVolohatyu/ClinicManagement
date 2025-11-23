@@ -1,6 +1,32 @@
 ﻿@model Dictionary<string, ClinicManagement.Services.QueryDefinition>
+@using System.IdentityModel.Tokens.Jwt
+@using ClinicManagement.Models.Auth
 @{
     ViewData["Title"] = "Home Page";
+    
+    // Check user role (same logic as _AuthButtons)
+    @functions {
+        private int GetRoleIdFromJwt()
+        {
+            var token = Context.Request.Cookies["jwt"];
+            if (string.IsNullOrEmpty(token))
+                return (int)RoleType.Unauthorized;
+
+            var handler = new JwtSecurityTokenHandler();
+            if (!handler.CanReadToken(token))
+                return (int)RoleType.Unauthorized;
+
+            var jwt = handler.ReadJwtToken(token);
+            var roleIdClaim = jwt.Claims.FirstOrDefault(c => c.Type == "roleId")?.Value;
+
+            if (int.TryParse(roleIdClaim, out int roleId))
+                return roleId;
+
+            return (int)RoleType.Unauthorized;
+        }
+    }
+    int roleId = GetRoleIdFromJwt();
+    bool isGuest = roleId == (int)RoleType.Guest;
 }
 
 <div class="container-fluid">
@@ -101,12 +127,21 @@
 
 @section Scripts {
     <script>
+        // Check if user is guest
+        const isGuest = @Html.Raw(isGuest.ToString().ToLower());
+        
         let currentQueryKey = null;
         let currentParameterLabels = [];
 
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.execute-query-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
+                    // Check if user is guest - show message instead of executing
+                    if (isGuest) {
+                        alert('You must be logged in to perform this action.');
+                        return;
+                    }
+                    
                     const card = this.closest('.query-card');
                     const queryKey = card.getAttribute('data-query-key');
                     const requiresParams = this.getAttribute('data-requires-params') === 'true';
@@ -180,6 +215,14 @@
         }
 
         function submitParameters() {
+            // Check if user is guest - show message
+            if (isGuest) {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('parameterModal'));
+                modal.hide();
+                alert('You must be logged in to perform this action.');
+                return;
+            }
+            
             const form = document.getElementById('parameterForm');
             if (!form.checkValidity()) {
                 form.reportValidity();
@@ -221,8 +264,17 @@
         }
 
         function redirectToQueryManager(queryKey, parameters) {
-            // Build URL with query parameters
-            let url = '@Url.Action("Index", "QueryManager")?queryKey=' + encodeURIComponent(queryKey);
+            // Check if user has execute_raw_queries permission
+            // Authorized users don't have this permission and should go to PredefinedQueries
+            const hasRawQueryPermission = hasPermission('execute_raw_queries');
+            
+            let url;
+            if (hasRawQueryPermission) {
+                url = '@Url.Action("Index", "QueryManager")?queryKey=' + encodeURIComponent(queryKey);
+            } else {
+                url = '@Url.Action("Index", "PredefinedQueries")?queryKey=' + encodeURIComponent(queryKey);
+            }
+            
             if (parameters && parameters.length > 0) {
                 parameters.forEach(param => {
                     url += '&parameters=' + encodeURIComponent(param);

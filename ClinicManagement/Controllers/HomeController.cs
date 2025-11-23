@@ -1,4 +1,6 @@
+using ClinicManagement.Helpers;
 using ClinicManagement.Models;
+using ClinicManagement.Models.Auth;
 using ClinicManagement.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -23,6 +25,7 @@ namespace ClinicManagement.Controllers
         }
 
         [HttpGet]
+        [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
         public IActionResult GetQueryDefinition(string queryKey)
         {
             try
@@ -54,19 +57,44 @@ namespace ClinicManagement.Controllers
         }
 
         [HttpPost]
+        [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
         public IActionResult RedirectToQueryManager(string queryKey, [FromForm] string[] parameters)
         {
-            // Build the URL manually to ensure it works
-            var urlHelper = Url;
-            var url = urlHelper.Action("Index", "QueryManager", new { queryKey = queryKey });
+            // Determine user role
+            var roleIdClaim = User.FindFirst("roleId");
+            var isAuthorized = roleIdClaim != null && 
+                              int.TryParse(roleIdClaim.Value, out int userRoleId) && 
+                              (RoleType)userRoleId == RoleType.Authorized;
             
-            if (parameters != null && parameters.Length > 0)
+            // Authorized users go to PredefinedQueriesController
+            // Operator and Admin go to QueryManagerController
+            if (isAuthorized)
             {
-                var queryString = string.Join("&", parameters.Select(p => $"parameters={Uri.EscapeDataString(p ?? string.Empty)}"));
-                url += "&" + queryString;
+                var urlHelper = Url;
+                var url = urlHelper.Action("Index", "PredefinedQueries", new { queryKey = queryKey });
+                
+                if (parameters != null && parameters.Length > 0)
+                {
+                    var queryString = string.Join("&", parameters.Select(p => $"parameters={Uri.EscapeDataString(p ?? string.Empty)}"));
+                    url += "&" + queryString;
+                }
+                
+                return Redirect(url);
             }
-            
-            return Redirect(url);
+            else
+            {
+                // Build the URL manually to ensure it works
+                var urlHelper = Url;
+                var url = urlHelper.Action("Index", "QueryManager", new { queryKey = queryKey });
+                
+                if (parameters != null && parameters.Length > 0)
+                {
+                    var queryString = string.Join("&", parameters.Select(p => $"parameters={Uri.EscapeDataString(p ?? string.Empty)}"));
+                    url += "&" + queryString;
+                }
+                
+                return Redirect(url);
+            }
         }
 
         public IActionResult Privacy()

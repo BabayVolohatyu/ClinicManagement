@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ClinicManagement.Controllers
 {
-    [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
+    [Authorize(RoleType.Operator, RoleType.Admin)]
     [Route("[controller]")]
     public class QueryManagerController : Controller
     {
@@ -55,6 +55,12 @@ namespace ClinicManagement.Controllers
         {
             try
             {
+                // Get current user's role
+                var roleIdClaim = User.FindFirst("roleId");
+                var isAdmin = roleIdClaim != null && 
+                             int.TryParse(roleIdClaim.Value, out int userRoleId) && 
+                             (RoleType)userRoleId == RoleType.Admin;
+
                 var tables = new List<string>();
                 var connection = _dbContext.Database.GetDbConnection();
                 
@@ -73,9 +79,34 @@ namespace ClinicManagement.Controllers
                 
                 using var reader = await command.ExecuteReaderAsync();
                 
+                // Restricted tables that nobody can access
+                var restrictedTables = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    "Roles",
+                    "migrations",
+                    "__EFMigrationsHistory"
+                };
+
+                // Users table is only available to admin
+                var usersTableName = "Users";
+                
                 while (await reader.ReadAsync())
                 {
-                    tables.Add(reader.GetString(0));
+                    var tableName = reader.GetString(0);
+                    
+                    // Skip restricted tables for everyone
+                    if (restrictedTables.Contains(tableName))
+                    {
+                        continue;
+                    }
+                    
+                    // Skip users table for non-admin users
+                    if (!isAdmin && string.Equals(tableName, usersTableName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+                    
+                    tables.Add(tableName);
                 }
                 
                 if (connection.State == System.Data.ConnectionState.Open)
@@ -105,6 +136,19 @@ namespace ClinicManagement.Controllers
                 }
 
                 var query = request.Query.Trim();
+
+                // Get current user's role
+                var roleIdClaim = User.FindFirst("roleId");
+                var isAdmin = roleIdClaim != null && 
+                             int.TryParse(roleIdClaim.Value, out int userRoleId) && 
+                             (RoleType)userRoleId == RoleType.Admin;
+
+                // Validate query doesn't reference restricted tables
+                var validationError = ValidateQueryAccess(query, isAdmin);
+                if (validationError != null)
+                {
+                    return Json(new { success = false, error = validationError });
+                }
 
                 // Check if it's a SELECT query
                 var isSelectQuery = query.TrimStart().StartsWith("SELECT", StringComparison.OrdinalIgnoreCase) ||
@@ -188,6 +232,103 @@ namespace ClinicManagement.Controllers
                 _logger.LogError(ex, "Error in ExecuteQuery");
                 return Json(new { success = false, error = ex.Message });
             }
+        }
+
+        /// <summary>
+        /// Validates that the query doesn't reference restricted tables
+        /// </summary>
+        private string? ValidateQueryAccess(string query, bool isAdmin)
+        {
+            // Tables that are restricted for everyone (case-insensitive matching)
+            var restrictedTables = new[] { "Roles", "migrations", "__EFMigrationsHistory" };
+            
+            // Check for restricted tables (case-insensitive)
+            foreach (var table in restrictedTables)
+            {
+                // Check for table references in various SQL contexts
+                // PostgreSQL uses double quotes for identifiers, so we check both quoted and unquoted forms
+                var tableUpper = table.ToUpperInvariant();
+                var queryUpper = query.ToUpperInvariant();
+                
+                // Patterns to match table references
+                var patterns = new[]
+                {
+                    $"\"{table}\"",           // "Roles"
+                    $"\"{tableUpper}\"",       // "ROLES"
+                    $"\"{table.ToLowerInvariant()}\"", // "roles"
+                    $" {table} ",              //  Roles  (with spaces)
+                    $" {tableUpper} ",         //  ROLES  (with spaces)
+                    $" {table.ToLowerInvariant()} ", //  roles  (with spaces)
+                    $".{table}",              // .Roles
+                    $".{tableUpper}",         // .ROLES
+                    $"{table}.",              // Roles.
+                    $"{tableUpper}.",         // ROLES.
+                    $"FROM {table}",          // FROM Roles
+                    $"FROM \"{table}\"",      // FROM "Roles"
+                    $"JOIN {table}",          // JOIN Roles
+                    $"JOIN \"{table}\"",      // JOIN "Roles"
+                    $"INTO {table}",          // INTO Roles
+                    $"INTO \"{table}\"",      // INTO "Roles"
+                    $"UPDATE {table}",        // UPDATE Roles
+                    $"UPDATE \"{table}\"",    // UPDATE "Roles"
+                    $"DELETE FROM {table}",   // DELETE FROM Roles
+                    $"DELETE FROM \"{table}\"", // DELETE FROM "Roles"
+                    $"TABLE {table}",         // TABLE Roles
+                    $"TABLE \"{table}\""      // TABLE "Roles"
+                };
+
+                foreach (var pattern in patterns)
+                {
+                    if (queryUpper.Contains(pattern.ToUpperInvariant(), StringComparison.Ordinal))
+                    {
+                        return $"Access to table '{table}' is restricted and cannot be used in queries.";
+                    }
+                }
+            }
+
+            // Users table is only available to admin
+            if (!isAdmin)
+            {
+                var usersTable = "Users";
+                var usersTableUpper = usersTable.ToUpperInvariant();
+                var queryUpper = query.ToUpperInvariant();
+                
+                var usersTablePatterns = new[]
+                {
+                    $"\"{usersTable}\"",           // "Users"
+                    $"\"{usersTableUpper}\"",      // "USERS"
+                    $"\"users\"",                  // "users"
+                    $" {usersTable} ",              //  Users  (with spaces)
+                    $" {usersTableUpper} ",        //  USERS  (with spaces)
+                    $" users ",                    //  users  (with spaces)
+                    $".{usersTable}",              // .Users
+                    $".{usersTableUpper}",         // .USERS
+                    $"{usersTable}.",              // Users.
+                    $"{usersTableUpper}.",         // USERS.
+                    $"FROM {usersTable}",          // FROM Users
+                    $"FROM \"{usersTable}\"",      // FROM "Users"
+                    $"JOIN {usersTable}",          // JOIN Users
+                    $"JOIN \"{usersTable}\"",      // JOIN "Users"
+                    $"INTO {usersTable}",          // INTO Users
+                    $"INTO \"{usersTable}\"",      // INTO "Users"
+                    $"UPDATE {usersTable}",        // UPDATE Users
+                    $"UPDATE \"{usersTable}\"",    // UPDATE "Users"
+                    $"DELETE FROM {usersTable}",   // DELETE FROM Users
+                    $"DELETE FROM \"{usersTable}\"", // DELETE FROM "Users"
+                    $"TABLE {usersTable}",         // TABLE Users
+                    $"TABLE \"{usersTable}\""      // TABLE "Users"
+                };
+
+                foreach (var pattern in usersTablePatterns)
+                {
+                    if (queryUpper.Contains(pattern.ToUpperInvariant(), StringComparison.Ordinal))
+                    {
+                        return "Access to table 'Users' is restricted to administrators only.";
+                    }
+                }
+            }
+
+            return null;
         }
     }
 

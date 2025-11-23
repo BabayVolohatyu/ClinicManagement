@@ -14,12 +14,14 @@ namespace ClinicManagement.Services.Info
     {
         private readonly DbSet<Models.Humans.Doctor> _doctors;
         private readonly DbSet<Models.Info.Address> _addresses;
+        private readonly DbSet<Models.Humans.DistrictDoctor> _districtDoctors;
 
         public DoctorOnCallStatusService(ClinicDbContext context, ILogger<DoctorOnCallStatusService> logger)
             : base(context, logger)
         {
             _doctors = _context.Set<Models.Humans.Doctor>();
             _addresses = _context.Set<Models.Info.Address>();
+            _districtDoctors = _context.Set<Models.Humans.DistrictDoctor>();
         }
 
         public override async Task<PaginatedResult<DoctorOnCallStatus>> GetAllAsync(
@@ -37,17 +39,20 @@ namespace ClinicManagement.Services.Info
             {
                 var query = _dbSet.Include(d => d.Doctor).ThenInclude(d => d.Person).Include(d => d.Address).AsNoTracking();
 
+                // Apply filtration if search term is provided
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
                     query = ApplySearchFilter(query, searchTerm);
                 }
 
+                // Apply sorting if sort field is provided
                 if (!string.IsNullOrWhiteSpace(sortBy))
                 {
                     query = ApplySorting(query, sortBy, sortAscending);
                 }
                 else
                 {
+                    // Default sorting by StartTime if no sort specified
                     query = ApplySorting(query, "StartTime", false);
                 }
 
@@ -69,9 +74,14 @@ namespace ClinicManagement.Services.Info
                     SortAscending = sortAscending
                 };
             }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetAllAsync operation for {Entity} was canceled", typeof(DoctorOnCallStatus).Name);
+                throw;
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while getting DoctorOnCallStatus list");
+                _logger.LogError(ex, "Error while getting {Entity} list", typeof(DoctorOnCallStatus).Name);
                 throw;
             }
         }
@@ -85,9 +95,14 @@ namespace ClinicManagement.Services.Info
                     .Include(d => d.Address)
                     .FirstOrDefaultAsync(d => d.Id == id, token);
             }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetByIdAsync for {Entity} with id {Id} was canceled", typeof(DoctorOnCallStatus).Name, id);
+                throw;
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while retrieving DoctorOnCallStatus");
+                _logger.LogError(ex, "Error while retrieving {Entity} with id {Id}", typeof(DoctorOnCallStatus).Name, id);
                 throw;
             }
         }
@@ -148,12 +163,23 @@ namespace ClinicManagement.Services.Info
         {
             try
             {
+                // Only return district doctors - only district doctors can be on call
+                var districtDoctorIds = await _districtDoctors
+                    .Select(dd => dd.DoctorId)
+                    .ToListAsync(token);
+
                 return await _doctors
+                    .Where(d => districtDoctorIds.Contains(d.Id))
                     .Include(d => d.Person)
                     .Include(d => d.Specialty)
                     .OrderBy(d => d.Person != null ? d.Person.LastName : "")
                     .ThenBy(d => d.Person != null ? d.Person.FirstName : "")
                     .ToListAsync(token);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetAllDoctorsAsync operation was canceled");
+                throw;
             }
             catch (Exception ex)
             {
@@ -172,9 +198,74 @@ namespace ClinicManagement.Services.Info
                     .ThenBy(a => a.Locality)
                     .ToListAsync(token);
             }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetAllAddressesAsync operation was canceled");
+                throw;
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while getting Address list");
+                throw;
+            }
+        }
+
+        public override async Task AddAsync(DoctorOnCallStatus entity, CancellationToken token = default)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            try
+            {
+                // Validate that the doctor is a district doctor
+                var isDistrictDoctor = await _districtDoctors
+                    .AnyAsync(dd => dd.DoctorId == entity.DoctorId, token);
+
+                if (!isDistrictDoctor)
+                {
+                    throw new InvalidOperationException("Only district doctors can be assigned on-call status.");
+                }
+
+                await base.AddAsync(entity, token);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("AddAsync for {Entity} was canceled", typeof(DoctorOnCallStatus).Name);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while adding {Entity}", typeof(DoctorOnCallStatus).Name);
+                throw;
+            }
+        }
+
+        public override async Task UpdateAsync(int id, DoctorOnCallStatus entity, CancellationToken token = default)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            try
+            {
+                // Validate that the doctor is a district doctor
+                var isDistrictDoctor = await _districtDoctors
+                    .AnyAsync(dd => dd.DoctorId == entity.DoctorId, token);
+
+                if (!isDistrictDoctor)
+                {
+                    throw new InvalidOperationException("Only district doctors can be assigned on-call status.");
+                }
+
+                await base.UpdateAsync(id, entity, token);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("UpdateAsync for {Entity} with id {Id} was canceled", typeof(DoctorOnCallStatus).Name, id);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while updating {Entity} with id {Id}", typeof(DoctorOnCallStatus).Name, id);
                 throw;
             }
         }
