@@ -22,6 +22,49 @@ namespace ClinicManagement.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("ClinicManagement.Models.Auth.PasswordChangeRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset?>("ProcessedAt")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<int?>("ProcessedByAdminId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("RequestedAt")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<string>("RequestedPasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProcessedByAdminId");
+
+                    b.HasIndex("RequestedAt");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PasswordChangeRequests");
+                });
+
             modelBuilder.Entity("ClinicManagement.Models.Auth.PromotionRequest", b =>
                 {
                     b.Property<int>("Id")
@@ -268,6 +311,38 @@ namespace ClinicManagement.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Email = "admin@clinic.local",
+                            FirstName = "Admin",
+                            LastName = "User",
+                            PasswordHash = "mvFbM25qlhmShTffMLLmojdlafz51+dz7M7eZWBlKaA=",
+                            RoleId = 4
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Email = "authorized@clinic.local",
+                            FirstName = "Authorized",
+                            LastName = "User",
+                            PasswordHash = "mvFbM25qlhmShTffMLLmojdlafz51+dz7M7eZWBlKaA=",
+                            RoleId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTimeOffset(new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Email = "operator@clinic.local",
+                            FirstName = "Operator",
+                            LastName = "User",
+                            PasswordHash = "mvFbM25qlhmShTffMLLmojdlafz51+dz7M7eZWBlKaA=",
+                            RoleId = 3
+                        });
                 });
 
             modelBuilder.Entity("ClinicManagement.Models.Facilities.Cabinet", b =>
@@ -731,6 +806,24 @@ namespace ClinicManagement.Migrations
                     b.HasIndex("DoctorId");
 
                     b.ToTable("Schedules");
+                });
+
+            modelBuilder.Entity("ClinicManagement.Models.Auth.PasswordChangeRequest", b =>
+                {
+                    b.HasOne("ClinicManagement.Models.Auth.User", "ProcessedByAdmin")
+                        .WithMany()
+                        .HasForeignKey("ProcessedByAdminId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("ClinicManagement.Models.Auth.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ProcessedByAdmin");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ClinicManagement.Models.Auth.PromotionRequest", b =>

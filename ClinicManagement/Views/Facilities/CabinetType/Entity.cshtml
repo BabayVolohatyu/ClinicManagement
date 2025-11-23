@@ -20,6 +20,7 @@
                                         <input asp-for="Id" class="form-control-plaintext" readonly />
                                     </td>
                                 </tr>
+                                
                                 <tr onclick="makeEditable(this)" style="cursor: pointer;">
                                     <th>Type</th>
                                     <td>
@@ -31,17 +32,10 @@
                         </table>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center mt-4">
-                        <a asp-action="Index" class="btn btn-outline-secondary" data-permission="read">Back</a>
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-success" data-permission="update">Save</button>
-                            <button type="button" class="btn btn-danger" onclick="submit" data-permission="delete">Delete</button>
-                        </div>
-                    </div>
+                    @await Html.PartialAsync("Entity/_EntityFormButtons", ViewData)
                 </form>
 
-                <form id="deleteForm" asp-action="Delete" asp-route-id="@Model.Id" method="post" style="display: none" data-permission="delete">
-                </form>
+                @await Html.PartialAsync("Entity/_EntityDeleteForm", Model)
             </div>
         </div>
     </div>
@@ -49,15 +43,9 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-
-    <script>
-        function makeEditable(row) {
-            const input = row.querySelector("input");
-            if (input && input.hasAttribute("readonly")) {
-                input.removeAttribute("readonly");
-                input.classList.remove("form-control-plaintext");
-                input.classList.add("form-control");
-            }
-        }
-    </script>
+    @{
+        ViewData["EntityNameSingular"] = "cabinet type";
+        ViewData["DeleteMessage"] = "Are you sure you want to delete this cabinet type?";
+    }
+    <partial name="Entity/_EntityFormScripts" ViewData="ViewData" />
 }

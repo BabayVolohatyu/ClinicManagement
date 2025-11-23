@@ -1,0 +1,24 @@
+@model dynamic
+
+@if (Model.ProcessedByAdmin != null)
+{
+    <tr>
+        <th>Processed By</th>
+        <td>
+            <a href="@Url.Action("Entity", "User", new { id = Model.ProcessedByAdmin.Id })">
+                @Model.ProcessedByAdmin.FirstName @(Model.ProcessedByAdmin.LastName ?? "") (@Model.ProcessedByAdmin.Email)
+            </a>
+        </td>
+    </tr>
+}
+
+@if (Model.ProcessedAt.HasValue)
+{
+    <tr>
+        <th>Processed At</th>
+        <td>
+            <input value="@Model.ProcessedAt.Value.ToString("yyyy-MM-dd HH:mm:ss")" class="form-control-plaintext" readonly />
+        </td>
+    </tr>
+}
+

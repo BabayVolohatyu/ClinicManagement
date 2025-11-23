@@ -1,0 +1,380 @@
+@{
+    ViewData["Title"] = "Query Manager";
+    var terminals = ViewBag.Terminals as List<string> ?? new List<string>();
+    var grammarPath = ViewBag.GrammarPath as string;
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-12 col-md-12">
+        <h2 class="mb-4">Query Manager</h2>
+
+        @if (string.IsNullOrEmpty(grammarPath))
+        {
+            <div class="alert alert-warning">
+                <strong>Warning:</strong> Grammar path is not configured in appsettings.json. 
+                Please add "QueryManager:GrammarPath" to your configuration.
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                <!-- Query Building Area -->
+                <div class="col-lg-8 col-md-12 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="bi bi-code-square"></i> Query
+                            </h5>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-secondary" onclick="clearQuery()">
+                                    <i class="bi bi-x-circle"></i> Clear
+                                </button>
+                                <button type="button" class="btn btn-sm btn-success" onclick="executeQuery()">
+                                    <i class="bi bi-play-fill"></i> Execute
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <!-- Query Blocks Display -->
+                            <div id="queryBlocksContainer" class="mb-3 p-3 border rounded" style="min-height: 150px; background-color: #f8f9fa;">
+                                <div id="queryBlocks" class="d-flex flex-wrap gap-2 align-items-center">
+                                    <span class="text-muted">Start building your query by selecting a block below...</span>
+                                </div>
+                            </div>
+
+                            <!-- User Input Panel (for fields, tables, etc.) -->
+                            <div id="userInputPanel" class="mb-3" style="display: none;">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0" id="userInputLabel">Select Input</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="userInputContent"></div>
+                                        <div class="mt-2">
+                                            <button type="button" class="btn btn-sm btn-primary" onclick="confirmUserInput()">Confirm</button>
+                                            <button type="button" class="btn btn-sm btn-secondary" onclick="cancelUserInput()">Cancel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Query Text Output -->
+                            <div class="mb-3">
+                                <label class="form-label">Generated Query</label>
+                                <textarea id="queryOutput" class="form-control" rows="6" readonly 
+                                          placeholder="Your query will appear here..."></textarea>
+                            </div>
+
+                            <!-- Execution Results -->
+                            <div id="resultPanel" style="display: none;">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">Execution Results</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="resultContent"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Available Blocks Panel -->
+                <div class="col-lg-4 col-md-12 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-puzzle"></i> Available Blocks
+                            </h5>
+                        </div>
+                        <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                            <div id="availableBlocks" class="d-flex flex-wrap gap-2">
+                                <!-- Blocks will be populated by JavaScript -->
+                                <span class="text-muted">Loading blocks...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentQueryBlocks = [];
+        const entityName = '@ViewData["Entity"]';
+
+        $(document).ready(function() {
+            loadNextBlocks();
+        });
+
+        let pendingUserInput = null;
+        let userInputSelections = [];
+
+        function loadNextBlocks() {
+            $.ajax({
+                url: `/${entityName}/GetNextBlocks`,
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(currentQueryBlocks),
+                success: function(response) {
+                    displayAvailableBlocks(response.nextBlocks || []);
+                    updateQueryDisplay();
+                    
+                    // Handle user input requirement
+                    if (response.requiresUserInput) {
+                        showUserInput(response.inputType, response.inputLabel, response.schemaData);
+                    } else {
+                        hideUserInput();
+                    }
+                    
+                    if (response.isComplete) {
+                        showCompletionMessage();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading next blocks:', error);
+                    $('#availableBlocks').html('<span class="text-danger">Error loading blocks. Please refresh the page.</span>');
+                }
+            });
+        }
+
+        function showUserInput(inputType, inputLabel, schemaData) {
+            pendingUserInput = { type: inputType, label: inputLabel, schemaData: schemaData };
+            $('#userInputLabel').text(inputLabel || 'Select Input');
+            const content = $('#userInputContent');
+            content.empty();
+            userInputSelections = [];
+
+            if (inputType === 'table' && schemaData && schemaData.tables) {
+                // Show table selection
+                const select = $('<select>').addClass('form-select').attr('multiple', false).attr('id', 'tableSelect');
+                schemaData.tables.forEach(function(table) {
+                    $('<option>').val(table.name).text(table.displayName || table.name).appendTo(select);
+                });
+                content.append($('<label>').text('Select Table:').addClass('form-label'));
+                content.append(select);
+            } else if (inputType === 'field' && schemaData && schemaData.tables) {
+                // Show field/column selection
+                content.append($('<label>').text('Select Fields:').addClass('form-label'));
+                
+                schemaData.tables.forEach(function(tableData) {
+                    const table = tableData.table;
+                    const columns = tableData.columns || [];
+                    
+                    const tableDiv = $('<div>').addClass('mb-3');
+                    tableDiv.append($('<h6>').text(table.displayName || table.name).addClass('mb-2'));
+                    
+                    const fieldContainer = $('<div>').addClass('d-flex flex-wrap gap-2');
+                    columns.forEach(function(column) {
+                        const checkbox = $('<input>')
+                            .attr('type', 'checkbox')
+                            .attr('id', `field_${table.name}_${column.name}`)
+                            .attr('data-table', table.name)
+                            .attr('data-column', column.name)
+                            .addClass('form-check-input');
+                        const label = $('<label>')
+                            .attr('for', `field_${table.name}_${column.name}`)
+                            .addClass('form-check-label badge bg-secondary')
+                            .css({ 'cursor': 'pointer', 'padding': '6px 10px' })
+                            .text(column.name)
+                            .prepend(checkbox);
+                        
+                        label.on('click', function(e) {
+                            if (e.target.type !== 'checkbox') {
+                                checkbox.prop('checked', !checkbox.prop('checked'));
+                            }
+                        });
+                        
+                        fieldContainer.append(label);
+                    });
+                    tableDiv.append(fieldContainer);
+                    content.append(tableDiv);
+                });
+            } else if (inputType === 'condition') {
+                // Show condition input
+                content.append($('<label>').text('Enter Condition:').addClass('form-label'));
+                content.append($('<input>').attr('type', 'text').addClass('form-control').attr('id', 'conditionInput').attr('placeholder', 'e.g., id > 10'));
+            }
+
+            $('#userInputPanel').show();
+        }
+
+        function hideUserInput() {
+            $('#userInputPanel').hide();
+            pendingUserInput = null;
+            userInputSelections = [];
+        }
+
+        function confirmUserInput() {
+            if (!pendingUserInput) return;
+
+            const inputType = pendingUserInput.type;
+            let inputValue = '';
+
+            if (inputType === 'table') {
+                const selected = $('#tableSelect').val();
+                if (selected) {
+                    inputValue = selected;
+                    currentQueryBlocks.push(inputValue);
+                }
+            } else if (inputType === 'field') {
+                const selectedFields = [];
+                $('input[type="checkbox"]:checked').each(function() {
+                    const table = $(this).data('table');
+                    const column = $(this).data('column');
+                    selectedFields.push(`${table}.${column}`);
+                });
+                if (selectedFields.length > 0) {
+                    inputValue = selectedFields.join(', ');
+                    currentQueryBlocks.push(inputValue);
+                }
+            } else if (inputType === 'condition') {
+                inputValue = $('#conditionInput').val();
+                if (inputValue) {
+                    currentQueryBlocks.push(inputValue);
+                }
+            }
+
+            if (inputValue) {
+                hideUserInput();
+                updateQueryDisplay();
+                loadNextBlocks();
+            } else {
+                alert('Please make a selection or enter a value');
+            }
+        }
+
+        function cancelUserInput() {
+            hideUserInput();
+        }
+
+        function displayAvailableBlocks(blocks) {
+            const container = $('#availableBlocks');
+            container.empty();
+
+            if (blocks.length === 0) {
+                container.html('<span class="text-muted">No more blocks available. Query may be complete.</span>');
+                return;
+            }
+
+            blocks.forEach(function(block) {
+                const blockElement = $('<span>')
+                    .addClass('badge bg-primary')
+                    .css({
+                        'cursor': 'pointer',
+                        'font-size': '0.9rem',
+                        'padding': '8px 12px',
+                        'margin': '4px'
+                    })
+                    .text(block)
+                    .on('click', function() {
+                        addBlock(block);
+                    })
+                    .on('mouseenter', function() {
+                        $(this).css('opacity', '0.8');
+                    })
+                    .on('mouseleave', function() {
+                        $(this).css('opacity', '1');
+                    });
+                
+                container.append(blockElement);
+            });
+        }
+
+        function addBlock(block) {
+            currentQueryBlocks.push(block);
+            updateQueryDisplay();
+            loadNextBlocks();
+        }
+
+        function removeBlock(index) {
+            currentQueryBlocks.splice(index, 1);
+            updateQueryDisplay();
+            loadNextBlocks();
+        }
+
+        function updateQueryDisplay() {
+            const container = $('#queryBlocks');
+            container.empty();
+
+            if (currentQueryBlocks.length === 0) {
+                container.html('<span class="text-muted">Start building your query by selecting a block below...</span>');
+                $('#queryOutput').val('');
+                return;
+            }
+
+            currentQueryBlocks.forEach(function(block, index) {
+                const blockElement = $('<span>')
+                    .addClass('badge bg-info')
+                    .css({
+                        'font-size': '0.9rem',
+                        'padding': '8px 12px',
+                        'margin': '2px',
+                        'position': 'relative'
+                    })
+                    .html(`
+                        ${block}
+                        <button type="button" class="btn-close btn-close-white ms-2" 
+                                style="font-size: 0.6rem;" 
+                                onclick="removeBlock(${index})" 
+                                aria-label="Remove"></button>
+                    `);
+                
+                container.append(blockElement);
+            });
+
+            // Update query output
+            const queryText = currentQueryBlocks.join(' ');
+            $('#queryOutput').val(queryText);
+        }
+
+        function clearQuery() {
+            currentQueryBlocks = [];
+            updateQueryDisplay();
+            loadNextBlocks();
+            hideResult();
+        }
+
+        function executeQuery() {
+            const query = $('#queryOutput').val().trim();
+            if (!query) {
+                showResult('Please build a query first by selecting blocks.', 'warning');
+                return;
+            }
+
+            showResult('Query execution not yet implemented. This would execute the query against the database.<br><br><strong>Query:</strong><br><code>' + query + '</code>', 'info');
+        }
+
+        function showCompletionMessage() {
+            const container = $('#queryBlocksContainer');
+            if (!container.find('.alert-success').length) {
+                const alert = $('<div>')
+                    .addClass('alert alert-success alert-dismissible fade show mt-2')
+                    .html(`
+                        <i class="bi bi-check-circle"></i> Query appears to be complete!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `);
+                container.append(alert);
+            }
+        }
+
+        function showResult(message, type) {
+            const panel = $('#resultPanel');
+            const content = $('#resultContent');
+            
+            const alertClass = type === 'success' ? 'alert-success' : 
+                              type === 'warning' ? 'alert-warning' : 
+                              type === 'error' ? 'alert-danger' : 'alert-info';
+            
+            content.html(`<div class="alert ${alertClass} mb-0">${message}</div>`);
+            panel.show();
+        }
+
+        function hideResult() {
+            $('#resultPanel').hide();
+        }
+    </script>
+}

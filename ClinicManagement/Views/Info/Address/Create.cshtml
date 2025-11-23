@@ -1,0 +1,56 @@
+@model ClinicManagement.Models.Info.Address
+
+@{
+    ViewData["Title"] = "Create Address";
+}
+
+<div class="row justify-content-center" data-permission="read">
+    <div class="col-lg-6 col-md-8">
+        <h2 class="mb-4">Create Address</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Create" method="post" data-permission="create">
+
+                    <div class="mb-3">
+                        <label asp-for="Country" class="form-label"></label>
+                        <input asp-for="Country" class="form-control" />
+                        <span asp-validation-for="Country" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="State" class="form-label"></label>
+                        <input asp-for="State" class="form-control" />
+                        <span asp-validation-for="State" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Locality" class="form-label"></label>
+                        <input asp-for="Locality" class="form-control" />
+                        <span asp-validation-for="Locality" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="StreetName" class="form-label"></label>
+                        <input asp-for="StreetName" class="form-control" />
+                        <span asp-validation-for="StreetName" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="StreetNumber" class="form-label"></label>
+                        <input asp-for="StreetNumber" class="form-control" type="number" />
+                        <span asp-validation-for="StreetNumber" class="text-danger"></span>
+                    </div>
+
+                    @await Html.PartialAsync("Create/_CreateFormButtons")
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

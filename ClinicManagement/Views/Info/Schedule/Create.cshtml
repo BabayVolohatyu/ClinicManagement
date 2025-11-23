@@ -1,0 +1,54 @@
+@model ClinicManagement.Models.Info.Schedule
+
+@{
+    ViewData["Title"] = "Create Schedule";
+}
+
+<div class="row justify-content-center" data-permission="read">
+    <div class="col-lg-6 col-md-8">
+        <h2 class="mb-4">Create Schedule</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Create" method="post" data-permission="create">
+
+                    <div class="mb-3">
+                        <label asp-for="DoctorId" class="form-label">Doctor</label>
+                        <select asp-for="DoctorId" class="form-control" asp-items="ViewBag.Doctors">
+                            <option value="">-- Select Doctor --</option>
+                        </select>
+                        <span asp-validation-for="DoctorId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="CabinetId" class="form-label">Cabinet</label>
+                        <select asp-for="CabinetId" class="form-control" asp-items="ViewBag.Cabinets">
+                            <option value="">-- Select Cabinet --</option>
+                        </select>
+                        <span asp-validation-for="CabinetId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="StartTime" class="form-label">Start Time</label>
+                        <input asp-for="StartTime" class="form-control" type="datetime-local" />
+                        <span asp-validation-for="StartTime" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="EndTime" class="form-label">End Time</label>
+                        <input asp-for="EndTime" class="form-control" type="datetime-local" />
+                        <span asp-validation-for="EndTime" class="text-danger"></span>
+                    </div>
+
+                    @await Html.PartialAsync("Create/_CreateFormButtons")
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

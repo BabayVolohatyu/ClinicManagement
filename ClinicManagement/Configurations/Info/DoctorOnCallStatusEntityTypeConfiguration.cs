@@ -17,6 +17,11 @@ namespace ClinicManagement.Configurations.Info
                 .HasForeignKey<DoctorOnCallStatus>(docs => docs.DoctorId)
                 .IsRequired();
 
+            // Explicit unique index on DoctorId for one-to-one relationship
+            builder
+                .HasIndex(docs => docs.DoctorId)
+                .IsUnique();
+
             builder
                 .HasOne(docs => docs.Address)
                 .WithMany(a => a.DoctorOnCallStatuses)

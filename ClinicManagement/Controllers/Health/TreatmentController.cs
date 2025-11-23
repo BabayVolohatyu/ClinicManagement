@@ -1,20 +1,11 @@
-﻿using ClinicManagement.Data;
-using Microsoft.AspNetCore.Mvc;
+﻿using ClinicManagement.Models.Health;
+using ClinicManagement.Services;
 
 namespace ClinicManagement.Controllers.Health
 {
-    public class TreatmentController : Controller
+    public class TreatmentController : CommonController<Treatment>
     {
-        private readonly ClinicDbContext _context;
-
-        public TreatmentController(ClinicDbContext context)
-        {
-            _context = context;
-        }
-
-        public IActionResult Index()
-        {
-            return View();
-        }
+        public TreatmentController(IService<Treatment> service, ILogger<TreatmentController> logger)
+            : base(service, logger) { }
     }
 }

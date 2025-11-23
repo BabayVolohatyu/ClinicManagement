@@ -1,0 +1,97 @@
+@model ClinicManagement.Services.PaginatedResult<ClinicManagement.Models.Health.Diagnosis>
+
+@{
+    ViewData["Title"] = "Diagnoses";
+    ViewData["Entity"] = ViewContext.RouteData.Values["controller"]?.ToString().ToLower();
+    var sortAscending = Model.SortAscending;
+    var currentSortBy = Model.SortBy ?? "Id";
+    
+    // Set ViewData for sortable headers
+    ViewData["SortAscending"] = sortAscending;
+    ViewData["CurrentSortBy"] = currentSortBy;
+    ViewData["PageSize"] = Model.PageSize;
+    ViewData["SearchTerm"] = Model.SearchTerm;
+}
+
+<div class="row justify-content-center" data-permission="read">
+    <div class="col-lg-10 col-md-12">
+        <h2 class="mb-4">Diagnoses</h2>
+
+        @await Html.PartialAsync("Index/_IndexSearchForm", Model)
+
+        @{
+            ViewData["EntityNamePlural"] = "diagnoses";
+            ViewData["EntityNameSingular"] = "diagnosis";
+        }
+        @await Html.PartialAsync("Index/_IndexEmptyState", Model, ViewData)
+
+        @if (Model.Items.Any())
+        {
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    @{
+                                        ViewData["SortBy"] = "Id";
+                                        ViewData["DisplayText"] = "ID";
+                                    }
+                                    @await Html.PartialAsync("Index/_IndexSortableHeader", ViewData)
+                                    
+                                    @{
+                                        ViewData["SortBy"] = "Appointment.Patient.Person.LastName";
+                                        ViewData["DisplayText"] = "Patient";
+                                    }
+                                    @await Html.PartialAsync("Index/_IndexSortableHeader", ViewData)
+                                    
+                                    @{
+                                        ViewData["SortBy"] = "Appointment.DoctorProcedure.Doctor.Person.LastName";
+                                        ViewData["DisplayText"] = "Doctor";
+                                    }
+                                    @await Html.PartialAsync("Index/_IndexSortableHeader", ViewData)
+                                    
+                                    @{
+                                        ViewData["SortBy"] = "Prescription";
+                                        ViewData["DisplayText"] = "Prescription";
+                                    }
+                                    @await Html.PartialAsync("Index/_IndexSortableHeader", ViewData)
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var item in Model.Items)
+                                {
+                                    <tr class="clickable-row" data-href="@Url.Action("Entity", new { id = item.Id })">
+                                        <td>@item.Id</td>
+                                        <td>
+                                            @if (item.Appointment != null && item.Appointment.Patient != null && item.Appointment.Patient.Person != null)
+                                            {
+                                                <a href="@Url.Action("Entity", "Patient", new { id = item.Appointment.Patient.Id })" onclick="event.stopPropagation()">
+                                                    @item.Appointment.Patient.Person.LastName, @item.Appointment.Patient.Person.FirstName
+                                                </a>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (item.Appointment != null && item.Appointment.DoctorProcedure != null && item.Appointment.DoctorProcedure.Doctor != null && item.Appointment.DoctorProcedure.Doctor.Person != null)
+                                            {
+                                                <a href="@Url.Action("Entity", "Doctor", new { id = item.Appointment.DoctorProcedure.Doctor.Id })" onclick="event.stopPropagation()">
+                                                    @item.Appointment.DoctorProcedure.Doctor.Person.LastName, @item.Appointment.DoctorProcedure.Doctor.Person.FirstName
+                                                </a>
+                                            }
+                                        </td>
+                                        <td>@(item.Prescription?.Length > 50 ? item.Prescription.Substring(0, 50) + "..." : item.Prescription)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            @await Html.PartialAsync("Index/_IndexPagination", Model)
+        }
+    </div>
+</div>
+
+

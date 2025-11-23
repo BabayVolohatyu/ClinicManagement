@@ -1,0 +1,42 @@
+@model ClinicManagement.Models.Auth.PromotionRequest
+
+@{
+    ViewData["Title"] = "Create Promotion Request";
+    var currentUserId = ViewBag.CurrentUserId as int?;
+}
+
+<div class="row justify-content-center" data-permission="read">
+    <div class="col-lg-6 col-md-8">
+        <h2 class="mb-4">Create Promotion Request</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Create" method="post" id="promotionRequestCreateForm" data-permission="create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <input type="hidden" asp-for="UserId" value="@(currentUserId ?? 0)" />
+
+                    <div class="mb-3">
+                        <label asp-for="RequestedRoleId" class="form-label">Requested Role</label>
+                        <select asp-for="RequestedRoleId" class="form-control" asp-items="ViewBag.Roles">
+                            <option value="">-- Select Role --</option>
+                        </select>
+                        <span asp-validation-for="RequestedRoleId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Reason" class="form-label">Reason</label>
+                        <textarea asp-for="Reason" class="form-control" rows="4"></textarea>
+                        <span asp-validation-for="Reason" class="text-danger"></span>
+                    </div>
+
+                    @await Html.PartialAsync("Create/_CreateFormButtons")
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

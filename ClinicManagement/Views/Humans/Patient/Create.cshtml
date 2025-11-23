@@ -1,0 +1,48 @@
+@model ClinicManagement.Models.Humans.Patient
+
+@{
+    ViewData["Title"] = "Create Patient";
+}
+
+<div class="row justify-content-center" data-permission="read">
+    <div class="col-lg-6 col-md-8">
+        <h2 class="mb-4">Create Patient</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Create" method="post" data-permission="create">
+
+                    <div class="mb-3">
+                        <label asp-for="PersonId" class="form-label">Person</label>
+                        <select asp-for="PersonId" class="form-control" asp-items="ViewBag.People">
+                            <option value="">-- Select Person --</option>
+                        </select>
+                        <span asp-validation-for="PersonId" class="text-danger"></span>
+                        <div class="text-muted mt-1">
+                            <small>Can't find the person? <a asp-action="Create" asp-controller="Person">Create a new person</a></small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="AddressId" class="form-label">Address</label>
+                        <select asp-for="AddressId" class="form-control" asp-items="ViewBag.Addresses">
+                            <option value="">-- Select Address --</option>
+                        </select>
+                        <span asp-validation-for="AddressId" class="text-danger"></span>
+                        <div class="text-muted mt-1">
+                            <small>Can't find the address? <a asp-action="Create" asp-controller="Address">Create a new address</a></small>
+                        </div>
+                    </div>
+
+                    @await Html.PartialAsync("Create/_CreateFormButtons")
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

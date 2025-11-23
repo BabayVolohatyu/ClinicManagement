@@ -1,0 +1,54 @@
+@model ClinicManagement.Models.Humans.DistrictDoctor
+
+@{
+    ViewData["Title"] = "District Doctor Details";
+}
+
+<div class="row justify-content-center" data-permission="read">
+    <div class="col-lg-6 col-md-8">
+        <h2 class="mb-4">District Doctor Details</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered mb-0">
+                        <tbody>
+                            <tr>
+                                <th class="w-25">Doctor</th>
+                                <td>
+                                    @if (Model.Doctor != null && Model.Doctor.Person != null)
+                                    {
+                                        <a href="@Url.Action("Entity", "Doctor", new { id = Model.Doctor.Id })">
+                                            @Model.Doctor.Person.LastName, @Model.Doctor.Person.FirstName @(Model.Doctor.Person.Patronymic ?? "")
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Specialty</th>
+                                <td>
+                                    @if (Model.Doctor != null && Model.Doctor.Specialty != null)
+                                    {
+                                        <a href="@Url.Action("Entity", "Specialty", new { id = Model.Doctor.Specialty.Id })">
+                                            @Model.Doctor.Specialty.Name
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+                @{
+                    ViewData["DeleteMessage"] = "Are you sure you want to remove this district doctor status?";
+                    ViewData["DeleteAction"] = "Delete";
+                    ViewData["DeleteRouteValues"] = new Dictionary<string, object> { { "doctorId", Model.DoctorId } };
+                }
+                @await Html.PartialAsync("Entity/_EntityReadOnlyButtons", Model, ViewData)
+            </div>
+        </div>
+    </div>
+</div>
+

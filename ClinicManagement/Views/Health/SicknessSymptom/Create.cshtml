@@ -1,0 +1,42 @@
+@model ClinicManagement.Models.Health.SicknessSymptom
+
+@{
+    ViewData["Title"] = "Create Sickness Symptom";
+}
+
+<div class="row justify-content-center" data-permission="read">
+    <div class="col-lg-6 col-md-8">
+        <h2 class="mb-4">Create Sickness Symptom</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Create" method="post" data-permission="create">
+
+                    <div class="mb-3">
+                        <label asp-for="SicknessId" class="form-label">Sickness</label>
+                        <select asp-for="SicknessId" class="form-control" asp-items="ViewBag.Sicknesses">
+                            <option value="">-- Select Sickness --</option>
+                        </select>
+                        <span asp-validation-for="SicknessId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="SymptomId" class="form-label">Symptom</label>
+                        <select asp-for="SymptomId" class="form-control" asp-items="ViewBag.Symptoms">
+                            <option value="">-- Select Symptom --</option>
+                        </select>
+                        <span asp-validation-for="SymptomId" class="text-danger"></span>
+                    </div>
+
+                    @await Html.PartialAsync("Create/_CreateFormButtons")
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

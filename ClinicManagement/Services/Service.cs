@@ -1,6 +1,8 @@
 ﻿using ClinicManagement.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using System.Text;
+using System.Reflection;
 
 namespace ClinicManagement.Services
 {
@@ -20,6 +22,7 @@ namespace ClinicManagement.Services
         Task<IEnumerable<T>> FindAsync(
             Expression<Func<T, bool>> predicate,
             CancellationToken token = default);
+        Task<byte[]> ExportToCsvAsync(CancellationToken token = default);
     }
     public abstract class Service<T> : IService<T> where T : class
     {
@@ -261,14 +264,11 @@ namespace ClinicManagement.Services
         {
             try
             {
-                var entity = Activator.CreateInstance<T>();
-                var keyProperty = _context.Model.FindEntityType(typeof(T))?.FindPrimaryKey()?.Properties.FirstOrDefault();
-                if (keyProperty == null)
-                    throw new InvalidOperationException($"No key defined for entity {typeof(T).Name}");
+                var entity = await GetByIdAsync(id, token);
+                if (entity == null)
+                    throw new KeyNotFoundException($"{typeof(T).Name} with id {id} not found");
 
-                _context.Entry(entity!).Property(keyProperty.Name).CurrentValue = id;
-                _context.Entry(entity!).State = EntityState.Deleted;
-
+                _dbSet.Remove(entity);
                 await _context.SaveChangesAsync(token);
 
                 _logger.LogInformation("Removed {Entity} with id {Id}", typeof(T).Name, id);
@@ -283,6 +283,101 @@ namespace ClinicManagement.Services
                 _logger.LogError(ex, "Error while removing {Entity} with id {Id}", typeof(T).Name, id);
                 throw;
             }
+        }
+
+        public virtual async Task<byte[]> ExportToCsvAsync(CancellationToken token = default)
+        {
+            try
+            {
+                // Get all entities using pagination
+                var allEntities = new List<T>();
+                int pageNumber = 1;
+                const int pageSize = 100; // Max allowed page size
+                PaginatedResult<T> result;
+
+                do
+                {
+                    result = await GetAllAsync(pageNumber, pageSize, null, "Id", true, token);
+                    allEntities.AddRange(result.Items);
+                    pageNumber++;
+                } while (result.Items.Any() && allEntities.Count < result.TotalCount);
+
+                // Get all simple properties (primitives, strings, dates, numbers)
+                // Exclude navigation properties and collections - just export raw data
+                var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                    .Where(p => p.CanRead)
+                    .Where(p => IsSimpleProperty(p.PropertyType))
+                    .OrderBy(p => p.Name == "Id" ? 0 : 1) // Put Id first
+                    .ThenBy(p => p.Name)
+                    .ToList();
+
+                // Build CSV content
+                var csv = new StringBuilder();
+
+                // Add header row
+                var headers = properties.Select(p => p.Name);
+                csv.AppendLine(string.Join(",", headers));
+
+                // Add data rows
+                foreach (var entity in allEntities)
+                {
+                    var values = properties.Select(prop =>
+                    {
+                        var value = prop.GetValue(entity);
+                        if (value == null) return "";
+                        
+                        // Format dates consistently
+                        if (value is DateTime dt) return dt.ToString("yyyy-MM-dd HH:mm:ss");
+                        if (value is DateTimeOffset dto) return dto.ToString("yyyy-MM-dd HH:mm:ss");
+                        
+                        return EscapeCsvField(value.ToString() ?? "");
+                    });
+                    csv.AppendLine(string.Join(",", values));
+                }
+
+                // Convert to bytes
+                return Encoding.UTF8.GetBytes(csv.ToString());
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("ExportToCsvAsync operation for {Entity} was canceled", typeof(T).Name);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while exporting {Entity} to CSV", typeof(T).Name);
+                throw;
+            }
+        }
+
+        private bool IsSimpleProperty(Type type)
+        {
+            // Handle nullable types
+            var underlyingType = Nullable.GetUnderlyingType(type);
+            if (underlyingType != null)
+                type = underlyingType;
+
+            // Only include: primitives, string, DateTime, DateTimeOffset, decimal, Guid
+            return type.IsPrimitive || 
+                   type == typeof(string) || 
+                   type == typeof(DateTime) || 
+                   type == typeof(DateTimeOffset) || 
+                   type == typeof(decimal) || 
+                   type == typeof(Guid);
+        }
+
+        private string EscapeCsvField(string? field)
+        {
+            if (string.IsNullOrEmpty(field))
+                return "";
+
+            // If field contains comma, quote, or newline, wrap in quotes and escape quotes
+            if (field.Contains(',') || field.Contains('"') || field.Contains('\n') || field.Contains('\r'))
+            {
+                return "\"" + field.Replace("\"", "\"\"") + "\"";
+            }
+
+            return field;
         }
     }
 }

@@ -253,6 +253,17 @@ tr[onclick]:hover {
     text-shadow: 0 0 5px var(--accent);
 }
 
+/* Prevent pagination overflow */
+.pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.pagination .page-item {
+    margin: 2px;
+}
 
 .form-select {
     color: var(--text-light);
@@ -303,4 +314,59 @@ tr[onclick]:hover {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* Modal dark theme styling */
+.modal-content {
+    background-color: var(--panel-dark) !important;
+    border: 1px solid var(--accent) !important;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3) !important;
+    color: var(--text-light) !important;
+}
+
+.modal-header {
+    background-color: var(--panel-dark) !important;
+    border-bottom: 1px solid var(--accent) !important;
+    color: var(--text-light) !important;
+}
+
+.modal-title {
+    color: var(--text-light) !important;
+}
+
+.modal-body {
+    background-color: var(--panel-dark) !important;
+    color: var(--text-light) !important;
+}
+
+.modal-footer {
+    background-color: var(--panel-dark) !important;
+    border-top: 1px solid var(--accent) !important;
+}
+
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+.modal .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.modal .form-control,
+.modal .form-select {
+    background-color: var(--panel-dark) !important;
+    color: var(--text-light) !important;
+    border: 1px solid var(--accent) !important;
+}
+
+.modal .form-control:focus,
+.modal .form-select:focus {
+    background-color: rgba(0, 255, 255, 0.05) !important;
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 10px var(--accent) !important;
+    color: var(--accent) !important;
+}
+
+.modal label {
+    color: var(--text-light) !important;
 }

@@ -1,0 +1,97 @@
+@model ClinicManagement.Services.PaginatedResult<ClinicManagement.Models.Info.Schedule>
+
+@{
+    ViewData["Title"] = "Schedules";
+    ViewData["Entity"] = ViewContext.RouteData.Values["controller"]?.ToString().ToLower();
+    var sortAscending = Model.SortAscending;
+    var currentSortBy = Model.SortBy ?? "StartTime";
+    
+    // Set ViewData for sortable headers
+    ViewData["SortAscending"] = sortAscending;
+    ViewData["CurrentSortBy"] = currentSortBy;
+    ViewData["PageSize"] = Model.PageSize;
+    ViewData["SearchTerm"] = Model.SearchTerm;
+}
+
+<div class="row justify-content-center" data-permission="read">
+    <div class="col-lg-10 col-md-12">
+        <h2 class="mb-4">Schedules</h2>
+
+        @await Html.PartialAsync("Index/_IndexSearchForm", Model)
+
+        @{
+            ViewData["EntityNamePlural"] = "schedules";
+            ViewData["EntityNameSingular"] = "schedule";
+        }
+        @await Html.PartialAsync("Index/_IndexEmptyState", Model, ViewData)
+
+        @if (Model.Items.Any())
+        {
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    @{
+                                        ViewData["SortBy"] = "Doctor.Person.LastName";
+                                        ViewData["DisplayText"] = "Doctor";
+                                    }
+                                    @await Html.PartialAsync("Index/_IndexSortableHeader", ViewData)
+                                    
+                                    @{
+                                        ViewData["SortBy"] = "Cabinet.Building";
+                                        ViewData["DisplayText"] = "Cabinet";
+                                    }
+                                    @await Html.PartialAsync("Index/_IndexSortableHeader", ViewData)
+                                    
+                                    @{
+                                        ViewData["SortBy"] = "StartTime";
+                                        ViewData["DisplayText"] = "Start Time";
+                                    }
+                                    @await Html.PartialAsync("Index/_IndexSortableHeader", ViewData)
+                                    
+                                    @{
+                                        ViewData["SortBy"] = "EndTime";
+                                        ViewData["DisplayText"] = "End Time";
+                                    }
+                                    @await Html.PartialAsync("Index/_IndexSortableHeader", ViewData)
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var item in Model.Items)
+                                {
+                                    <tr class="clickable-row" data-href="@Url.Action("Entity", new { id = item.Id })">
+                                        <td>
+                                            @if (item.Doctor != null && item.Doctor.Person != null)
+                                            {
+                                                <a href="@Url.Action("Entity", "Doctor", new { id = item.Doctor.Id })" onclick="event.stopPropagation()">
+                                                    @item.Doctor.Person.LastName, @item.Doctor.Person.FirstName
+                                                </a>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (item.Cabinet != null)
+                                            {
+                                                <a href="@Url.Action("Entity", "Cabinet", new { id = item.Cabinet.Id })" onclick="event.stopPropagation()">
+                                                    Building @item.Cabinet.Building, Floor @item.Cabinet.Floor, Room @item.Cabinet.Number
+                                                </a>
+                                            }
+                                        </td>
+                                        <td>@item.StartTime.ToString("g")</td>
+                                        <td>@item.EndTime.ToString("g")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            @await Html.PartialAsync("Index/_IndexPagination", Model)
+        }
+    </div>
+</div>
+
+

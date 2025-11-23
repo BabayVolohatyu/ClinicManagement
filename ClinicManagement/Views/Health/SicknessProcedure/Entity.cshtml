@@ -1,0 +1,54 @@
+@model ClinicManagement.Models.Health.SicknessProcedure
+
+@{
+    ViewData["Title"] = "Sickness Procedure Details";
+}
+
+<div class="row justify-content-center" data-permission="read">
+    <div class="col-lg-6 col-md-8">
+        <h2 class="mb-4">Sickness Procedure Details</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered mb-0">
+                        <tbody>
+                            <tr>
+                                <th class="w-25">Sickness</th>
+                                <td>
+                                    @if (Model.Sickness != null)
+                                    {
+                                        <a href="@Url.Action("Entity", "Sickness", new { id = Model.Sickness.Id })">
+                                            @Model.Sickness.Name
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Procedure</th>
+                                <td>
+                                    @if (Model.Procedure != null)
+                                    {
+                                        <a href="@Url.Action("Entity", "Procedure", new { id = Model.Procedure.Id })">
+                                            @Model.Procedure.Name
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+                @{
+                    ViewData["DeleteMessage"] = "Are you sure you want to delete this relationship?";
+                    ViewData["DeleteAction"] = "Delete";
+                    ViewData["DeleteRouteValues"] = new Dictionary<string, object> { { "sicknessId", Model.SicknessId }, { "procedureId", Model.ProcedureId } };
+                }
+                @await Html.PartialAsync("Entity/_EntityReadOnlyButtons", Model, ViewData)
+            </div>
+        </div>
+    </div>
+</div>
+

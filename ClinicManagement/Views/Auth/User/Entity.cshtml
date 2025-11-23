@@ -1,0 +1,119 @@
+@model ClinicManagement.Models.Auth.User
+
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<div class="row justify-content-center" data-permission="read">
+    <div class="col-lg-6 col-md-8">
+        <h2 class="mb-4">User Details</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Update" asp-route-id="@Model.Id" method="post" id="editForm" data-permission="update">
+                    <div class="table-responsive">
+                        <table class="table table-bordered mb-0">
+                            <tbody>
+                                <tr>
+                                    <th class="w-25">ID</th>
+                                    <td>
+                                        <input asp-for="Id" class="form-control-plaintext" readonly />
+                                    </td>
+                                </tr>
+                                <tr onclick="makeEditable(this)" style="cursor: pointer;">
+                                    <th>First Name</th>
+                                    <td>
+                                        <input asp-for="FirstName" class="form-control-plaintext" readonly />
+                                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                                    </td>
+                                </tr>
+                                <tr onclick="makeEditable(this)" style="cursor: pointer;">
+                                    <th>Middle Name</th>
+                                    <td>
+                                        <input asp-for="MiddleName" class="form-control-plaintext" readonly />
+                                        <span asp-validation-for="MiddleName" class="text-danger"></span>
+                                    </td>
+                                </tr>
+                                <tr onclick="makeEditable(this)" style="cursor: pointer;">
+                                    <th>Last Name</th>
+                                    <td>
+                                        <input asp-for="LastName" class="form-control-plaintext" readonly />
+                                        <span asp-validation-for="LastName" class="text-danger"></span>
+                                    </td>
+                                </tr>
+                                <tr onclick="makeEditable(this)" style="cursor: pointer;">
+                                    <th>Email</th>
+                                    <td>
+                                        <input asp-for="Email" type="email" class="form-control-plaintext" readonly />
+                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                    </td>
+                                </tr>
+                                <tr onclick="makeEditablePassword(this)" style="cursor: pointer;">
+                                    <th>Password</th>
+                                    <td>
+                                        <input type="password" name="Password" class="form-control-plaintext" readonly placeholder="Click to change password" />
+                                        <span asp-validation-for="PasswordHash" class="text-danger"></span>
+                                        <div class="text-muted mt-1">
+                                            <small>Leave empty to keep current password</small>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr onclick="makeEditableRole(this)" style="cursor: pointer;">
+                                    <th>Role</th>
+                                    <td>
+                                        <select asp-for="RoleId" class="form-control-plaintext" readonly asp-items="ViewBag.Roles">
+                                            <option value="">-- Select Role --</option>
+                                        </select>
+                                        <span asp-validation-for="RoleId" class="text-danger"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Created At</th>
+                                    <td>
+                                        <input value="@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")" class="form-control-plaintext" readonly />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @await Html.PartialAsync("Entity/_EntityFormButtons", ViewData)
+                </form>
+
+                @await Html.PartialAsync("Entity/_EntityDeleteForm", Model)
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    @{
+        ViewData["EntityNameSingular"] = "user";
+        ViewData["DeleteMessage"] = "Are you sure you want to delete this user?";
+    }
+    <partial name="Entity/_EntityFormScripts" ViewData="ViewData" />
+    <script>
+        function makeEditablePassword(row) {
+            const input = row.querySelector("input[type='password']");
+            if (input && input.hasAttribute("readonly")) {
+                input.removeAttribute("readonly");
+                input.classList.remove("form-control-plaintext");
+                input.classList.add("form-control");
+                input.placeholder = "Enter new password";
+            }
+        }
+
+        function makeEditableRole(row) {
+            makeEditableSelect(row);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const roleSelect = document.querySelector("select[name='RoleId']");
+            if (roleSelect) {
+                roleSelect.setAttribute('data-initial-value', roleSelect.value);
+            }
+        });
+    </script>
+}
+

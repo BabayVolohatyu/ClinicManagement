@@ -1,0 +1,90 @@
+@model ClinicManagement.Services.PaginatedResult<ClinicManagement.Models.Humans.Doctor>
+
+@{
+    ViewData["Title"] = "Doctors";
+    ViewData["Entity"] = ViewContext.RouteData.Values["controller"]?.ToString().ToLower();
+    var sortAscending = Model.SortAscending;
+    var currentSortBy = Model.SortBy ?? "Id";
+    
+    // Set ViewData for sortable headers
+    ViewData["SortAscending"] = sortAscending;
+    ViewData["CurrentSortBy"] = currentSortBy;
+    ViewData["PageSize"] = Model.PageSize;
+    ViewData["SearchTerm"] = Model.SearchTerm;
+}
+
+<div class="row justify-content-center" data-permission="read">
+    <div class="col-lg-10 col-md-12">
+        <h2 class="mb-4">Doctors</h2>
+
+        @await Html.PartialAsync("Index/_IndexSearchForm", Model)
+
+        @{
+            ViewData["EntityNamePlural"] = "doctors";
+            ViewData["EntityNameSingular"] = "doctor";
+        }
+        @await Html.PartialAsync("Index/_IndexEmptyState", Model, ViewData)
+
+        @if (Model.Items.Any())
+        {
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    @{
+                                        ViewData["SortBy"] = "Id";
+                                        ViewData["DisplayText"] = "ID";
+                                    }
+                                    @await Html.PartialAsync("Index/_IndexSortableHeader", ViewData)
+                                    
+                                    @{
+                                        ViewData["SortBy"] = "Person.LastName";
+                                        ViewData["DisplayText"] = "Person";
+                                    }
+                                    @await Html.PartialAsync("Index/_IndexSortableHeader", ViewData)
+                                    
+                                    @{
+                                        ViewData["SortBy"] = "Specialty.Name";
+                                        ViewData["DisplayText"] = "Specialty";
+                                    }
+                                    @await Html.PartialAsync("Index/_IndexSortableHeader", ViewData)
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var doctor in Model.Items)
+                                {
+                                    <tr class="clickable-row" data-href="@Url.Action("Entity", new { id = doctor.Id })">
+                                        <td>@doctor.Id</td>
+                                        <td>
+                                            @if (doctor.Person != null)
+                                            {
+                                                <a href="@Url.Action("Entity", "Person", new { id = doctor.Person.Id })" onclick="event.stopPropagation()">
+                                                    @doctor.Person.LastName, @doctor.Person.FirstName @(doctor.Person.Patronymic ?? "")
+                                                </a>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (doctor.Specialty != null)
+                                            {
+                                                <a href="@Url.Action("Entity", "Specialty", new { id = doctor.Specialty.Id })" onclick="event.stopPropagation()">
+                                                    @doctor.Specialty.Name
+                                                </a>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            @await Html.PartialAsync("Index/_IndexPagination", Model)
+        }
+    </div>
+</div>
+
+

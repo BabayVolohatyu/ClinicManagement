@@ -1,4 +1,5 @@
-﻿using ClinicManagement.Models.Auth;
+﻿using ClinicManagement.Data.Auth;
+using ClinicManagement.Models.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -41,6 +42,9 @@ namespace ClinicManagement.Configurations.Auth
                 .WithMany(r => r.Users)
                 .HasForeignKey(u => u.RoleId)
                 .IsRequired();
+
+            // SEED data
+            builder.HasData(AuthSeedData.GetSeedData());
         }
     }
 }
