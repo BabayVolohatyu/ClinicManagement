@@ -323,6 +323,36 @@ namespace ClinicManagement.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PasswordChangeRequests",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    RequestedPasswordHash = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    RequestedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: false),
+                    Status = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    ProcessedByAdminId = table.Column<int>(type: "integer", nullable: true),
+                    ProcessedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PasswordChangeRequests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PasswordChangeRequests_Users_ProcessedByAdminId",
+                        column: x => x.ProcessedByAdminId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_PasswordChangeRequests_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PromotionRequests",
                 columns: table => new
                 {
@@ -645,6 +675,26 @@ namespace ClinicManagement.Migrations
                 column: "DoctorId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PasswordChangeRequests_ProcessedByAdminId",
+                table: "PasswordChangeRequests",
+                column: "ProcessedByAdminId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PasswordChangeRequests_RequestedAt",
+                table: "PasswordChangeRequests",
+                column: "RequestedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PasswordChangeRequests_Status",
+                table: "PasswordChangeRequests",
+                column: "Status");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PasswordChangeRequests_UserId",
+                table: "PasswordChangeRequests",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Patients_AddressId",
                 table: "Patients",
                 column: "AddressId");
@@ -742,6 +792,9 @@ namespace ClinicManagement.Migrations
 
             migrationBuilder.DropTable(
                 name: "HomeCallLogs");
+
+            migrationBuilder.DropTable(
+                name: "PasswordChangeRequests");
 
             migrationBuilder.DropTable(
                 name: "PromotionRequests");

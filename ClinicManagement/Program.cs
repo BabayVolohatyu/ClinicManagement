@@ -68,6 +68,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IService<User>, UserService>();
 builder.Services.AddScoped<IPromotionRequestService, PromotionRequestService>();
 builder.Services.AddScoped<IService<PromotionRequest>, PromotionRequestService>();
+builder.Services.AddScoped<IPasswordChangeRequestService, PasswordChangeRequestService>();
+builder.Services.AddScoped<IService<PasswordChangeRequest>, PasswordChangeRequestService>();
 
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<PredefinedQueriesService>();
