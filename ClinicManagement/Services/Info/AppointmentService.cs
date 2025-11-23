@@ -45,17 +45,20 @@ namespace ClinicManagement.Services.Info
                     .Include(a => a.Patient).ThenInclude(p => p.Person)
                     .AsNoTracking();
 
+                // Apply filtration if search term is provided
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
                     query = ApplySearchFilter(query, searchTerm);
                 }
 
+                // Apply sorting if sort field is provided
                 if (!string.IsNullOrWhiteSpace(sortBy))
                 {
                     query = ApplySorting(query, sortBy, sortAscending);
                 }
                 else
                 {
+                    // Default sorting by StartTime if no sort specified
                     query = ApplySorting(query, "StartTime", false);
                 }
 
@@ -77,9 +80,14 @@ namespace ClinicManagement.Services.Info
                     SortAscending = sortAscending
                 };
             }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetAllAsync operation for {Entity} was canceled", typeof(Appointment).Name);
+                throw;
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while getting Appointment list");
+                _logger.LogError(ex, "Error while getting {Entity} list", typeof(Appointment).Name);
                 throw;
             }
         }
@@ -96,9 +104,14 @@ namespace ClinicManagement.Services.Info
                     .Include(a => a.Diagnosis)
                     .FirstOrDefaultAsync(a => a.Id == id, token);
             }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetByIdAsync for {Entity} with id {Id} was canceled", typeof(Appointment).Name, id);
+                throw;
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while retrieving Appointment");
+                _logger.LogError(ex, "Error while retrieving {Entity} with id {Id}", typeof(Appointment).Name, id);
                 throw;
             }
         }
@@ -171,6 +184,11 @@ namespace ClinicManagement.Services.Info
                     .ThenBy(dp => dp.Procedure != null ? dp.Procedure.Name : "")
                     .ToListAsync(token);
             }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetAllDoctorProceduresAsync operation was canceled");
+                throw;
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while getting DoctorProcedure list");
@@ -189,6 +207,11 @@ namespace ClinicManagement.Services.Info
                     .ThenBy(c => c.Number)
                     .ToListAsync(token);
             }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetAllCabinetsAsync operation was canceled");
+                throw;
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while getting Cabinet list");
@@ -205,6 +228,11 @@ namespace ClinicManagement.Services.Info
                     .OrderBy(p => p.Person != null ? p.Person.LastName : "")
                     .ThenBy(p => p.Person != null ? p.Person.FirstName : "")
                     .ToListAsync(token);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetAllPatientsAsync operation was canceled");
+                throw;
             }
             catch (Exception ex)
             {

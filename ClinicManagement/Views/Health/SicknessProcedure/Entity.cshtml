@@ -41,15 +41,12 @@
                     </table>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center mt-4">
-                    <a asp-action="Index" class="btn btn-outline-secondary" data-permission="read">Back</a>
-
-                    <form asp-action="Delete" method="post" data-permission="delete">
-                        <input type="hidden" name="sicknessId" value="@Model.SicknessId" />
-                        <input type="hidden" name="procedureId" value="@Model.ProcedureId" />
-                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this relationship?')">Delete</button>
-                    </form>
-                </div>
+                @{
+                    ViewData["DeleteMessage"] = "Are you sure you want to delete this relationship?";
+                    ViewData["DeleteAction"] = "Delete";
+                    ViewData["DeleteRouteValues"] = new Dictionary<string, object> { { "sicknessId", Model.SicknessId }, { "procedureId", Model.ProcedureId } };
+                }
+                @await Html.PartialAsync("Entity/_EntityReadOnlyButtons", Model, ViewData)
             </div>
         </div>
     </div>

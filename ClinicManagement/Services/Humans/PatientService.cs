@@ -37,17 +37,20 @@ namespace ClinicManagement.Services.Humans
             {
                 var query = _dbSet.Include(p => p.Person).Include(p => p.Address).AsNoTracking();
 
+                // Apply filtration if search term is provided
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
                     query = ApplySearchFilter(query, searchTerm);
                 }
 
+                // Apply sorting if sort field is provided
                 if (!string.IsNullOrWhiteSpace(sortBy))
                 {
                     query = ApplySorting(query, sortBy, sortAscending);
                 }
                 else
                 {
+                    // Default sorting by ID if no sort specified
                     query = ApplySorting(query, "Id", true);
                 }
 
@@ -169,6 +172,11 @@ namespace ClinicManagement.Services.Humans
                     .ThenBy(p => p.FirstName)
                     .ToListAsync(token);
             }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetAllPeopleAsync operation was canceled");
+                throw;
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while getting Person list");
@@ -185,6 +193,11 @@ namespace ClinicManagement.Services.Humans
                     .ThenBy(a => a.State)
                     .ThenBy(a => a.Locality)
                     .ToListAsync(token);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetAllAddressesAsync operation was canceled");
+                throw;
             }
             catch (Exception ex)
             {

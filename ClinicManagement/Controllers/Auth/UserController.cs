@@ -21,27 +21,6 @@ namespace ClinicManagement.Controllers.Auth
         }
 
         [HttpGet]
-        public override async Task<IActionResult> Index(
-           int pageNumber = 1,
-           int pageSize = 10,
-           string? searchTerm = null,
-           string? sortBy = null,
-           bool sortAscending = true)
-        {
-            try
-            {
-                ViewData["Entity"] = RouteData.Values["controller"]?.ToString().ToLower();
-                var result = await _service.GetAllAsync(pageNumber, pageSize, searchTerm, sortBy, sortAscending);
-                return View(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching User list");
-                return StatusCode(500, "An error occurred while fetching data.");
-            }
-        }
-
-        [HttpGet]
         public override async Task<IActionResult> Create()
         {
             try

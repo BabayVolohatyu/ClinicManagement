@@ -1,0 +1,16 @@
+@{
+    var showDelete = ViewData["ShowDelete"] as bool? ?? true;
+}
+
+<div class="d-flex justify-content-between align-items-center mt-4">
+    <a asp-action="Index" class="btn btn-outline-secondary" data-permission="read">Back</a>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-success" data-permission="update">Save</button>
+        @if (showDelete)
+        {
+            <button type="button" class="btn btn-danger" onclick="submitDelete()" data-permission="delete">Delete</button>
+        }
+    </div>
+</div>
+

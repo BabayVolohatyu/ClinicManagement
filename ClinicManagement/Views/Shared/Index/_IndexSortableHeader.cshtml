@@ -1,0 +1,29 @@
+@{
+    var sortBy = ViewData["SortBy"] as string ?? "Id";
+    var sortAscending = (bool)(ViewData["SortAscending"] ?? true);
+    var currentSortBy = ViewData["CurrentSortBy"] as string ?? "Id";
+    var pageSize = (int)(ViewData["PageSize"] ?? 10);
+    var searchTerm = ViewData["SearchTerm"] as string;
+    var displayText = ViewData["DisplayText"] as string ?? sortBy;
+}
+
+<th>
+    <a href="@Url.Action("Index", new {
+        pageNumber = 1,
+        pageSize = pageSize,
+        searchTerm = searchTerm,
+        sortBy = sortBy,
+        sortAscending = currentSortBy == sortBy ? !sortAscending : true
+    })" class="text-decoration-none">
+        @displayText
+        @if (currentSortBy == sortBy)
+        {
+            <span>@(sortAscending ? "↑" : "↓")</span>
+        }
+        else
+        {
+            <span class="text-muted">↕</span>
+        }
+    </a>
+</th>
+

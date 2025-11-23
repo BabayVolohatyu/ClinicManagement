@@ -1,0 +1,14 @@
+@{
+    var tableClass = ViewData["TableClass"] as string ?? "table table-striped table-hover mb-0";
+}
+
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="@tableClass">
+                @RenderBody()
+            </table>
+        </div>
+    </div>
+</div>
+

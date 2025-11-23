@@ -37,17 +37,20 @@ namespace ClinicManagement.Services.Info
             {
                 var query = _dbSet.Include(h => h.Doctor).ThenInclude(d => d.Person).Include(h => h.Address).AsNoTracking();
 
+                // Apply filtration if search term is provided
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
                     query = ApplySearchFilter(query, searchTerm);
                 }
 
+                // Apply sorting if sort field is provided
                 if (!string.IsNullOrWhiteSpace(sortBy))
                 {
                     query = ApplySorting(query, sortBy, sortAscending);
                 }
                 else
                 {
+                    // Default sorting by DateTime if no sort specified
                     query = ApplySorting(query, "DateTime", false);
                 }
 
@@ -69,9 +72,14 @@ namespace ClinicManagement.Services.Info
                     SortAscending = sortAscending
                 };
             }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetAllAsync operation for {Entity} was canceled", typeof(HomeCallLog).Name);
+                throw;
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while getting HomeCallLog list");
+                _logger.LogError(ex, "Error while getting {Entity} list", typeof(HomeCallLog).Name);
                 throw;
             }
         }
@@ -85,9 +93,14 @@ namespace ClinicManagement.Services.Info
                     .Include(h => h.Address)
                     .FirstOrDefaultAsync(h => h.Id == id, token);
             }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetByIdAsync for {Entity} with id {Id} was canceled", typeof(HomeCallLog).Name, id);
+                throw;
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while retrieving HomeCallLog");
+                _logger.LogError(ex, "Error while retrieving {Entity} with id {Id}", typeof(HomeCallLog).Name, id);
                 throw;
             }
         }
@@ -155,6 +168,11 @@ namespace ClinicManagement.Services.Info
                     .ThenBy(d => d.Person != null ? d.Person.FirstName : "")
                     .ToListAsync(token);
             }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetAllDoctorsAsync operation was canceled");
+                throw;
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while getting Doctor list");
@@ -171,6 +189,11 @@ namespace ClinicManagement.Services.Info
                     .ThenBy(a => a.State)
                     .ThenBy(a => a.Locality)
                     .ToListAsync(token);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetAllAddressesAsync operation was canceled");
+                throw;
             }
             catch (Exception ex)
             {

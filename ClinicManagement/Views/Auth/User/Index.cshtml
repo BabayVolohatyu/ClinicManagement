@@ -27,125 +27,46 @@
                         <table class="table table-striped table-hover mb-0">
                             <thead>
                                 <tr>
-                                    <th>
-                                        <a href="@Url.Action("Index", new {
-                                            pageNumber = 1,
-                                            pageSize = Model.PageSize,
-                                            searchTerm = Model.SearchTerm,
-                                            sortBy = "Id",
-                                            sortAscending = currentSortBy == "Id" ? !sortAscending : true
-                                        })" class="text-decoration-none">
-                                            ID
-                                            @if (currentSortBy == "Id")
-                                            {
-                                                <span>@(sortAscending ? "↑" : "↓")</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="text-muted">↕</span>
-                                            }
-                                        </a>
-                                    </th>
-
-                                    <th>
-                                        <a href="@Url.Action("Index", new {
-                                            pageNumber = 1,
-                                            pageSize = Model.PageSize,
-                                            searchTerm = Model.SearchTerm,
-                                            sortBy = "FirstName",
-                                            sortAscending = currentSortBy == "FirstName" ? !sortAscending : true
-                                        })" class="text-decoration-none">
-                                            First Name
-                                            @if (currentSortBy == "FirstName")
-                                            {
-                                                <span>@(sortAscending ? "↑" : "↓")</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="text-muted">↕</span>
-                                            }
-                                        </a>
-                                    </th>
-
-                                    <th>
-                                        <a href="@Url.Action("Index", new {
-                                            pageNumber = 1,
-                                            pageSize = Model.PageSize,
-                                            searchTerm = Model.SearchTerm,
-                                            sortBy = "LastName",
-                                            sortAscending = currentSortBy == "LastName" ? !sortAscending : true
-                                        })" class="text-decoration-none">
-                                            Last Name
-                                            @if (currentSortBy == "LastName")
-                                            {
-                                                <span>@(sortAscending ? "↑" : "↓")</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="text-muted">↕</span>
-                                            }
-                                        </a>
-                                    </th>
-
-                                    <th>
-                                        <a href="@Url.Action("Index", new {
-                                            pageNumber = 1,
-                                            pageSize = Model.PageSize,
-                                            searchTerm = Model.SearchTerm,
-                                            sortBy = "Email",
-                                            sortAscending = currentSortBy == "Email" ? !sortAscending : true
-                                        })" class="text-decoration-none">
-                                            Email
-                                            @if (currentSortBy == "Email")
-                                            {
-                                                <span>@(sortAscending ? "↑" : "↓")</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="text-muted">↕</span>
-                                            }
-                                        </a>
-                                    </th>
-
-                                    <th>
-                                        <a href="@Url.Action("Index", new {
-                                            pageNumber = 1,
-                                            pageSize = Model.PageSize,
-                                            searchTerm = Model.SearchTerm,
-                                            sortBy = "RoleId",
-                                            sortAscending = currentSortBy == "RoleId" ? !sortAscending : true
-                                        })" class="text-decoration-none">
-                                            Role
-                                            @if (currentSortBy == "RoleId")
-                                            {
-                                                <span>@(sortAscending ? "↑" : "↓")</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="text-muted">↕</span>
-                                            }
-                                        </a>
-                                    </th>
-
-                                    <th>
-                                        <a href="@Url.Action("Index", new {
-                                            pageNumber = 1,
-                                            pageSize = Model.PageSize,
-                                            searchTerm = Model.SearchTerm,
-                                            sortBy = "CreatedAt",
-                                            sortAscending = currentSortBy == "CreatedAt" ? !sortAscending : true
-                                        })" class="text-decoration-none">
-                                            Created At
-                                            @if (currentSortBy == "CreatedAt")
-                                            {
-                                                <span>@(sortAscending ? "↑" : "↓")</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="text-muted">↕</span>
-                                            }
-                                        </a>
-                                    </th>
+                                    @{
+                                        ViewData["CurrentSortBy"] = currentSortBy;
+                                        ViewData["SortAscending"] = sortAscending;
+                                        ViewData["PageSize"] = Model.PageSize;
+                                        ViewData["SearchTerm"] = Model.SearchTerm;
+                                        
+                                        ViewData["SortBy"] = "Id";
+                                        ViewData["DisplayText"] = "ID";
+                                    }
+                                    @await Html.PartialAsync("Index/_IndexSortableHeader", ViewData)
+                                    
+                                    @{
+                                        ViewData["SortBy"] = "FirstName";
+                                        ViewData["DisplayText"] = "First Name";
+                                    }
+                                    @await Html.PartialAsync("Index/_IndexSortableHeader", ViewData)
+                                    
+                                    @{
+                                        ViewData["SortBy"] = "LastName";
+                                        ViewData["DisplayText"] = "Last Name";
+                                    }
+                                    @await Html.PartialAsync("Index/_IndexSortableHeader", ViewData)
+                                    
+                                    @{
+                                        ViewData["SortBy"] = "Email";
+                                        ViewData["DisplayText"] = "Email";
+                                    }
+                                    @await Html.PartialAsync("Index/_IndexSortableHeader", ViewData)
+                                    
+                                    @{
+                                        ViewData["SortBy"] = "RoleId";
+                                        ViewData["DisplayText"] = "Role";
+                                    }
+                                    @await Html.PartialAsync("Index/_IndexSortableHeader", ViewData)
+                                    
+                                    @{
+                                        ViewData["SortBy"] = "CreatedAt";
+                                        ViewData["DisplayText"] = "Created At";
+                                    }
+                                    @await Html.PartialAsync("Index/_IndexSortableHeader", ViewData)
                                 </tr>
                             </thead>
 

@@ -5,6 +5,12 @@
     ViewData["Entity"] = ViewContext.RouteData.Values["controller"]?.ToString().ToLower();
     var sortAscending = Model.SortAscending;
     var currentSortBy = Model.SortBy ?? "Id";
+    
+    // Set ViewData for sortable headers
+    ViewData["SortAscending"] = sortAscending;
+    ViewData["CurrentSortBy"] = currentSortBy;
+    ViewData["PageSize"] = Model.PageSize;
+    ViewData["SearchTerm"] = Model.SearchTerm;
 }
 
 <div class="row justify-content-center" data-permission="read">
@@ -27,44 +33,17 @@
                         <table class="table table-hover table-striped mb-0">
                             <thead>
                                 <tr>
-                                    <th>
-                                        <a href="@Url.Action("Index", new { 
-                                            pageNumber = 1, 
-                                            pageSize = Model.PageSize,
-                                            searchTerm = Model.SearchTerm,
-                                            sortBy = "Id",
-                                            sortAscending = currentSortBy == "Id" ? !sortAscending : true
-                                        })" class="text-decoration-none">
-                                            ID
-                                            @if (currentSortBy == "Id")
-                                            {
-                                                <span>@(sortAscending ? "↑" : "↓")</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="text-muted">↕</span>
-                                            }
-                                        </a>
-                                    </th>
-                                    <th>
-                                        <a href="@Url.Action("Index", new { 
-                                            pageNumber = 1, 
-                                            pageSize = Model.PageSize,
-                                            searchTerm = Model.SearchTerm,
-                                            sortBy = "Type",
-                                            sortAscending = currentSortBy == "Type" ? !sortAscending : true
-                                        })" class="text-decoration-none">
-                                            Type
-                                            @if (currentSortBy == "Type")
-                                            {
-                                                <span>@(sortAscending ? "↑" : "↓")</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="text-muted">↕</span>
-                                            }
-                                        </a>
-                                    </th>
+                                    @{
+                                        ViewData["SortBy"] = "Id";
+                                        ViewData["DisplayText"] = "ID";
+                                    }
+                                    @await Html.PartialAsync("Index/_IndexSortableHeader", ViewData)
+                                    
+                                    @{
+                                        ViewData["SortBy"] = "Type";
+                                        ViewData["DisplayText"] = "Type";
+                                    }
+                                    @await Html.PartialAsync("Index/_IndexSortableHeader", ViewData)
                                 </tr>
                             </thead>
                             <tbody>

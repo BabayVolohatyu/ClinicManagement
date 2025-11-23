@@ -37,17 +37,20 @@ namespace ClinicManagement.Services.Info
             {
                 var query = _dbSet.Include(s => s.Doctor).ThenInclude(d => d.Person).Include(s => s.Cabinet).ThenInclude(c => c.Type).AsNoTracking();
 
+                // Apply filtration if search term is provided
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
                     query = ApplySearchFilter(query, searchTerm);
                 }
 
+                // Apply sorting if sort field is provided
                 if (!string.IsNullOrWhiteSpace(sortBy))
                 {
                     query = ApplySorting(query, sortBy, sortAscending);
                 }
                 else
                 {
+                    // Default sorting by StartTime if no sort specified
                     query = ApplySorting(query, "StartTime", false);
                 }
 
@@ -69,9 +72,14 @@ namespace ClinicManagement.Services.Info
                     SortAscending = sortAscending
                 };
             }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetAllAsync operation for {Entity} was canceled", typeof(Schedule).Name);
+                throw;
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while getting Schedule list");
+                _logger.LogError(ex, "Error while getting {Entity} list", typeof(Schedule).Name);
                 throw;
             }
         }
@@ -85,9 +93,14 @@ namespace ClinicManagement.Services.Info
                     .Include(s => s.Cabinet).ThenInclude(c => c.Type)
                     .FirstOrDefaultAsync(s => s.Id == id, token);
             }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetByIdAsync for {Entity} with id {Id} was canceled", typeof(Schedule).Name, id);
+                throw;
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while retrieving Schedule");
+                _logger.LogError(ex, "Error while retrieving {Entity} with id {Id}", typeof(Schedule).Name, id);
                 throw;
             }
         }
@@ -149,6 +162,11 @@ namespace ClinicManagement.Services.Info
                     .ThenBy(d => d.Person != null ? d.Person.FirstName : "")
                     .ToListAsync(token);
             }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetAllDoctorsAsync operation was canceled");
+                throw;
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while getting Doctor list");
@@ -166,6 +184,11 @@ namespace ClinicManagement.Services.Info
                     .ThenBy(c => c.Floor)
                     .ThenBy(c => c.Number)
                     .ToListAsync(token);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("GetAllCabinetsAsync operation was canceled");
+                throw;
             }
             catch (Exception ex)
             {

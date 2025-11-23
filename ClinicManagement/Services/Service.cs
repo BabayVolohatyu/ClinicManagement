@@ -264,14 +264,11 @@ namespace ClinicManagement.Services
         {
             try
             {
-                var entity = Activator.CreateInstance<T>();
-                var keyProperty = _context.Model.FindEntityType(typeof(T))?.FindPrimaryKey()?.Properties.FirstOrDefault();
-                if (keyProperty == null)
-                    throw new InvalidOperationException($"No key defined for entity {typeof(T).Name}");
+                var entity = await GetByIdAsync(id, token);
+                if (entity == null)
+                    throw new KeyNotFoundException($"{typeof(T).Name} with id {id} not found");
 
-                _context.Entry(entity!).Property(keyProperty.Name).CurrentValue = id;
-                _context.Entry(entity!).State = EntityState.Deleted;
-
+                _dbSet.Remove(entity);
                 await _context.SaveChangesAsync(token);
 
                 _logger.LogInformation("Removed {Entity} with id {Id}", typeof(T).Name, id);
