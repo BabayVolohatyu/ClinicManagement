@@ -14,30 +14,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
-	<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\Auth\" />
-    <Folder Include="Services\Auth\" />
-    <Folder Include="Validators\Auth\" />
-    <Folder Include="Views\Facilities\Cabinet\" />
-    <Folder Include="Views\Health\Diagnosis\" />
-    <Folder Include="Views\Health\Treatment\" />
-    <Folder Include="Views\Health\Symptom\" />
-    <Folder Include="Views\Health\SicknessTreatment\" />
-    <Folder Include="Views\Health\SicknessSymptom\" />
-    <Folder Include="Views\Health\SicknessProcesdure\" />
-    <Folder Include="Views\Health\Sickness\" />
-    <Folder Include="Views\Health\Procedure\" />
-    <Folder Include="Views\Humans\DistrictDoctor\" />
-    <Folder Include="Views\Humans\Doctor\" />
-    <Folder Include="Views\Humans\Patient\" />
-    <Folder Include="Views\Info\Address\" />
-    <Folder Include="Views\Info\Appointment\" />
-    <Folder Include="Views\Info\DoctorOnCallStatus\" />
-    <Folder Include="Views\Info\DoctorProcedure\" />
-    <Folder Include="Views\Info\Schedule\" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
   </ItemGroup>
 
 </Project>
