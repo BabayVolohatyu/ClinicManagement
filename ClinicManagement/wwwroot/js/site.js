@@ -71,15 +71,17 @@ function applyEntityActions() {
         });
     }
 
-    const allButtons = actions.querySelectorAll("a[data-permission]");
+    const allButtons = actions.querySelectorAll("a[data-permission], button[data-permission]");
     allButtons.forEach(btn => {
         if (!btn.hasAttribute("data-entity-action")) {
             const perm = btn.getAttribute("data-permission");
             if (hasPermission(perm)) {
-                // Set href from data-route attribute if present
-                const route = btn.getAttribute("data-route");
-                if (route && !btn.hasAttribute("href")) {
-                    btn.setAttribute("href", route);
+                // Set href from data-route attribute if present (only for anchor tags)
+                if (btn.tagName.toLowerCase() === "a") {
+                    const route = btn.getAttribute("data-route");
+                    if (route && !btn.hasAttribute("href")) {
+                        btn.setAttribute("href", route);
+                    }
                 }
                 btn.style.display = "inline-flex";
             } else {
