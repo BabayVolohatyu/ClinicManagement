@@ -165,5 +165,23 @@ namespace ClinicManagement.Controllers
                 return StatusCode(500, "An error occurred while deleting entity.");
             }
         }
+
+        // GET: /[controller]/DownloadCsv
+        [HttpGet]
+        public virtual async Task<IActionResult> DownloadCsv()
+        {
+            try
+            {
+                var bytes = await _service.ExportToCsvAsync();
+                var entityName = typeof(T).Name.ToLower();
+                var fileName = $"{entityName}_{DateTime.UtcNow:yyyyMMdd_HHmmss}.csv";
+                return File(bytes, "text/csv", fileName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating CSV for {EntityName}", typeof(T).Name);
+                return StatusCode(500, "An error occurred while generating the CSV file.");
+            }
+        }
     }
 }

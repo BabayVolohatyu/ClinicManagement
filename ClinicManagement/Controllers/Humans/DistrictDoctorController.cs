@@ -1,6 +1,7 @@
 ﻿using ClinicManagement.Helpers;
 using ClinicManagement.Models.Auth;
 using ClinicManagement.Models.Humans;
+using ClinicManagement.Services;
 using ClinicManagement.Services.Humans;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -8,41 +9,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace ClinicManagement.Controllers.Humans
 {
     [Authorize]
-    public class DistrictDoctorController : Controller
+    public class DistrictDoctorController : CommonController<DistrictDoctor>
     {
-        private readonly IDistrictDoctorService _service;
-        private readonly ILogger<DistrictDoctorController> _logger;
+        private readonly IDistrictDoctorService _districtDoctorService;
 
-        public DistrictDoctorController(IDistrictDoctorService service, ILogger<DistrictDoctorController> logger)
+        public DistrictDoctorController(IService<DistrictDoctor> service, IDistrictDoctorService districtDoctorService, ILogger<DistrictDoctorController> logger)
+            : base(service, logger)
         {
-            _service = service;
-            _logger = logger;
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Index(
-            int pageNumber = 1,
-            int pageSize = 10,
-            string? searchTerm = null,
-            string? sortBy = null,
-            bool sortAscending = true)
-        {
-            try
-            {
-                ViewData["Entity"] = RouteData.Values["controller"]?.ToString().ToLower();
-                var result = await _service.GetAllAsync(pageNumber, pageSize, searchTerm, sortBy, sortAscending);
-                return View(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching DistrictDoctor list");
-                return StatusCode(500, "An error occurred while fetching data.");
-            }
+            _districtDoctorService = districtDoctorService;
         }
 
         [HttpGet]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
-        public async Task<IActionResult> Create()
+        public override async Task<IActionResult> Create()
         {
             try
             {
@@ -58,7 +37,7 @@ namespace ClinicManagement.Controllers.Humans
 
         [HttpPost]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
-        public async Task<IActionResult> Create(DistrictDoctor entity)
+        public override async Task<IActionResult> Create(DistrictDoctor entity)
         {
             if (entity == null)
                 return BadRequest("Entity cannot be null.");
@@ -75,7 +54,7 @@ namespace ClinicManagement.Controllers.Humans
             try
             {
                 await _service.AddAsync(entity);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Entity), new { doctorId = entity.DoctorId });
             }
             catch (Exception ex)
             {
@@ -88,11 +67,11 @@ namespace ClinicManagement.Controllers.Humans
 
         [HttpGet]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
-        public async Task<IActionResult> Entity(int doctorId)
+        public new async Task<IActionResult> Entity(int doctorId)
         {
             try
             {
-                var entity = await _service.GetByIdAsync(doctorId);
+                var entity = await _districtDoctorService.GetByIdAsync(doctorId);
                 if (entity == null)
                     return NotFound($"DistrictDoctor not found.");
 
@@ -108,11 +87,11 @@ namespace ClinicManagement.Controllers.Humans
 
         [HttpPost]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
-        public async Task<IActionResult> Delete(int doctorId)
+        public new async Task<IActionResult> Delete(int doctorId)
         {
             try
             {
-                await _service.RemoveAsync(doctorId);
+                await _districtDoctorService.RemoveAsync(doctorId);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -124,7 +103,7 @@ namespace ClinicManagement.Controllers.Humans
 
         private async Task LoadDropdownsAsync()
         {
-            var doctors = await _service.GetAllDoctorsAsync();
+            var doctors = await _districtDoctorService.GetAllDoctorsAsync();
             ViewBag.Doctors = new SelectList(doctors.Select(d => new { 
                 Id = d.Id, 
                 DisplayName = d.Person != null ? $"{d.Person.LastName}, {d.Person.FirstName}" + (string.IsNullOrEmpty(d.Person.Patronymic) ? "" : $" {d.Person.Patronymic}") : $"Doctor {d.Id}"

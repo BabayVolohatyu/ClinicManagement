@@ -1,6 +1,7 @@
 ﻿using ClinicManagement.Helpers;
 using ClinicManagement.Models.Auth;
 using ClinicManagement.Models.Health;
+using ClinicManagement.Services;
 using ClinicManagement.Services.Health;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -8,41 +9,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace ClinicManagement.Controllers.Health
 {
     [Authorize]
-    public class SicknessSymptomController : Controller
+    public class SicknessSymptomController : CommonController<SicknessSymptom>
     {
-        private readonly ISicknessSymptomService _service;
-        private readonly ILogger<SicknessSymptomController> _logger;
+        private readonly ISicknessSymptomService _sicknessSymptomService;
 
-        public SicknessSymptomController(ISicknessSymptomService service, ILogger<SicknessSymptomController> logger)
+        public SicknessSymptomController(IService<SicknessSymptom> service, ISicknessSymptomService sicknessSymptomService, ILogger<SicknessSymptomController> logger)
+            : base(service, logger)
         {
-            _service = service;
-            _logger = logger;
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Index(
-            int pageNumber = 1,
-            int pageSize = 10,
-            string? searchTerm = null,
-            string? sortBy = null,
-            bool sortAscending = true)
-        {
-            try
-            {
-                ViewData["Entity"] = RouteData.Values["controller"]?.ToString().ToLower();
-                var result = await _service.GetAllAsync(pageNumber, pageSize, searchTerm, sortBy, sortAscending);
-                return View(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching SicknessSymptom list");
-                return StatusCode(500, "An error occurred while fetching data.");
-            }
+            _sicknessSymptomService = sicknessSymptomService;
         }
 
         [HttpGet]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
-        public async Task<IActionResult> Create()
+        public override async Task<IActionResult> Create()
         {
             try
             {
@@ -58,7 +37,7 @@ namespace ClinicManagement.Controllers.Health
 
         [HttpPost]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
-        public async Task<IActionResult> Create(SicknessSymptom entity)
+        public override async Task<IActionResult> Create(SicknessSymptom entity)
         {
             if (entity == null)
                 return BadRequest("Entity cannot be null.");
@@ -78,7 +57,7 @@ namespace ClinicManagement.Controllers.Health
             try
             {
                 await _service.AddAsync(entity);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Entity), new { sicknessId = entity.SicknessId, symptomId = entity.SymptomId });
             }
             catch (Exception ex)
             {
@@ -91,11 +70,11 @@ namespace ClinicManagement.Controllers.Health
 
         [HttpGet]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
-        public async Task<IActionResult> Entity(int sicknessId, int symptomId)
+        public new async Task<IActionResult> Entity(int sicknessId, int symptomId)
         {
             try
             {
-                var entity = await _service.GetByIdAsync(sicknessId, symptomId);
+                var entity = await _sicknessSymptomService.GetByIdAsync(sicknessId, symptomId);
                 if (entity == null)
                     return NotFound($"SicknessSymptom not found.");
 
@@ -111,11 +90,11 @@ namespace ClinicManagement.Controllers.Health
 
         [HttpPost]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
-        public async Task<IActionResult> Delete(int sicknessId, int symptomId)
+        public new async Task<IActionResult> Delete(int sicknessId, int symptomId)
         {
             try
             {
-                await _service.RemoveAsync(sicknessId, symptomId);
+                await _sicknessSymptomService.RemoveAsync(sicknessId, symptomId);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -127,10 +106,10 @@ namespace ClinicManagement.Controllers.Health
 
         private async Task LoadDropdownsAsync()
         {
-            var sicknesses = await _service.GetAllSicknessesAsync();
+            var sicknesses = await _sicknessSymptomService.GetAllSicknessesAsync();
             ViewBag.Sicknesses = new SelectList(sicknesses, "Id", "Name");
 
-            var symptoms = await _service.GetAllSymptomsAsync();
+            var symptoms = await _sicknessSymptomService.GetAllSymptomsAsync();
             ViewBag.Symptoms = new SelectList(symptoms, "Id", "Name");
         }
     }
