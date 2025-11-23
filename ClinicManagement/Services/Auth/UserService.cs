@@ -116,7 +116,7 @@ namespace ClinicManagement.Services.Auth
         {
             if (sortBy == "Role.Name" || sortBy == "RoleId")
             {
-                query = ascending ? query.OrderBy(u => u.Role != null ? u.Role.Name : "") 
+                query = ascending ? query.OrderBy(u => u.Role != null ? u.Role.Name : "")
                     : query.OrderByDescending(u => u.Role != null ? u.Role.Name : "");
                 return query;
             }
@@ -137,10 +137,12 @@ namespace ClinicManagement.Services.Auth
                 }
 
                 entity.CreatedAt = DateTimeOffset.UtcNow;
-                await _dbSet.AddAsync(entity, token);
-                await _context.SaveChangesAsync(token);
 
-                _logger.LogInformation("Added new {Entity}", typeof(User).Name);
+                // Clear navigation properties to prevent EF Core from trying to insert them
+                entity.Role = null!;
+                entity.PromotionRequests = null!;
+
+                await base.AddAsync(entity, token);
             }
             catch (OperationCanceledException)
             {
@@ -165,23 +167,23 @@ namespace ClinicManagement.Services.Auth
                 if (existingEntity == null)
                     throw new KeyNotFoundException($"{typeof(User).Name} with id {id} not found");
 
-                // Store the original password hash
-                var originalPasswordHash = existingEntity.PasswordHash;
-
                 // Preserve CreatedAt
                 entity.CreatedAt = existingEntity.CreatedAt;
 
-                // Only update password if a new one is provided
-                if (!string.IsNullOrWhiteSpace(entity.PasswordHash))
+                // If password is empty, preserve the existing password hash
+                // Otherwise, hash the new password
+                if (string.IsNullOrWhiteSpace(entity.PasswordHash))
                 {
-                    // Hash the new password
-                    entity.PasswordHash = HashPassword(entity.PasswordHash);
+                    entity.PasswordHash = existingEntity.PasswordHash;
                 }
                 else
                 {
-                    // Keep the existing password hash
-                    entity.PasswordHash = originalPasswordHash;
+                    entity.PasswordHash = HashPassword(entity.PasswordHash);
                 }
+
+                // Clear navigation properties to prevent EF Core from trying to insert them
+                entity.Role = null!;
+                entity.PromotionRequests = null!;
 
                 _context.Entry(existingEntity).CurrentValues.SetValues(entity);
                 _context.Entry(existingEntity).State = EntityState.Modified;

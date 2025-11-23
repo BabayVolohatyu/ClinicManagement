@@ -51,7 +51,7 @@
                                 <tr onclick="makeEditablePassword(this)" style="cursor: pointer;">
                                     <th>Password</th>
                                     <td>
-                                        <input type="password" name="PasswordHash" class="form-control-plaintext" readonly placeholder="Click to change password" />
+                                        <input type="password" name="Password" class="form-control-plaintext" readonly placeholder="Click to change password" />
                                         <span asp-validation-for="PasswordHash" class="text-danger"></span>
                                         <div class="text-muted mt-1">
                                             <small>Leave empty to keep current password</small>
@@ -131,11 +131,9 @@
             }
         }
 
-        // Initialize - make sure the correct role is selected
         document.addEventListener("DOMContentLoaded", function () {
             const roleSelect = document.querySelector("select[name='RoleId']");
             if (roleSelect) {
-                // The selected value should already be set by ASP.NET, but we ensure it's readable
                 roleSelect.setAttribute('data-initial-value', roleSelect.value);
             }
         });

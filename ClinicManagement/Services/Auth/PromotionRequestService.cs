@@ -1,7 +1,6 @@
 using ClinicManagement.Data;
 using ClinicManagement.Models.Auth;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace ClinicManagement.Services.Auth
 {
@@ -9,22 +8,18 @@ namespace ClinicManagement.Services.Auth
     {
         Task<IEnumerable<User>> GetAllUsersAsync(CancellationToken token = default);
         Task<IEnumerable<Role>> GetAllRolesAsync(CancellationToken token = default);
-        Task<User?> GetCurrentUserAsync(CancellationToken token = default);
-        bool IsCurrentUserAdmin();
     }
 
     public class PromotionRequestService : Service<PromotionRequest>, IPromotionRequestService
     {
         private readonly DbSet<User> _users;
         private readonly DbSet<Role> _roles;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public PromotionRequestService(ClinicDbContext context, ILogger<PromotionRequestService> logger, IHttpContextAccessor httpContextAccessor)
+        public PromotionRequestService(ClinicDbContext context, ILogger<PromotionRequestService> logger)
             : base(context, logger)
         {
             _users = _context.Set<User>();
             _roles = _context.Set<Role>();
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public override async Task<PaginatedResult<PromotionRequest>> GetAllAsync(
@@ -119,26 +114,26 @@ namespace ClinicManagement.Services.Auth
 
             try
             {
-                // If user is not admin, automatically set UserId to current user
-                if (!IsCurrentUserAdmin())
+                if (entity.UserId == 0)
                 {
-                    var currentUser = await GetCurrentUserAsync(token);
-                    if (currentUser != null)
-                    {
-                        entity.UserId = currentUser.Id;
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException("Unable to determine current user.");
-                    }
+                    throw new ArgumentException("UserId cannot be 0.");
                 }
 
-                entity.RequestedAt = DateTimeOffset.UtcNow;
-                entity.Status = PromotionStatus.Pending;
-                await _dbSet.AddAsync(entity, token);
-                await _context.SaveChangesAsync(token);
+                if (entity.RequestedRoleId == 0)
+                {
+                    throw new ArgumentException("RequestedRoleId cannot be 0.");
+                }
 
-                _logger.LogInformation("Added new {Entity}", typeof(PromotionRequest).Name);
+                // Check if user already has a pending promotion request
+                var existingPendingRequest = await _dbSet
+                    .FirstOrDefaultAsync(pr => pr.UserId == entity.UserId && pr.Status == PromotionStatus.Pending, token);
+
+                if (existingPendingRequest != null)
+                {
+                    throw new InvalidOperationException("You already have a pending promotion request. Please wait for it to be processed before submitting a new one.");
+                }
+
+                await base.AddAsync(entity, token);
             }
             catch (OperationCanceledException)
             {
@@ -159,23 +154,57 @@ namespace ClinicManagement.Services.Auth
 
             try
             {
+                if (entity.UserId == 0)
+                {
+                    throw new ArgumentException("UserId cannot be 0.");
+                }
+
+                if (entity.RequestedRoleId == 0)
+                {
+                    throw new ArgumentException("RequestedRoleId cannot be 0.");
+                }
+
                 var existingEntity = await GetByIdAsync(id, token);
                 if (existingEntity == null)
                     throw new KeyNotFoundException($"{typeof(PromotionRequest).Name} with id {id} not found");
 
-                // If admin is processing the promotion (status changed from Pending), set ProcessedByAdminId and ProcessedAt
-                if (IsCurrentUserAdmin() && existingEntity.Status == PromotionStatus.Pending && entity.Status != PromotionStatus.Pending)
+                // Preserve original values that shouldn't be changed
+                var originalRequestedAt = existingEntity.RequestedAt;
+                var originalStatus = existingEntity.Status;
+
+                // If status is changing from Pending to Approved/Rejected, update user's role and set processed info
+                if (originalStatus == PromotionStatus.Pending && entity.Status != PromotionStatus.Pending)
                 {
-                    var currentUser = await GetCurrentUserAsync(token);
-                    if (currentUser != null)
+                    // Set processed info (should be set by controller, but ensure it's set)
+                    if (!entity.ProcessedAt.HasValue)
                     {
-                        entity.ProcessedByAdminId = currentUser.Id;
                         entity.ProcessedAt = DateTimeOffset.UtcNow;
+                    }
+
+                    // If approved, update the user's role
+                    if (entity.Status == PromotionStatus.Approved)
+                    {
+                        var user = await _users.FindAsync(new object[] { entity.UserId }, token);
+                        if (user != null)
+                        {
+                            user.RoleId = entity.RequestedRoleId;
+                            _users.Update(user);
+                            _logger.LogInformation("Updated user {UserId} role to {RoleId} after promotion approval", entity.UserId, entity.RequestedRoleId);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException($"User with id {entity.UserId} not found.");
+                        }
                     }
                 }
 
                 // Preserve RequestedAt
-                entity.RequestedAt = existingEntity.RequestedAt;
+                entity.RequestedAt = originalRequestedAt;
+
+                // Clear navigation properties to prevent EF Core from trying to insert them
+                entity.RequestedRole = null!;
+                entity.User = null!;
+                entity.ProcessedByAdmin = null;
 
                 _context.Entry(existingEntity).CurrentValues.SetValues(entity);
                 _context.Entry(existingEntity).State = EntityState.Modified;
@@ -215,19 +244,19 @@ namespace ClinicManagement.Services.Auth
         {
             if (sortBy == "User.Email" || sortBy == "UserId")
             {
-                query = ascending ? query.OrderBy(pr => pr.User != null ? pr.User.Email : "") 
+                query = ascending ? query.OrderBy(pr => pr.User != null ? pr.User.Email : "")
                     : query.OrderByDescending(pr => pr.User != null ? pr.User.Email : "");
                 return query;
             }
             if (sortBy == "RequestedRole.Name" || sortBy == "RequestedRoleId")
             {
-                query = ascending ? query.OrderBy(pr => pr.RequestedRole != null ? pr.RequestedRole.Name : "") 
+                query = ascending ? query.OrderBy(pr => pr.RequestedRole != null ? pr.RequestedRole.Name : "")
                     : query.OrderByDescending(pr => pr.RequestedRole != null ? pr.RequestedRole.Name : "");
                 return query;
             }
             if (sortBy == "Status")
             {
-                query = ascending ? query.OrderBy(pr => pr.Status) 
+                query = ascending ? query.OrderBy(pr => pr.Status)
                     : query.OrderByDescending(pr => pr.Status);
                 return query;
             }
@@ -262,48 +291,6 @@ namespace ClinicManagement.Services.Auth
             {
                 _logger.LogError(ex, "Error while getting Role list");
                 throw;
-            }
-        }
-
-        public async Task<User?> GetCurrentUserAsync(CancellationToken token = default)
-        {
-            try
-            {
-                var user = _httpContextAccessor.HttpContext?.User;
-                if (user == null)
-                    return null;
-
-                var userIdClaim = user.FindFirst("id") ?? user.FindFirst(ClaimTypes.NameIdentifier);
-                if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-                    return null;
-
-                return await _users.FirstOrDefaultAsync(u => u.Id == userId, token);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error while getting current user");
-                return null;
-            }
-        }
-
-        public bool IsCurrentUserAdmin()
-        {
-            try
-            {
-                var user = _httpContextAccessor.HttpContext?.User;
-                if (user == null)
-                    return false;
-
-                var roleIdClaim = user.FindFirst("roleId");
-                if (roleIdClaim == null || !int.TryParse(roleIdClaim.Value, out int roleId))
-                    return false;
-
-                return roleId == (int)RoleType.Admin;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error while checking if current user is admin");
-                return false;
             }
         }
     }
