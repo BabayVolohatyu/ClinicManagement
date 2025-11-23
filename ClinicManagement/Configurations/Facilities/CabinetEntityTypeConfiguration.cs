@@ -1,5 +1,4 @@
-﻿using ClinicManagement.Data.Facilities;
-using ClinicManagement.Models.Facilities;
+﻿using ClinicManagement.Models.Facilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -17,9 +16,6 @@ namespace ClinicManagement.Configurations.Facilities
                 .WithMany(ct => ct.Cabinets)
                 .HasForeignKey(c => c.TypeId)
                 .IsRequired();
-
-            // SEED data
-            builder.HasData(CabinetSeedData.GetSeedData());
         }
     }
 }

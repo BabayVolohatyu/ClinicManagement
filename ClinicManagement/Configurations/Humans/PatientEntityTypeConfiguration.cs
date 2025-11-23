@@ -1,5 +1,4 @@
-﻿using ClinicManagement.Data.Humans;
-using ClinicManagement.Models.Humans;
+﻿using ClinicManagement.Models.Humans;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -22,9 +21,6 @@ namespace ClinicManagement.Configurations.Humans
                 .HasOne(pt => pt.Address)
                 .WithMany(a => a.Patients)
                 .HasForeignKey(pt => pt.AddressId);
-
-            // SEED data
-            builder.HasData(PatientSeedData.GetSeedData());
         }
     }
 }

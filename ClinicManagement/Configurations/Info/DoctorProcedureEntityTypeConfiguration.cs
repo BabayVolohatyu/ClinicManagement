@@ -1,5 +1,4 @@
-﻿using ClinicManagement.Data.Info;
-using ClinicManagement.Models.Info;
+﻿using ClinicManagement.Models.Info;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -25,9 +24,6 @@ namespace ClinicManagement.Configurations.Info
                 .HasForeignKey(d => d.ProcedureId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
-
-            // SEED data
-            builder.HasData(DoctorProcedureSeedData.GetSeedData());
         }
     }
 }

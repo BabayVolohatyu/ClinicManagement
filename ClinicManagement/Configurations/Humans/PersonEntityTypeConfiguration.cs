@@ -1,5 +1,4 @@
-﻿using ClinicManagement.Data.Humans;
-using ClinicManagement.Models.Humans;
+﻿using ClinicManagement.Models.Humans;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -11,9 +10,6 @@ namespace ClinicManagement.Configurations.Humans
         {
             builder
                 .HasKey(p => p.Id);
-
-            // SEED data
-            builder.HasData(PersonSeedData.GetSeedData());
         }
     }
 }

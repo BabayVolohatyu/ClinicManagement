@@ -1,5 +1,4 @@
-﻿using ClinicManagement.Data.Humans;
-using ClinicManagement.Models.Humans;
+﻿using ClinicManagement.Models.Humans;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -23,9 +22,6 @@ namespace ClinicManagement.Configurations.Humans
                 .WithMany(s => s.Doctors)
                 .HasForeignKey(d => d.SpecialtyId)
                 .IsRequired();
-
-            // SEED data
-            builder.HasData(DoctorSeedData.GetSeedData());
         }
     }
 }
