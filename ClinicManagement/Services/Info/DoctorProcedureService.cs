@@ -1,4 +1,6 @@
 using ClinicManagement.Data;
+using ClinicManagement.Models.Health;
+using ClinicManagement.Models.Humans;
 using ClinicManagement.Models.Info;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,20 +8,20 @@ namespace ClinicManagement.Services.Info
 {
     public interface IDoctorProcedureService : IService<DoctorProcedure>
     {
-        Task<IEnumerable<Models.Humans.Doctor>> GetAllDoctorsAsync(CancellationToken token = default);
-        Task<IEnumerable<Models.Health.Procedure>> GetAllProceduresAsync(CancellationToken token = default);
+        Task<IEnumerable<Doctor>> GetAllDoctorsAsync(CancellationToken token = default);
+        Task<IEnumerable<Procedure>> GetAllProceduresAsync(CancellationToken token = default);
     }
 
     public class DoctorProcedureService : Service<DoctorProcedure>, IDoctorProcedureService
     {
-        private readonly DbSet<Models.Humans.Doctor> _doctors;
-        private readonly DbSet<Models.Health.Procedure> _procedures;
+        private readonly DbSet<Doctor> _doctors;
+        private readonly DbSet<Procedure> _procedures;
 
         public DoctorProcedureService(ClinicDbContext context, ILogger<DoctorProcedureService> logger)
             : base(context, logger)
         {
-            _doctors = _context.Set<Models.Humans.Doctor>();
-            _procedures = _context.Set<Models.Health.Procedure>();
+            _doctors = _context.Set<Doctor>();
+            _procedures = _context.Set<Procedure>();
         }
 
         public override async Task<PaginatedResult<DoctorProcedure>> GetAllAsync(
@@ -124,7 +126,7 @@ namespace ClinicManagement.Services.Info
             return base.ApplySorting(query, sortBy, ascending);
         }
 
-        public async Task<IEnumerable<Models.Humans.Doctor>> GetAllDoctorsAsync(CancellationToken token = default)
+        public async Task<IEnumerable<Doctor>> GetAllDoctorsAsync(CancellationToken token = default)
         {
             try
             {
@@ -142,7 +144,7 @@ namespace ClinicManagement.Services.Info
             }
         }
 
-        public async Task<IEnumerable<Models.Health.Procedure>> GetAllProceduresAsync(CancellationToken token = default)
+        public async Task<IEnumerable<Procedure>> GetAllProceduresAsync(CancellationToken token = default)
         {
             try
             {

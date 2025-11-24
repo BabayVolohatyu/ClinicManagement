@@ -1,5 +1,6 @@
 using ClinicManagement.Data;
 using ClinicManagement.Models.Humans;
+using ClinicManagement.Models.Info;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicManagement.Services.Humans
@@ -7,19 +8,19 @@ namespace ClinicManagement.Services.Humans
     public interface IPatientService : IService<Patient>
     {
         Task<IEnumerable<Person>> GetAllPeopleAsync(CancellationToken token = default);
-        Task<IEnumerable<Models.Info.Address>> GetAllAddressesAsync(CancellationToken token = default);
+        Task<IEnumerable<Address>> GetAllAddressesAsync(CancellationToken token = default);
     }
 
     public class PatientService : Service<Patient>, IPatientService
     {
         private readonly DbSet<Person> _people;
-        private readonly DbSet<Models.Info.Address> _addresses;
+        private readonly DbSet<Address> _addresses;
 
         public PatientService(ClinicDbContext context, ILogger<PatientService> logger)
             : base(context, logger)
         {
             _people = _context.Set<Person>();
-            _addresses = _context.Set<Models.Info.Address>();
+            _addresses = _context.Set<Address>();
         }
 
         public override async Task<PaginatedResult<Patient>> GetAllAsync(
@@ -184,7 +185,7 @@ namespace ClinicManagement.Services.Humans
             }
         }
 
-        public async Task<IEnumerable<Models.Info.Address>> GetAllAddressesAsync(CancellationToken token = default)
+        public async Task<IEnumerable<Address>> GetAllAddressesAsync(CancellationToken token = default)
         {
             try
             {

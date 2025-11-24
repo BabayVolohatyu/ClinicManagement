@@ -1,4 +1,6 @@
 using ClinicManagement.Data;
+using ClinicManagement.Models.Facilities;
+using ClinicManagement.Models.Humans;
 using ClinicManagement.Models.Info;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,20 +8,20 @@ namespace ClinicManagement.Services.Info
 {
     public interface IScheduleService : IService<Schedule>
     {
-        Task<IEnumerable<Models.Humans.Doctor>> GetAllDoctorsAsync(CancellationToken token = default);
-        Task<IEnumerable<Models.Facilities.Cabinet>> GetAllCabinetsAsync(CancellationToken token = default);
+        Task<IEnumerable<Doctor>> GetAllDoctorsAsync(CancellationToken token = default);
+        Task<IEnumerable<Cabinet>> GetAllCabinetsAsync(CancellationToken token = default);
     }
 
     public class ScheduleService : Service<Schedule>, IScheduleService
     {
-        private readonly DbSet<Models.Humans.Doctor> _doctors;
-        private readonly DbSet<Models.Facilities.Cabinet> _cabinets;
+        private readonly DbSet<Doctor> _doctors;
+        private readonly DbSet<Cabinet> _cabinets;
 
         public ScheduleService(ClinicDbContext context, ILogger<ScheduleService> logger)
             : base(context, logger)
         {
-            _doctors = _context.Set<Models.Humans.Doctor>();
-            _cabinets = _context.Set<Models.Facilities.Cabinet>();
+            _doctors = _context.Set<Doctor>();
+            _cabinets = _context.Set<Cabinet>();
         }
 
         public override async Task<PaginatedResult<Schedule>> GetAllAsync(
@@ -151,7 +153,7 @@ namespace ClinicManagement.Services.Info
             return base.ApplySorting(query, sortBy, ascending);
         }
 
-        public async Task<IEnumerable<Models.Humans.Doctor>> GetAllDoctorsAsync(CancellationToken token = default)
+        public async Task<IEnumerable<Doctor>> GetAllDoctorsAsync(CancellationToken token = default)
         {
             try
             {
@@ -174,7 +176,7 @@ namespace ClinicManagement.Services.Info
             }
         }
 
-        public async Task<IEnumerable<Models.Facilities.Cabinet>> GetAllCabinetsAsync(CancellationToken token = default)
+        public async Task<IEnumerable<Cabinet>> GetAllCabinetsAsync(CancellationToken token = default)
         {
             try
             {

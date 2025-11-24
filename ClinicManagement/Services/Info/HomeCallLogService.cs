@@ -1,4 +1,5 @@
 using ClinicManagement.Data;
+using ClinicManagement.Models.Humans;
 using ClinicManagement.Models.Info;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,20 +7,20 @@ namespace ClinicManagement.Services.Info
 {
     public interface IHomeCallLogService : IService<HomeCallLog>
     {
-        Task<IEnumerable<Models.Humans.Doctor>> GetAllDoctorsAsync(CancellationToken token = default);
-        Task<IEnumerable<Models.Info.Address>> GetAllAddressesAsync(CancellationToken token = default);
+        Task<IEnumerable<Doctor>> GetAllDoctorsAsync(CancellationToken token = default);
+        Task<IEnumerable<Address>> GetAllAddressesAsync(CancellationToken token = default);
     }
 
     public class HomeCallLogService : Service<HomeCallLog>, IHomeCallLogService
     {
-        private readonly DbSet<Models.Humans.Doctor> _doctors;
-        private readonly DbSet<Models.Info.Address> _addresses;
+        private readonly DbSet<Doctor> _doctors;
+        private readonly DbSet<Address> _addresses;
 
         public HomeCallLogService(ClinicDbContext context, ILogger<HomeCallLogService> logger)
             : base(context, logger)
         {
-            _doctors = _context.Set<Models.Humans.Doctor>();
-            _addresses = _context.Set<Models.Info.Address>();
+            _doctors = _context.Set<Doctor>();
+            _addresses = _context.Set<Address>();
         }
 
         public override async Task<PaginatedResult<HomeCallLog>> GetAllAsync(
@@ -157,7 +158,7 @@ namespace ClinicManagement.Services.Info
             return base.ApplySorting(query, sortBy, ascending);
         }
 
-        public async Task<IEnumerable<Models.Humans.Doctor>> GetAllDoctorsAsync(CancellationToken token = default)
+        public async Task<IEnumerable<Doctor>> GetAllDoctorsAsync(CancellationToken token = default)
         {
             try
             {
@@ -180,7 +181,7 @@ namespace ClinicManagement.Services.Info
             }
         }
 
-        public async Task<IEnumerable<Models.Info.Address>> GetAllAddressesAsync(CancellationToken token = default)
+        public async Task<IEnumerable<Address>> GetAllAddressesAsync(CancellationToken token = default)
         {
             try
             {

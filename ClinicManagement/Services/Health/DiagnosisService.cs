@@ -1,22 +1,23 @@
 using ClinicManagement.Data;
 using ClinicManagement.Models.Health;
+using ClinicManagement.Models.Info;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicManagement.Services.Health
 {
     public interface IDiagnosisService : IService<Diagnosis>
     {
-        Task<IEnumerable<Models.Info.Appointment>> GetAllAppointmentsAsync(CancellationToken token = default);
+        Task<IEnumerable<Appointment>> GetAllAppointmentsAsync(CancellationToken token = default);
     }
 
     public class DiagnosisService : Service<Diagnosis>, IDiagnosisService
     {
-        private readonly DbSet<Models.Info.Appointment> _appointments;
+        private readonly DbSet<Appointment> _appointments;
 
         public DiagnosisService(ClinicDbContext context, ILogger<DiagnosisService> logger)
             : base(context, logger)
         {
-            _appointments = _context.Set<Models.Info.Appointment>();
+            _appointments = _context.Set<Appointment>();
         }
 
         public override async Task<PaginatedResult<Diagnosis>> GetAllAsync(
@@ -130,7 +131,7 @@ namespace ClinicManagement.Services.Health
             return base.ApplySorting(query, sortBy, ascending);
         }
 
-        public async Task<IEnumerable<Models.Info.Appointment>> GetAllAppointmentsAsync(CancellationToken token = default)
+        public async Task<IEnumerable<Appointment>> GetAllAppointmentsAsync(CancellationToken token = default)
         {
             try
             {

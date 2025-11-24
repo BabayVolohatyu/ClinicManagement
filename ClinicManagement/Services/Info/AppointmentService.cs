@@ -1,4 +1,6 @@
 using ClinicManagement.Data;
+using ClinicManagement.Models.Facilities;
+using ClinicManagement.Models.Humans;
 using ClinicManagement.Models.Info;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,22 +9,22 @@ namespace ClinicManagement.Services.Info
     public interface IAppointmentService : IService<Appointment>
     {
         Task<IEnumerable<DoctorProcedure>> GetAllDoctorProceduresAsync(CancellationToken token = default);
-        Task<IEnumerable<Models.Facilities.Cabinet>> GetAllCabinetsAsync(CancellationToken token = default);
-        Task<IEnumerable<Models.Humans.Patient>> GetAllPatientsAsync(CancellationToken token = default);
+        Task<IEnumerable<Cabinet>> GetAllCabinetsAsync(CancellationToken token = default);
+        Task<IEnumerable<Patient>> GetAllPatientsAsync(CancellationToken token = default);
     }
 
     public class AppointmentService : Service<Appointment>, IAppointmentService
     {
         private readonly DbSet<DoctorProcedure> _doctorProcedures;
-        private readonly DbSet<Models.Facilities.Cabinet> _cabinets;
-        private readonly DbSet<Models.Humans.Patient> _patients;
+        private readonly DbSet<Cabinet> _cabinets;
+        private readonly DbSet<Patient> _patients;
 
         public AppointmentService(ClinicDbContext context, ILogger<AppointmentService> logger)
             : base(context, logger)
         {
             _doctorProcedures = _context.Set<DoctorProcedure>();
-            _cabinets = _context.Set<Models.Facilities.Cabinet>();
-            _patients = _context.Set<Models.Humans.Patient>();
+            _cabinets = _context.Set<Cabinet>();
+            _patients = _context.Set<Patient>();
         }
 
         public override async Task<PaginatedResult<Appointment>> GetAllAsync(
@@ -196,7 +198,7 @@ namespace ClinicManagement.Services.Info
             }
         }
 
-        public async Task<IEnumerable<Models.Facilities.Cabinet>> GetAllCabinetsAsync(CancellationToken token = default)
+        public async Task<IEnumerable<Cabinet>> GetAllCabinetsAsync(CancellationToken token = default)
         {
             try
             {
@@ -219,7 +221,7 @@ namespace ClinicManagement.Services.Info
             }
         }
 
-        public async Task<IEnumerable<Models.Humans.Patient>> GetAllPatientsAsync(CancellationToken token = default)
+        public async Task<IEnumerable<Patient>> GetAllPatientsAsync(CancellationToken token = default)
         {
             try
             {
