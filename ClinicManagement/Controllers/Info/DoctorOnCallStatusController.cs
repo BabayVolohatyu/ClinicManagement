@@ -20,22 +20,6 @@ namespace ClinicManagement.Controllers.Info
             _doctorOnCallStatusService = doctorOnCallStatusService;
         }
 
-        [HttpGet]
-        [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
-        public override async Task<IActionResult> Create()
-        {
-            try
-            {
-                await LoadDropdownsAsync();
-                return View();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading create form for DoctorOnCallStatus");
-                return StatusCode(500, "An error occurred while loading the create form.");
-            }
-        }
-
         [HttpPost]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
         public override async Task<IActionResult> Create(DoctorOnCallStatus entity)
@@ -73,24 +57,6 @@ namespace ClinicManagement.Controllers.Info
                 await LoadDropdownsAsync();
                 ModelState.AddModelError("", "An error occurred while creating the doctor on call status.");
                 return View(entity);
-            }
-        }
-
-        public override async Task<IActionResult> Entity(int id)
-        {
-            try
-            {
-                var entity = await _service.GetByIdAsync(id);
-                if (entity == null)
-                    return NotFound($"DoctorOnCallStatus with id {id} not found.");
-
-                await LoadDropdownsAsync();
-                return View(entity);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching DoctorOnCallStatus with id {Id}", id);
-                return StatusCode(500, "An error occurred while fetching entity.");
             }
         }
 
@@ -145,7 +111,7 @@ namespace ClinicManagement.Controllers.Info
             }
         }
 
-        private async Task LoadDropdownsAsync()
+        protected override async Task LoadDropdownsAsync()
         {
             var doctors = await _doctorOnCallStatusService.GetAllDoctorsAsync();
             ViewBag.Doctors = new SelectList(doctors.Select(d => new { 

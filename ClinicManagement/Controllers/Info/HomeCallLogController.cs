@@ -20,22 +20,6 @@ namespace ClinicManagement.Controllers.Info
             _homeCallLogService = homeCallLogService;
         }
 
-        [HttpGet]
-        [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
-        public override async Task<IActionResult> Create()
-        {
-            try
-            {
-                await LoadDropdownsAsync();
-                return View();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading create form for HomeCallLog");
-                return StatusCode(500, "An error occurred while loading the create form.");
-            }
-        }
-
         [HttpPost]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
         public override async Task<IActionResult> Create(HomeCallLog entity)
@@ -66,24 +50,6 @@ namespace ClinicManagement.Controllers.Info
                 await LoadDropdownsAsync();
                 ModelState.AddModelError("", "An error occurred while creating the home call log.");
                 return View(entity);
-            }
-        }
-
-        public override async Task<IActionResult> Entity(int id)
-        {
-            try
-            {
-                var entity = await _service.GetByIdAsync(id);
-                if (entity == null)
-                    return NotFound($"HomeCallLog with id {id} not found.");
-
-                await LoadDropdownsAsync();
-                return View(entity);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching HomeCallLog with id {Id}", id);
-                return StatusCode(500, "An error occurred while fetching entity.");
             }
         }
 
@@ -130,7 +96,7 @@ namespace ClinicManagement.Controllers.Info
             }
         }
 
-        private async Task LoadDropdownsAsync()
+        protected override async Task LoadDropdownsAsync()
         {
             var doctors = await _homeCallLogService.GetAllDoctorsAsync();
             ViewBag.Doctors = new SelectList(doctors.Select(d => new { 

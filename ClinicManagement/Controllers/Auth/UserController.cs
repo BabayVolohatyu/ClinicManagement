@@ -20,21 +20,6 @@ namespace ClinicManagement.Controllers.Auth
             _userService = userService;
         }
 
-        [HttpGet]
-        public override async Task<IActionResult> Create()
-        {
-            try
-            {
-                await LoadDropdownsAsync();
-                return View();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading create form for User");
-                return StatusCode(500, "An error occurred while loading the create form.");
-            }
-        }
-
         [HttpPost]
         public override async Task<IActionResult> Create(User entity)
         {
@@ -61,25 +46,6 @@ namespace ClinicManagement.Controllers.Auth
                 await LoadDropdownsAsync();
                 ModelState.AddModelError("", "An error occurred while creating the user.");
                 return View(entity);
-            }
-        }
-
-        [HttpGet]
-        public override async Task<IActionResult> Entity(int id)
-        {
-            try
-            {
-                var entity = await _service.GetByIdAsync(id);
-                if (entity == null)
-                    return NotFound($"User with id {id} not found.");
-
-                await LoadDropdownsAsync();
-                return View(entity);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching User with id {Id}", id);
-                return StatusCode(500, "An error occurred while fetching entity.");
             }
         }
 
@@ -155,7 +121,7 @@ namespace ClinicManagement.Controllers.Auth
             }
         }
 
-        private async Task LoadDropdownsAsync()
+        protected override async Task LoadDropdownsAsync()
         {
             var roles = await _userService.GetAllRolesAsync();
             ViewBag.Roles = new SelectList(roles, "Id", "Name");

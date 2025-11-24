@@ -41,26 +41,6 @@ namespace ClinicManagement.Controllers.Auth
             }
         }
 
-        [HttpGet]
-        [Authorize(RoleType.Admin)]
-        public override async Task<IActionResult> Entity(int id)
-        {
-            try
-            {
-                var entity = await _service.GetByIdAsync(id);
-                if (entity == null)
-                    return NotFound($"PasswordChangeRequest with id {id} not found.");
-
-                await LoadDropdownsAsync();
-                return View(entity);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching PasswordChangeRequest with id {Id}", id);
-                return StatusCode(500, "An error occurred while fetching entity.");
-            }
-        }
-
         [HttpPost]
         [Authorize(RoleType.Admin)]
         public override async Task<IActionResult> Update(int id, PasswordChangeRequest entity)
@@ -121,7 +101,7 @@ namespace ClinicManagement.Controllers.Auth
             }
         }
 
-        private async Task LoadDropdownsAsync()
+        protected override async Task LoadDropdownsAsync()
         {
             var users = await _passwordChangeRequestService.GetAllUsersAsync();
             ViewBag.Users = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(users.Select(u => new

@@ -20,22 +20,6 @@ namespace ClinicManagement.Controllers.Health
             _diagnosisService = diagnosisService;
         }
 
-        [HttpGet]
-        [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
-        public override async Task<IActionResult> Create()
-        {
-            try
-            {
-                await LoadDropdownsAsync();
-                return View();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading create form for Diagnosis");
-                return StatusCode(500, "An error occurred while loading the create form.");
-            }
-        }
-
         [HttpPost]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
         public override async Task<IActionResult> Create(Diagnosis entity)
@@ -63,24 +47,6 @@ namespace ClinicManagement.Controllers.Health
                 await LoadDropdownsAsync();
                 ModelState.AddModelError("", "An error occurred while creating the diagnosis.");
                 return View(entity);
-            }
-        }
-
-        public override async Task<IActionResult> Entity(int id)
-        {
-            try
-            {
-                var entity = await _service.GetByIdAsync(id);
-                if (entity == null)
-                    return NotFound($"Diagnosis with id {id} not found.");
-
-                await LoadDropdownsAsync();
-                return View(entity);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching Diagnosis with id {Id}", id);
-                return StatusCode(500, "An error occurred while fetching entity.");
             }
         }
 
@@ -124,7 +90,7 @@ namespace ClinicManagement.Controllers.Health
             }
         }
 
-        private async Task LoadDropdownsAsync()
+        protected override async Task LoadDropdownsAsync()
         {
             var appointments = await _diagnosisService.GetAllAppointmentsAsync();
             ViewBag.Appointments = new SelectList(appointments.Select(a => new { 

@@ -19,22 +19,6 @@ namespace ClinicManagement.Controllers.Health
             _sicknessSymptomService = sicknessSymptomService;
         }
 
-        [HttpGet]
-        [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
-        public override async Task<IActionResult> Create()
-        {
-            try
-            {
-                await LoadDropdownsAsync();
-                return View();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading create form for SicknessSymptom");
-                return StatusCode(500, "An error occurred while loading the create form.");
-            }
-        }
-
         [HttpPost]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
         public override async Task<IActionResult> Create(SicknessSymptom entity)
@@ -104,7 +88,7 @@ namespace ClinicManagement.Controllers.Health
             }
         }
 
-        private async Task LoadDropdownsAsync()
+        protected override async Task LoadDropdownsAsync()
         {
             var sicknesses = await _sicknessSymptomService.GetAllSicknessesAsync();
             ViewBag.Sicknesses = new SelectList(sicknesses, "Id", "Name");

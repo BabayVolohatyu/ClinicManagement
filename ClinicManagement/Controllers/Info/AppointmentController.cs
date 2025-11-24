@@ -20,22 +20,6 @@ namespace ClinicManagement.Controllers.Info
             _appointmentService = appointmentService;
         }
 
-        [HttpGet]
-        [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
-        public override async Task<IActionResult> Create()
-        {
-            try
-            {
-                await LoadDropdownsAsync();
-                return View();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading create form for Appointment");
-                return StatusCode(500, "An error occurred while loading the create form.");
-            }
-        }
-
         [HttpPost]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
         public override async Task<IActionResult> Create(Appointment entity)
@@ -69,24 +53,6 @@ namespace ClinicManagement.Controllers.Info
                 await LoadDropdownsAsync();
                 ModelState.AddModelError("", "An error occurred while creating the appointment.");
                 return View(entity);
-            }
-        }
-
-        public override async Task<IActionResult> Entity(int id)
-        {
-            try
-            {
-                var entity = await _service.GetByIdAsync(id);
-                if (entity == null)
-                    return NotFound($"Appointment with id {id} not found.");
-
-                await LoadDropdownsAsync();
-                return View(entity);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error fetching Appointment with id {Id}", id);
-                return StatusCode(500, "An error occurred while fetching entity.");
             }
         }
 
@@ -136,7 +102,7 @@ namespace ClinicManagement.Controllers.Info
             }
         }
 
-        private async Task LoadDropdownsAsync()
+        protected override async Task LoadDropdownsAsync()
         {
             var doctorProcedures = await _appointmentService.GetAllDoctorProceduresAsync();
             ViewBag.DoctorProcedures = new SelectList(doctorProcedures.Select(dp => new { 

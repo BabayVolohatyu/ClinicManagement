@@ -51,6 +51,7 @@ namespace ClinicManagement.Controllers
                 if (entity == null)
                     return NotFound($"Entity with id {id} not found.");
 
+                await LoadDropdownsAsync();
                 return View(entity);
             }
             catch (Exception ex)
@@ -63,16 +64,17 @@ namespace ClinicManagement.Controllers
         // GET: /[controller]/create
         [HttpGet]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
-        public virtual Task<IActionResult> Create()
+        public virtual async Task<IActionResult> Create()
         {
             try
             {
-                return Task.FromResult<IActionResult>(View());
+                await LoadDropdownsAsync();
+                return View();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error loading create form for {EntityName}", typeof(T).Name);
-                return Task.FromResult<IActionResult>(StatusCode(500, "An error occurred while loading the create form."));
+                return StatusCode(500, "An error occurred while loading the create form.");
             }
         }
 
@@ -87,6 +89,7 @@ namespace ClinicManagement.Controllers
 
             if (!ModelState.IsValid)
             {
+                await LoadDropdownsAsync();
                 return View(entity);
             }
 
@@ -114,6 +117,7 @@ namespace ClinicManagement.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error creating {EntityName}", typeof(T).Name);
+                await LoadDropdownsAsync();
                 ModelState.AddModelError("", "An error occurred while creating the entity.");
                 return View(entity);
             }
@@ -135,12 +139,18 @@ namespace ClinicManagement.Controllers
             catch (ArgumentException ex)
             {
                 _logger.LogWarning(ex, "Entity with id {Id} not found for update", id);
-                return NotFound(ex.Message);
+                await LoadDropdownsAsync();
+                var currentEntity = await _service.GetByIdAsync(id) ?? entity;
+                ModelState.AddModelError("", ex.Message);
+                return View("Entity", currentEntity);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating {EntityName} with id {Id}", typeof(T).Name, id);
-                return StatusCode(500, "An error occurred while updating entity.");
+                await LoadDropdownsAsync();
+                var currentEntity = await _service.GetByIdAsync(id) ?? entity;
+                ModelState.AddModelError("", "An error occurred while updating entity.");
+                return View("Entity", currentEntity);
             }
         }
 
@@ -182,6 +192,15 @@ namespace ClinicManagement.Controllers
                 _logger.LogError(ex, "Error generating CSV for {EntityName}", typeof(T).Name);
                 return StatusCode(500, "An error occurred while generating the CSV file.");
             }
+        }
+
+        /// <summary>
+        /// Loads dropdown data for views. Override this method in derived controllers to populate ViewBag with SelectList items.
+        /// </summary>
+        protected virtual Task LoadDropdownsAsync()
+        {
+            // Default implementation does nothing - derived controllers can override to load their specific dropdowns
+            return Task.CompletedTask;
         }
 
     }

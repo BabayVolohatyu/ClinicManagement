@@ -19,22 +19,6 @@ namespace ClinicManagement.Controllers.Humans
             _districtDoctorService = districtDoctorService;
         }
 
-        [HttpGet]
-        [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
-        public override async Task<IActionResult> Create()
-        {
-            try
-            {
-                await LoadDropdownsAsync();
-                return View();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading create form for DistrictDoctor");
-                return StatusCode(500, "An error occurred while loading the create form.");
-            }
-        }
-
         [HttpPost]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
         public override async Task<IActionResult> Create(DistrictDoctor entity)
@@ -101,7 +85,7 @@ namespace ClinicManagement.Controllers.Humans
             }
         }
 
-        private async Task LoadDropdownsAsync()
+        protected override async Task LoadDropdownsAsync()
         {
             var doctors = await _districtDoctorService.GetAllDoctorsAsync();
             ViewBag.Doctors = new SelectList(doctors.Select(d => new { 
