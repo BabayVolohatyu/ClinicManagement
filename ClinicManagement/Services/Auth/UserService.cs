@@ -204,6 +204,57 @@ namespace ClinicManagement.Services.Auth
             }
         }
 
+        public override async Task RemoveAsync(int id, CancellationToken token = default)
+        {
+            try
+            {
+                var entity = await GetByIdAsync(id, token);
+                if (entity == null)
+                    throw new KeyNotFoundException($"{typeof(User).Name} with id {id} not found");
+
+                var promotionRequests = await _context.Set<PromotionRequest>()
+                    .Where(pr => pr.UserId == id)
+                    .ToListAsync(token);
+                
+                if (promotionRequests.Any())
+                {
+                    _context.Set<PromotionRequest>().RemoveRange(promotionRequests);
+                }
+
+                var processedRequests = await _context.Set<PromotionRequest>()
+                    .Where(pr => pr.ProcessedByAdminId == id)
+                    .ToListAsync(token);
+                
+                if (processedRequests.Any())
+                {
+                    foreach (var request in processedRequests)
+                    {
+                        request.ProcessedByAdminId = null;
+                        request.ProcessedByAdmin = null;
+                    }
+                }
+
+                _dbSet.Remove(entity);
+                await _context.SaveChangesAsync(token);
+
+                _logger.LogInformation("Removed {Entity} with id {Id}", typeof(User).Name, id);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("RemoveAsync for {Entity} with id {Id} was canceled", typeof(User).Name, id);
+                throw;
+            }
+            catch (KeyNotFoundException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while removing {Entity} with id {Id}", typeof(User).Name, id);
+                throw;
+            }
+        }
+
         public async Task<IEnumerable<Role>> GetAllRolesAsync(CancellationToken token = default)
         {
             try

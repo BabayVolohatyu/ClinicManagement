@@ -5,6 +5,7 @@ using ClinicManagement.Services.Auth;
 using ClinicManagement.Validators.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security.Claims;
 
 namespace ClinicManagement.Controllers.Auth
 {
@@ -104,10 +105,25 @@ namespace ClinicManagement.Controllers.Auth
         [HttpPost]
         public override async Task<IActionResult> Delete(int id)
         {
+            var currentUserIdClaim = User?.FindFirst("id") ?? User?.FindFirst(ClaimTypes.NameIdentifier);
+            if (currentUserIdClaim != null && int.TryParse(currentUserIdClaim.Value, out int currentUserId))
+            {
+                if (currentUserId == id)
+                {
+                    _logger.LogWarning("Admin with id {Id} attempted to delete themselves", id);
+                    return StatusCode(403, "You cannot delete your own account.");
+                }
+            }
+
             try
             {
                 await _service.RemoveAsync(id);
                 return RedirectToAction(nameof(Index));
+            }
+            catch (KeyNotFoundException ex)
+            {
+                _logger.LogWarning(ex, "User with id {Id} not found for delete", id);
+                return NotFound(ex.Message);
             }
             catch (ArgumentException ex)
             {
