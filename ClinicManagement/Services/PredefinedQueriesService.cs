@@ -80,17 +80,34 @@ namespace ClinicManagement.Services
                 ["search-patients-record"] = new QueryDefinition
                 {
                     Name = "Search by Record Number",
-                    Description = "Search patients by medical record number (Patient ID)",
+                    Description = "Search patients by medical record number (Patient ID) - shows patient history",
                     Query = @"SELECT 
                     p.""FirstName"",
                     p.""LastName"",
                     p.""Patronymic"",
                     pt.""Id"" AS ""PatientId"",
-                    a.""Country"" || ', ' || a.""State"" || ', ' || a.""Locality"" AS ""Address""
+                    addr.""Country"" || ', ' || addr.""State"" || ', ' || addr.""Locality"" AS ""Address"",
+                    apt.""StartTime"" AS ""AppointmentDate"",
+                    apt.""EndTime"" AS ""AppointmentEndTime"",
+                    apt.""DidItHappen"" AS ""Completed"",
+                    doc_p.""FirstName"" || ' ' || doc_p.""LastName"" AS ""Doctor"",
+                    sp.""Name"" AS ""Specialty"",
+                    pr.""Name"" AS ""Procedure"",
+                    dg.""Prescription"" AS ""Diagnosis"",
+                    c.""Building"" || ', Floor ' || c.""Floor"" || ', Cabinet ' || c.""Number"" AS ""Cabinet""
                 FROM ""Patients"" pt
                 JOIN ""People"" p ON pt.""PersonId"" = p.""Id""
-                JOIN ""Addresses"" a ON pt.""AddressId"" = a.""Id""
-                WHERE pt.""Id"" = {0};",
+                JOIN ""Addresses"" addr ON pt.""AddressId"" = addr.""Id""
+                LEFT JOIN ""Appointments"" apt ON pt.""Id"" = apt.""PatientId""
+                LEFT JOIN ""DoctorProcedures"" dp ON apt.""DoctorProcedureId"" = dp.""Id""
+                LEFT JOIN ""Doctors"" d ON dp.""DoctorId"" = d.""Id""
+                LEFT JOIN ""People"" doc_p ON d.""PersonId"" = doc_p.""Id""
+                LEFT JOIN ""Specialties"" sp ON d.""SpecialtyId"" = sp.""Id""
+                LEFT JOIN ""Procedures"" pr ON dp.""ProcedureId"" = pr.""Id""
+                LEFT JOIN ""Diagnoses"" dg ON apt.""Id"" = dg.""AppointmentId""
+                LEFT JOIN ""Cabinets"" c ON apt.""CabinetId"" = c.""Id""
+                WHERE pt.""Id"" = {0}
+                ORDER BY apt.""StartTime"" DESC NULLS LAST;",
                     RequiresParameters = true,
                     ParameterLabels = new[] { "Patient ID" }
                 },
