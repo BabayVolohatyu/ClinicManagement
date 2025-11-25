@@ -178,8 +178,8 @@ namespace ClinicManagement.Services
                 FROM ""Schedules"" s
                 JOIN ""Cabinets"" c ON s.""CabinetId"" = c.""Id""
                 WHERE s.""DoctorId"" = {0}
-                AND s.""StartTime"" >= {1}
-                AND s.""StartTime"" < {2}
+                AND s.""StartTime"" >= '{1}'::date
+                AND s.""StartTime"" < '{2}'::date
                 ORDER BY s.""StartTime"";",
                     RequiresParameters = true,
                     ParameterLabels = new[] { "Doctor ID", "Start Date (YYYY-MM-DD)", "End Date (YYYY-MM-DD)" }
