@@ -66,7 +66,7 @@ For manual setup or non-Windows systems, see sections below.
 ### Clone Repository
 
 ```bash
-git clone <repository-url>
+git clone git@github.com:BabayVolohatyu/ClinicManagement.git
 cd ClinicManagement/ClinicManagement/ClinicManagement
 ```
 
