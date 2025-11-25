@@ -67,7 +67,7 @@ For manual setup or non-Windows systems, see sections below.
 
 ```bash
 git clone git@github.com:BabayVolohatyu/ClinicManagement.git
-cd ClinicManagement/ClinicManagement/ClinicManagement
+cd ClinicManagement/ClinicManagement
 ```
 
 Navigate to the innermost `ClinicManagement` folder where the `.csproj` file is located.
