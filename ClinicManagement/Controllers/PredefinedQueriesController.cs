@@ -25,7 +25,7 @@ namespace ClinicManagement.Controllers
             _logger = logger;
         }
 
-        // GET: /PredefinedQueries
+        
         [HttpGet]
         [Route("")]
         [Route("Index")]
@@ -37,7 +37,7 @@ namespace ClinicManagement.Controllers
             return View(queries);
         }
 
-        // GET: /PredefinedQueries/List
+        
         [HttpGet]
         [Route("List")]
         public IActionResult List()
@@ -55,7 +55,7 @@ namespace ClinicManagement.Controllers
             return Json(new { success = true, queries = queryList });
         }
 
-        // GET: /PredefinedQueries/GetQueryDefinition
+        
         [HttpGet]
         [Route("GetQueryDefinition")]
         public IActionResult GetQueryDefinition(string queryKey)
@@ -89,7 +89,7 @@ namespace ClinicManagement.Controllers
             }
         }
 
-        // POST: /PredefinedQueries/Execute
+        
         [HttpPost]
         [Route("Execute")]
         public async Task<IActionResult> Execute([FromBody] ExecutePredefinedQueryRequest request)
@@ -101,7 +101,7 @@ namespace ClinicManagement.Controllers
                     return Json(new { success = false, error = "Query key cannot be empty" });
                 }
 
-                // Build the predefined query
+                
                 string query;
                 try
                 {
@@ -117,20 +117,20 @@ namespace ClinicManagement.Controllers
                     return Json(new { success = false, error = "Generated query is empty" });
                 }
 
-                // Get current user's role
+                
                 var roleIdClaim = User.FindFirst("roleId");
                 var isAdmin = roleIdClaim != null && 
                              int.TryParse(roleIdClaim.Value, out int userRoleId) && 
                              (RoleType)userRoleId == RoleType.Admin;
 
-                // Validate query doesn't reference restricted tables
+                
                 var validationError = ValidateQueryAccess(query, isAdmin);
                 if (validationError != null)
                 {
                     return Json(new { success = false, error = validationError });
                 }
 
-                // Only SELECT queries are allowed for predefined queries (safety)
+                
                 var trimmedQuery = query.Trim();
                 var isSelectQuery = trimmedQuery.StartsWith("SELECT", StringComparison.OrdinalIgnoreCase) ||
                                    trimmedQuery.StartsWith("WITH", StringComparison.OrdinalIgnoreCase);
@@ -140,7 +140,7 @@ namespace ClinicManagement.Controllers
                     return Json(new { success = false, error = "Predefined queries can only execute SELECT statements for security reasons." });
                 }
 
-                // Execute SELECT query and return results
+                
                 var results = new List<Dictionary<string, object>>();
                 
                 try
@@ -211,15 +211,15 @@ namespace ClinicManagement.Controllers
             }
         }
 
-        /// <summary>
-        /// Validates that the query doesn't reference restricted tables
-        /// </summary>
+        
+        
+        
         private string? ValidateQueryAccess(string query, bool isAdmin)
         {
-            // Tables that are restricted for everyone (case-insensitive matching)
+            
             var restrictedTables = new[] { "Roles", "migrations", "__EFMigrationsHistory" };
             
-            // Check for restricted tables (case-insensitive)
+            
             foreach (var table in restrictedTables)
             {
                 var tableUpper = table.ToUpperInvariant();
@@ -260,7 +260,7 @@ namespace ClinicManagement.Controllers
                 }
             }
 
-            // Users table is only available to admin
+            
             if (!isAdmin)
             {
                 var usersTable = "Users";

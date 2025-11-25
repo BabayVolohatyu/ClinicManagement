@@ -18,7 +18,7 @@ namespace ClinicManagement.Configurations.Auth
             builder.Property(r => r.Type)
                 .IsRequired();
 
-            // Boolean permissions (clean & consistent)
+            
             builder.Property(r => r.CanCreate).HasDefaultValue(false).IsRequired();
             builder.Property(r => r.CanRead).HasDefaultValue(false).IsRequired();
             builder.Property(r => r.CanUpdate).HasDefaultValue(false).IsRequired();
@@ -39,7 +39,7 @@ namespace ClinicManagement.Configurations.Auth
             builder.HasIndex(r => r.Name)
                 .IsUnique();
 
-            // SEED roles
+            
             builder.HasData(
                 new Role
                 {

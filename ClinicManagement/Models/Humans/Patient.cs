@@ -6,14 +6,14 @@ namespace ClinicManagement.Models.Humans
     {
         public int Id { get; set; }
         public int PersonId { get; set; }
-        //One-to-one
+        
         public Person? Person { get; set; }
         public int AddressId { get; set; }
 
-        //Many-to-one
+        
         public Address? Address { get; set; }
 
-        //One-to-many
+        
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
     }
 }

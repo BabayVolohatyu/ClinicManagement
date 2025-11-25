@@ -130,7 +130,7 @@ namespace ClinicManagement.Services.Auth
 
             try
             {
-                // Hash password if provided
+                
                 if (!string.IsNullOrWhiteSpace(entity.PasswordHash))
                 {
                     entity.PasswordHash = HashPassword(entity.PasswordHash);
@@ -138,7 +138,7 @@ namespace ClinicManagement.Services.Auth
 
                 entity.CreatedAt = DateTimeOffset.UtcNow;
 
-                // Clear navigation properties to prevent EF Core from trying to insert them
+                
                 entity.Role = null!;
                 entity.PromotionRequests = null!;
 
@@ -167,11 +167,11 @@ namespace ClinicManagement.Services.Auth
                 if (existingEntity == null)
                     throw new KeyNotFoundException($"{typeof(User).Name} with id {id} not found");
 
-                // Preserve CreatedAt
+                
                 entity.CreatedAt = existingEntity.CreatedAt;
 
-                // If password is empty, preserve the existing password hash
-                // Otherwise, hash the new password
+                
+                
                 if (string.IsNullOrWhiteSpace(entity.PasswordHash))
                 {
                     entity.PasswordHash = existingEntity.PasswordHash;
@@ -181,7 +181,7 @@ namespace ClinicManagement.Services.Auth
                     entity.PasswordHash = HashPassword(entity.PasswordHash);
                 }
 
-                // Clear navigation properties to prevent EF Core from trying to insert them
+                
                 entity.Role = null!;
                 entity.PromotionRequests = null!;
 

@@ -51,23 +51,23 @@ namespace ClinicManagement.Services
                     new Claim(ClaimTypes.Email, user.Email),
                     new Claim("firstName", user.FirstName),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim("createdAt", user.CreatedAt.ToString("O")) // ISO 8601 format
+                    new Claim("createdAt", user.CreatedAt.ToString("O")) 
                 };
 
-                // Add name claims
+                
                 if (!string.IsNullOrEmpty(user.MiddleName))
                     claims.Add(new Claim("middleName", user.MiddleName));
 
                 if (!string.IsNullOrEmpty(user.LastName))
                     claims.Add(new Claim("lastName", user.LastName));
 
-                // Add role and permissions
+                
                 if (user.Role != null)
                 {
                     claims.Add(new Claim(ClaimTypes.Role, user.Role.Name));
                     claims.Add(new Claim("roleId", user.Role.Id.ToString()));
 
-                    // Add individual permission claims
+                    
                     AddPermissionClaims(claims, user.Role);
                 }
 

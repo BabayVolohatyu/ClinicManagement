@@ -387,16 +387,16 @@ namespace ClinicManagement.Services
             var queryDef = queries[queryKey];
             var query = queryDef.Query;
 
-            // Replace parameters
+            
             for (int i = 0; i < parameters.Length; i++)
             {
                 var param = parameters[i];
-                // Escape single quotes for SQL
+                
                 param = param.Replace("'", "''");
                 query = query.Replace($"{{{i}}}", param);
             }
 
-            // Replace any remaining parameter placeholders with empty strings for optional parameters
+            
             if (!queryDef.RequiresParameters)
             {
                 int placeholderIndex = 0;

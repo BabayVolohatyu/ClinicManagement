@@ -52,20 +52,20 @@ namespace ClinicManagement.Services
             {
                 var query = _dbSet.AsNoTracking();
 
-                // Apply filtration if search term is provided
+                
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
                     query = ApplySearchFilter(query, searchTerm);
                 }
 
-                // Apply sorting if sort field is provided
+                
                 if (!string.IsNullOrWhiteSpace(sortBy))
                 {
                     query = ApplySorting(query, sortBy, sortAscending);
                 }
                 else
                 {
-                    // Default sorting by ID if no sort specified
+                    
                     query = ApplySorting(query, "Id", true);
                 }
 
@@ -99,17 +99,17 @@ namespace ClinicManagement.Services
             }
         }
 
-        // Virtual method for search filtration - can be overridden in child services
+        
         protected virtual IQueryable<T> ApplySearchFilter(IQueryable<T> query, string searchTerm)
         {
-            // Default implementation searches in all string properties
+            
             var stringProperties = typeof(T).GetProperties()
                 .Where(p => p.PropertyType == typeof(string) && p.CanRead);
 
             if (!stringProperties.Any())
                 return query;
 
-            // Build OR expression for all string properties
+            
             var parameter = Expression.Parameter(typeof(T), "x");
             Expression? orExpression = null;
 
@@ -140,7 +140,7 @@ namespace ClinicManagement.Services
             return query;
         }
 
-        // Virtual method for sorting - can be overridden in child services
+        
         protected virtual IQueryable<T> ApplySorting(IQueryable<T> query, string sortBy, bool ascending)
         {
             var property = typeof(T).GetProperty(sortBy,
@@ -150,7 +150,7 @@ namespace ClinicManagement.Services
 
             if (property == null)
             {
-                // Fallback to ID sorting if specified property doesn't exist
+                
                 property = typeof(T).GetProperty("Id");
                 if (property == null) return query;
             }
@@ -289,10 +289,10 @@ namespace ClinicManagement.Services
         {
             try
             {
-                // Get all entities using pagination
+                
                 var allEntities = new List<T>();
                 int pageNumber = 1;
-                const int pageSize = 100; // Max allowed page size
+                const int pageSize = 100; 
                 PaginatedResult<T> result;
 
                 do
@@ -302,23 +302,23 @@ namespace ClinicManagement.Services
                     pageNumber++;
                 } while (result.Items.Any() && allEntities.Count < result.TotalCount);
 
-                // Get all simple properties (primitives, strings, dates, numbers)
-                // Exclude navigation properties and collections - just export raw data
+                
+                
                 var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance)
                     .Where(p => p.CanRead)
                     .Where(p => IsSimpleProperty(p.PropertyType))
-                    .OrderBy(p => p.Name == "Id" ? 0 : 1) // Put Id first
+                    .OrderBy(p => p.Name == "Id" ? 0 : 1) 
                     .ThenBy(p => p.Name)
                     .ToList();
 
-                // Build CSV content
+                
                 var csv = new StringBuilder();
 
-                // Add header row
+                
                 var headers = properties.Select(p => p.Name);
                 csv.AppendLine(string.Join(",", headers));
 
-                // Add data rows
+                
                 foreach (var entity in allEntities)
                 {
                     var values = properties.Select(prop =>
@@ -326,7 +326,7 @@ namespace ClinicManagement.Services
                         var value = prop.GetValue(entity);
                         if (value == null) return "";
                         
-                        // Format dates consistently
+                        
                         if (value is DateTime dt) return dt.ToString("yyyy-MM-dd HH:mm:ss");
                         if (value is DateTimeOffset dto) return dto.ToString("yyyy-MM-dd HH:mm:ss");
                         
@@ -335,7 +335,7 @@ namespace ClinicManagement.Services
                     csv.AppendLine(string.Join(",", values));
                 }
 
-                // Convert to bytes
+                
                 return Encoding.UTF8.GetBytes(csv.ToString());
             }
             catch (OperationCanceledException)
@@ -352,12 +352,12 @@ namespace ClinicManagement.Services
 
         private bool IsSimpleProperty(Type type)
         {
-            // Handle nullable types
+            
             var underlyingType = Nullable.GetUnderlyingType(type);
             if (underlyingType != null)
                 type = underlyingType;
 
-            // Only include: primitives, string, DateTime, DateTimeOffset, decimal, Guid
+            
             return type.IsPrimitive || 
                    type == typeof(string) || 
                    type == typeof(DateTime) || 
@@ -371,7 +371,7 @@ namespace ClinicManagement.Services
             if (string.IsNullOrEmpty(field))
                 return "";
 
-            // If field contains comma, quote, or newline, wrap in quotes and escape quotes
+            
             if (field.Contains(',') || field.Contains('"') || field.Contains('\n') || field.Contains('\r'))
             {
                 return "\"" + field.Replace("\"", "\"\"") + "\"";

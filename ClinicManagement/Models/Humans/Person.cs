@@ -7,7 +7,7 @@
         public string LastName { get; set; } = null!;
         public string? Patronymic { get; set; }
 
-        //One-to-one
+        
         public Patient? Patient { get; set; }
         public Doctor? Doctor { get; set; }
     }

@@ -60,14 +60,14 @@ namespace ClinicManagement.Controllers
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
         public IActionResult RedirectToQueryManager(string queryKey, [FromForm] string[] parameters)
         {
-            // Determine user role
+            
             var roleIdClaim = User.FindFirst("roleId");
             var isAuthorized = roleIdClaim != null && 
                               int.TryParse(roleIdClaim.Value, out int userRoleId) && 
                               (RoleType)userRoleId == RoleType.Authorized;
             
-            // Authorized users go to PredefinedQueriesController
-            // Operator and Admin go to QueryManagerController
+            
+            
             if (isAuthorized)
             {
                 var urlHelper = Url;
@@ -83,7 +83,7 @@ namespace ClinicManagement.Controllers
             }
             else
             {
-                // Build the URL manually to ensure it works
+                
                 var urlHelper = Url;
                 var url = urlHelper.Action("Index", "QueryManager", new { queryKey = queryKey });
                 

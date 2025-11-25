@@ -20,7 +20,7 @@ namespace ClinicManagement.Controllers.Facilities
             _cabinetService = cabinetService;
         }
 
-        // GET: /Cabinet/Create
+        
         [HttpGet]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
         public override async Task<IActionResult> Create()
@@ -37,7 +37,7 @@ namespace ClinicManagement.Controllers.Facilities
             }
         }
 
-        // POST: /Cabinet/Create
+        
         [HttpPost]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
         public override async Task<IActionResult> Create(Cabinet entity)
@@ -45,7 +45,7 @@ namespace ClinicManagement.Controllers.Facilities
             if (entity == null)
                 return BadRequest("Entity cannot be null.");
 
-            // Validate TypeId directly from the model binding
+            
             if (entity.TypeId == 0)
             {
                 ModelState.AddModelError("TypeId", "Cabinet Type is required.");
@@ -71,7 +71,7 @@ namespace ClinicManagement.Controllers.Facilities
             }
         }
 
-        // GET: /Cabinet/Entity/{id}
+        
         public override async Task<IActionResult> Entity(int id)
         {
             try
@@ -90,7 +90,7 @@ namespace ClinicManagement.Controllers.Facilities
             }
         }
 
-        // POST: /Cabinet/Update/{id}
+        
         [HttpPost]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
         public override async Task<IActionResult> Update(int id, Cabinet entity)
@@ -98,7 +98,7 @@ namespace ClinicManagement.Controllers.Facilities
             if (entity == null)
                 return BadRequest("Entity cannot be null.");
 
-            // Validate TypeId directly from the model binding
+            
             if (entity.TypeId == 0)
             {
                 ModelState.AddModelError("TypeId", "Cabinet Type is required.");
@@ -107,7 +107,7 @@ namespace ClinicManagement.Controllers.Facilities
             if (!ModelState.IsValid)
             {
                 await LoadCabinetTypesAsync();
-                // Reload entity from DB to ensure latest values in view
+                
                 var currentEntity = await _service.GetByIdAsync(id) ?? entity;
                 return View("Entity", currentEntity);
             }

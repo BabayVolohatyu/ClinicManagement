@@ -15,7 +15,7 @@
         public string Name { get; set; } = string.Empty;
         public RoleType Type { get; set; }
 
-        // Permissions
+        
         public bool CanCreate { get; set; }
         public bool CanRead { get; set; }
         public bool CanUpdate { get; set; }
@@ -30,7 +30,7 @@
 
         public IEnumerable<User>? Users { get; set; }
 
-        // Static presets
+        
         public static Role Guest => new Role
         {
             Id = 1,

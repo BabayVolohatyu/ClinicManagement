@@ -22,7 +22,7 @@ namespace ClinicManagement.Controllers
             _logger = logger;
         }
 
-        // GET: /QueryManager
+        
         [HttpGet]
         [Route("")]
         [Route("Index")]
@@ -48,14 +48,14 @@ namespace ClinicManagement.Controllers
             return View();
         }
 
-        // GET: /QueryManager/GetTables
+        
         [HttpGet]
         [Route("GetTables")]
         public async Task<IActionResult> GetTables()
         {
             try
             {
-                // Get current user's role
+                
                 var roleIdClaim = User.FindFirst("roleId");
                 var isAdmin = roleIdClaim != null && 
                              int.TryParse(roleIdClaim.Value, out int userRoleId) && 
@@ -79,7 +79,7 @@ namespace ClinicManagement.Controllers
                 
                 using var reader = await command.ExecuteReaderAsync();
                 
-                // Restricted tables that nobody can access
+                
                 var restrictedTables = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
                 {
                     "Roles",
@@ -87,20 +87,20 @@ namespace ClinicManagement.Controllers
                     "__EFMigrationsHistory"
                 };
 
-                // Users table is only available to admin
+                
                 var usersTableName = "Users";
                 
                 while (await reader.ReadAsync())
                 {
                     var tableName = reader.GetString(0);
                     
-                    // Skip restricted tables for everyone
+                    
                     if (restrictedTables.Contains(tableName))
                     {
                         continue;
                     }
                     
-                    // Skip users table for non-admin users
+                    
                     if (!isAdmin && string.Equals(tableName, usersTableName, StringComparison.OrdinalIgnoreCase))
                     {
                         continue;
@@ -123,7 +123,7 @@ namespace ClinicManagement.Controllers
             }
         }
 
-        // POST: /QueryManager/Execute
+        
         [HttpPost]
         [Route("Execute")]
         public async Task<IActionResult> Execute([FromBody] ExecuteQueryRequest request)
@@ -137,26 +137,26 @@ namespace ClinicManagement.Controllers
 
                 var query = request.Query.Trim();
 
-                // Get current user's role
+                
                 var roleIdClaim = User.FindFirst("roleId");
                 var isAdmin = roleIdClaim != null && 
                              int.TryParse(roleIdClaim.Value, out int userRoleId) && 
                              (RoleType)userRoleId == RoleType.Admin;
 
-                // Validate query doesn't reference restricted tables
+                
                 var validationError = ValidateQueryAccess(query, isAdmin);
                 if (validationError != null)
                 {
                     return Json(new { success = false, error = validationError });
                 }
 
-                // Check if it's a SELECT query
+                
                 var isSelectQuery = query.TrimStart().StartsWith("SELECT", StringComparison.OrdinalIgnoreCase) ||
                                    query.TrimStart().StartsWith("WITH", StringComparison.OrdinalIgnoreCase);
 
                 if (isSelectQuery)
                 {
-                    // Execute SELECT query and return results
+                    
                     var results = new List<Dictionary<string, object>>();
                     
                     try
@@ -209,7 +209,7 @@ namespace ClinicManagement.Controllers
                 }
                 else
                 {
-                    // Execute non-SELECT queries (INSERT, UPDATE, DELETE, etc.)
+                    
                     try
                     {
                         var affectedRows = await _dbContext.Database.ExecuteSqlRawAsync(query);
@@ -234,47 +234,47 @@ namespace ClinicManagement.Controllers
             }
         }
 
-        /// <summary>
-        /// Validates that the query doesn't reference restricted tables
-        /// </summary>
+        
+        
+        
         private string? ValidateQueryAccess(string query, bool isAdmin)
         {
-            // Tables that are restricted for everyone (case-insensitive matching)
+            
             var restrictedTables = new[] { "Roles", "migrations", "__EFMigrationsHistory" };
             
-            // Check for restricted tables (case-insensitive)
+            
             foreach (var table in restrictedTables)
             {
-                // Check for table references in various SQL contexts
-                // PostgreSQL uses double quotes for identifiers, so we check both quoted and unquoted forms
+                
+                
                 var tableUpper = table.ToUpperInvariant();
                 var queryUpper = query.ToUpperInvariant();
                 
-                // Patterns to match table references
+                
                 var patterns = new[]
                 {
-                    $"\"{table}\"",           // "Roles"
-                    $"\"{tableUpper}\"",       // "ROLES"
-                    $"\"{table.ToLowerInvariant()}\"", // "roles"
-                    $" {table} ",              //  Roles  (with spaces)
-                    $" {tableUpper} ",         //  ROLES  (with spaces)
-                    $" {table.ToLowerInvariant()} ", //  roles  (with spaces)
-                    $".{table}",              // .Roles
-                    $".{tableUpper}",         // .ROLES
-                    $"{table}.",              // Roles.
-                    $"{tableUpper}.",         // ROLES.
-                    $"FROM {table}",          // FROM Roles
-                    $"FROM \"{table}\"",      // FROM "Roles"
-                    $"JOIN {table}",          // JOIN Roles
-                    $"JOIN \"{table}\"",      // JOIN "Roles"
-                    $"INTO {table}",          // INTO Roles
-                    $"INTO \"{table}\"",      // INTO "Roles"
-                    $"UPDATE {table}",        // UPDATE Roles
-                    $"UPDATE \"{table}\"",    // UPDATE "Roles"
-                    $"DELETE FROM {table}",   // DELETE FROM Roles
-                    $"DELETE FROM \"{table}\"", // DELETE FROM "Roles"
-                    $"TABLE {table}",         // TABLE Roles
-                    $"TABLE \"{table}\""      // TABLE "Roles"
+                    $"\"{table}\"",           
+                    $"\"{tableUpper}\"",       
+                    $"\"{table.ToLowerInvariant()}\"", 
+                    $" {table} ",              
+                    $" {tableUpper} ",         
+                    $" {table.ToLowerInvariant()} ", 
+                    $".{table}",              
+                    $".{tableUpper}",         
+                    $"{table}.",              
+                    $"{tableUpper}.",         
+                    $"FROM {table}",          
+                    $"FROM \"{table}\"",      
+                    $"JOIN {table}",          
+                    $"JOIN \"{table}\"",      
+                    $"INTO {table}",          
+                    $"INTO \"{table}\"",      
+                    $"UPDATE {table}",        
+                    $"UPDATE \"{table}\"",    
+                    $"DELETE FROM {table}",   
+                    $"DELETE FROM \"{table}\"", 
+                    $"TABLE {table}",         
+                    $"TABLE \"{table}\""      
                 };
 
                 foreach (var pattern in patterns)
@@ -286,7 +286,7 @@ namespace ClinicManagement.Controllers
                 }
             }
 
-            // Users table is only available to admin
+            
             if (!isAdmin)
             {
                 var usersTable = "Users";
@@ -295,28 +295,28 @@ namespace ClinicManagement.Controllers
                 
                 var usersTablePatterns = new[]
                 {
-                    $"\"{usersTable}\"",           // "Users"
-                    $"\"{usersTableUpper}\"",      // "USERS"
-                    $"\"users\"",                  // "users"
-                    $" {usersTable} ",              //  Users  (with spaces)
-                    $" {usersTableUpper} ",        //  USERS  (with spaces)
-                    $" users ",                    //  users  (with spaces)
-                    $".{usersTable}",              // .Users
-                    $".{usersTableUpper}",         // .USERS
-                    $"{usersTable}.",              // Users.
-                    $"{usersTableUpper}.",         // USERS.
-                    $"FROM {usersTable}",          // FROM Users
-                    $"FROM \"{usersTable}\"",      // FROM "Users"
-                    $"JOIN {usersTable}",          // JOIN Users
-                    $"JOIN \"{usersTable}\"",      // JOIN "Users"
-                    $"INTO {usersTable}",          // INTO Users
-                    $"INTO \"{usersTable}\"",      // INTO "Users"
-                    $"UPDATE {usersTable}",        // UPDATE Users
-                    $"UPDATE \"{usersTable}\"",    // UPDATE "Users"
-                    $"DELETE FROM {usersTable}",   // DELETE FROM Users
-                    $"DELETE FROM \"{usersTable}\"", // DELETE FROM "Users"
-                    $"TABLE {usersTable}",         // TABLE Users
-                    $"TABLE \"{usersTable}\""      // TABLE "Users"
+                    $"\"{usersTable}\"",           
+                    $"\"{usersTableUpper}\"",      
+                    $"\"users\"",                  
+                    $" {usersTable} ",              
+                    $" {usersTableUpper} ",        
+                    $" users ",                    
+                    $".{usersTable}",              
+                    $".{usersTableUpper}",         
+                    $"{usersTable}.",              
+                    $"{usersTableUpper}.",         
+                    $"FROM {usersTable}",          
+                    $"FROM \"{usersTable}\"",      
+                    $"JOIN {usersTable}",          
+                    $"JOIN \"{usersTable}\"",      
+                    $"INTO {usersTable}",          
+                    $"INTO \"{usersTable}\"",      
+                    $"UPDATE {usersTable}",        
+                    $"UPDATE \"{usersTable}\"",    
+                    $"DELETE FROM {usersTable}",   
+                    $"DELETE FROM \"{usersTable}\"", 
+                    $"TABLE {usersTable}",         
+                    $"TABLE \"{usersTable}\""      
                 };
 
                 foreach (var pattern in usersTablePatterns)

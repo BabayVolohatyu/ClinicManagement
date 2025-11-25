@@ -116,7 +116,7 @@ namespace ClinicManagement.Services.Health
 
             try
             {
-                // Check if already exists
+                
                 var exists = await _dbSet.AnyAsync(ss => ss.SicknessId == entity.SicknessId && ss.SymptomId == entity.SymptomId, token);
                 if (exists)
                     throw new InvalidOperationException("This relationship already exists.");

@@ -17,7 +17,7 @@ namespace ClinicManagement.Data.Auth
                     LastName = "User",
                     Email = "admin@clinic.local",
                     PasswordHash = HashPassword("0000"),
-                    RoleId = 4, // Admin
+                    RoleId = 4, 
                     CreatedAt = new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero)
                 },
                 new User
@@ -27,7 +27,7 @@ namespace ClinicManagement.Data.Auth
                     LastName = "User",
                     Email = "authorized@clinic.local",
                     PasswordHash = HashPassword("0000"),
-                    RoleId = 2, // Authorized
+                    RoleId = 2, 
                     CreatedAt = new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero)
                 },
                 new User
@@ -37,7 +37,7 @@ namespace ClinicManagement.Data.Auth
                     LastName = "User",
                     Email = "operator@clinic.local",
                     PasswordHash = HashPassword("0000"),
-                    RoleId = 3, // Operator
+                    RoleId = 3, 
                     CreatedAt = new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero)
                 }
             };

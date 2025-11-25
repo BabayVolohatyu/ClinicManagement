@@ -27,7 +27,6 @@ function applyEntityActions() {
     const entity = pageInfo?.dataset.entity;
     const hasEntity = entity && entity.trim() !== "";
 
-    // Process entity-specific buttons (require entity context)
     const entityButtons = actions.querySelectorAll("[data-entity-action]");
     
     if (hasEntity) {
@@ -40,7 +39,6 @@ function applyEntityActions() {
             }
 
             if (btn.tagName.toLowerCase() === "a") {
-                // If href is already set, don't override it (for promotion buttons)
                 if (btn.hasAttribute("href") && btn.getAttribute("href") !== "") {
                     btn.style.display = "inline-flex";
                     return;
@@ -65,7 +63,6 @@ function applyEntityActions() {
             }
         });
     } else {
-        // Hide entity-specific buttons when no entity context
         entityButtons.forEach(btn => {
             btn.style.display = "none";
         });
@@ -76,7 +73,6 @@ function applyEntityActions() {
         if (!btn.hasAttribute("data-entity-action")) {
             const perm = btn.getAttribute("data-permission");
             if (hasPermission(perm)) {
-                // Set href from data-route attribute if present (only for anchor tags)
                 if (btn.tagName.toLowerCase() === "a") {
                     const route = btn.getAttribute("data-route");
                     if (route && !btn.hasAttribute("href")) {
@@ -90,7 +86,6 @@ function applyEntityActions() {
         }
     });
 
-    // Show actions container if any button is visible
     const anyVisible = Array.from(allButtons).some(b => {
         const display = b.style.display;
         return display !== "none" && display !== "";

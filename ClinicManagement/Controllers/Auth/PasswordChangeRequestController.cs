@@ -63,7 +63,7 @@ namespace ClinicManagement.Controllers.Auth
 
             try
             {
-                // If status is changing from Pending to Approved/Rejected, set processed info
+                
                 if (existingEntity.Status == PasswordChangeStatus.Pending && entity.Status != PasswordChangeStatus.Pending)
                 {
                     var currentUserId = GetCurrentUserId();
@@ -75,7 +75,7 @@ namespace ClinicManagement.Controllers.Auth
                 }
                 else
                 {
-                    // Preserve existing processed info if status isn't changing from Pending
+                    
                     entity.ProcessedByAdminId = existingEntity.ProcessedByAdminId;
                     entity.ProcessedAt = existingEntity.ProcessedAt;
                 }

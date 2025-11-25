@@ -26,7 +26,7 @@ namespace ClinicManagement.Configurations.Auth
             builder.Property(pcr => pcr.ProcessedAt)
                 .HasColumnType("timestamptz");
 
-            // Relationships
+            
             builder.HasOne(pcr => pcr.User)
                 .WithMany()
                 .HasForeignKey(pcr => pcr.UserId)
@@ -39,7 +39,7 @@ namespace ClinicManagement.Configurations.Auth
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Indexes for better query performance
+            
             builder.HasIndex(pcr => pcr.Status);
             builder.HasIndex(pcr => pcr.RequestedAt);
             builder.HasIndex(pcr => pcr.UserId);

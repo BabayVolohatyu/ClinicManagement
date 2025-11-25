@@ -138,7 +138,7 @@ namespace ClinicManagement.Services.Health
                 return await _appointments
                     .Include(a => a.Patient).ThenInclude(p => p.Person)
                     .Include(a => a.DoctorProcedure).ThenInclude(dp => dp.Doctor).ThenInclude(d => d.Person)
-                    .Where(a => a.Diagnosis == null) // Only show appointments without diagnosis
+                    .Where(a => a.Diagnosis == null) 
                     .OrderByDescending(a => a.StartTime)
                     .ToListAsync(token);
             }

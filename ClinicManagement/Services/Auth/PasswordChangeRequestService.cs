@@ -62,7 +62,7 @@ namespace ClinicManagement.Services.Auth
                     .Take(pageSize)
                     .ToListAsync(token);
 
-                // Clear password hashes before returning
+                
                 foreach (var item in items)
                 {
                     if (item.User != null)
@@ -108,7 +108,7 @@ namespace ClinicManagement.Services.Auth
 
                 if (request != null)
                 {
-                    // Clear password hash
+                    
                     request.User.PasswordHash = string.Empty;
                     if (request.ProcessedByAdmin != null)
                     {
@@ -142,7 +142,7 @@ namespace ClinicManagement.Services.Auth
                     throw new ArgumentException("UserId cannot be 0.");
                 }
 
-                // Check if user already has a pending password change request
+                
                 var existingPendingRequest = await _dbSet
                     .FirstOrDefaultAsync(pcr => pcr.UserId == entity.UserId && pcr.Status == PasswordChangeStatus.Pending, token);
 
@@ -182,24 +182,24 @@ namespace ClinicManagement.Services.Auth
                 if (existingEntity == null)
                     throw new KeyNotFoundException($"{typeof(PasswordChangeRequest).Name} with id {id} not found");
 
-                // Preserve original values that shouldn't be changed
+                
                 var originalRequestedAt = existingEntity.RequestedAt;
                 var originalStatus = existingEntity.Status;
 
-                // If status is changing from Pending to Approved, reset the password using the requested password
+                
                 if (originalStatus == PasswordChangeStatus.Pending && entity.Status == PasswordChangeStatus.Approved)
                 {
-                    // Set processed info (should be set by controller, but ensure it's set)
+                    
                     if (!entity.ProcessedAt.HasValue)
                     {
                         entity.ProcessedAt = DateTimeOffset.UtcNow;
                     }
 
-                    // Use the requested password hash that was stored when the request was created
+                    
                     var user = await _users.FindAsync(new object[] { entity.UserId }, token);
                     if (user != null)
                     {
-                        // Use the stored requested password hash
+                        
                         user.PasswordHash = existingEntity.RequestedPasswordHash;
                         _users.Update(user);
                         await _context.SaveChangesAsync(token);
@@ -211,11 +211,11 @@ namespace ClinicManagement.Services.Auth
                     }
                 }
 
-                // Preserve RequestedAt and RequestedPasswordHash
+                
                 entity.RequestedAt = originalRequestedAt;
                 entity.RequestedPasswordHash = existingEntity.RequestedPasswordHash;
 
-                // Clear navigation properties to prevent EF Core from trying to insert them
+                
                 entity.User = null!;
                 entity.ProcessedByAdmin = null;
 
@@ -284,7 +284,7 @@ namespace ClinicManagement.Services.Auth
                         CreatedAt = u.CreatedAt,
                         RoleId = u.RoleId,
                         Role = u.Role,
-                        PasswordHash = string.Empty // Don't expose password hash
+                        PasswordHash = string.Empty 
                     })
                     .OrderBy(u => u.LastName)
                     .ThenBy(u => u.FirstName)

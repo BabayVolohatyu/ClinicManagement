@@ -124,7 +124,7 @@ namespace ClinicManagement.Services.Auth
                     throw new ArgumentException("RequestedRoleId cannot be 0.");
                 }
 
-                // Check if user already has a pending promotion request
+                
                 var existingPendingRequest = await _dbSet
                     .FirstOrDefaultAsync(pr => pr.UserId == entity.UserId && pr.Status == PromotionStatus.Pending, token);
 
@@ -168,20 +168,20 @@ namespace ClinicManagement.Services.Auth
                 if (existingEntity == null)
                     throw new KeyNotFoundException($"{typeof(PromotionRequest).Name} with id {id} not found");
 
-                // Preserve original values that shouldn't be changed
+                
                 var originalRequestedAt = existingEntity.RequestedAt;
                 var originalStatus = existingEntity.Status;
 
-                // If status is changing from Pending to Approved/Rejected, update user's role and set processed info
+                
                 if (originalStatus == PromotionStatus.Pending && entity.Status != PromotionStatus.Pending)
                 {
-                    // Set processed info (should be set by controller, but ensure it's set)
+                    
                     if (!entity.ProcessedAt.HasValue)
                     {
                         entity.ProcessedAt = DateTimeOffset.UtcNow;
                     }
 
-                    // If approved, update the user's role
+                    
                     if (entity.Status == PromotionStatus.Approved)
                     {
                         var user = await _users.FindAsync(new object[] { entity.UserId }, token);
@@ -198,10 +198,10 @@ namespace ClinicManagement.Services.Auth
                     }
                 }
 
-                // Preserve RequestedAt
+                
                 entity.RequestedAt = originalRequestedAt;
 
-                // Clear navigation properties to prevent EF Core from trying to insert them
+                
                 entity.RequestedRole = null!;
                 entity.User = null!;
                 entity.ProcessedByAdmin = null;

@@ -45,7 +45,7 @@ Best regards,
 Clinic Support Team
 ";
 
-            // Try to send via SMTP if configured
+            
             if (!string.IsNullOrEmpty(smtpServer) && smtpServer != "localhost")
             {
                 try
@@ -87,7 +87,7 @@ Clinic Support Team
                 }
             }
 
-            // Fallback: Log the email (works without any SMTP server)
+            
             _logger.LogInformation("=== Password Reset Email ===");
             _logger.LogInformation($"From: {fromEmail} ({senderName})");
             _logger.LogInformation($"To: {toEmail}");

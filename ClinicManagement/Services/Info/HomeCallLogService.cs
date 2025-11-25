@@ -38,20 +38,20 @@ namespace ClinicManagement.Services.Info
             {
                 var query = _dbSet.Include(h => h.Doctor).ThenInclude(d => d.Person).Include(h => h.Address).AsNoTracking();
 
-                // Apply filtration if search term is provided
+                
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
                     query = ApplySearchFilter(query, searchTerm);
                 }
 
-                // Apply sorting if sort field is provided
+                
                 if (!string.IsNullOrWhiteSpace(sortBy))
                 {
                     query = ApplySorting(query, sortBy, sortAscending);
                 }
                 else
                 {
-                    // Default sorting by DateTime if no sort specified
+                    
                     query = ApplySorting(query, "DateTime", false);
                 }
 

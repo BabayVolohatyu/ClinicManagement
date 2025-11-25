@@ -47,20 +47,20 @@ namespace ClinicManagement.Services.Info
                     .Include(a => a.Patient).ThenInclude(p => p.Person)
                     .AsNoTracking();
 
-                // Apply filtration if search term is provided
+                
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
                     query = ApplySearchFilter(query, searchTerm);
                 }
 
-                // Apply sorting if sort field is provided
+                
                 if (!string.IsNullOrWhiteSpace(sortBy))
                 {
                     query = ApplySorting(query, sortBy, sortAscending);
                 }
                 else
                 {
-                    // Default sorting by StartTime if no sort specified
+                    
                     query = ApplySorting(query, "StartTime", false);
                 }
 

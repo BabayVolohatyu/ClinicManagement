@@ -78,11 +78,11 @@
             makeEditableSelect(row);
         }
 
-        // Initialize - make sure the correct cabinet type is selected
+        
         document.addEventListener("DOMContentLoaded", function () {
             const typeSelect = document.querySelector("select[name='TypeId']");
             if (typeSelect) {
-                // The selected value should already be set by ASP.NET, but we ensure it's readable
+                
                 typeSelect.setAttribute('data-initial-value', typeSelect.value);
             }
         });

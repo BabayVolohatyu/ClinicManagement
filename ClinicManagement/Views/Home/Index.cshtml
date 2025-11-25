@@ -4,7 +4,7 @@
 @{
     ViewData["Title"] = "Home Page";
     
-    // Check user role (same logic as _AuthButtons)
+    
     @functions {
         private int GetRoleIdFromJwt()
         {
@@ -39,7 +39,7 @@
         </div>
     </div>
 
-    <!-- Parameter Modal -->
+    
     <div class="modal fade" id="parameterModal" tabindex="-1" aria-labelledby="parameterModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -62,7 +62,7 @@
         </div>
     </div>
 
-    <!-- Search and Analytics Section -->
+    
     <div class="row mb-4">
         <div class="col-12">
             <h3 class="mb-3">
@@ -127,7 +127,7 @@
 
 @section Scripts {
     <script>
-        // Check if user is guest
+        
         const isGuest = @Html.Raw(isGuest.ToString().ToLower());
         
         let currentQueryKey = null;
@@ -136,7 +136,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.execute-query-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    // Check if user is guest - show message instead of executing
+                    
                     if (isGuest) {
                         alert('You must be logged in to perform this action.');
                         return;
@@ -149,7 +149,7 @@
                     currentQueryKey = queryKey;
                     
                     if (requiresParams) {
-                        // Get query definition to show parameter form
+                        
                         fetch(`/Home/GetQueryDefinition?queryKey=${encodeURIComponent(queryKey)}`)
                             .then(response => response.json())
                             .then(data => {
@@ -163,7 +163,7 @@
                                 alert('Error: ' + error.message);
                             });
                     } else {
-                        // No parameters needed, redirect directly
+                        
                         redirectToQueryManager(queryKey, []);
                     }
                 });
@@ -196,7 +196,7 @@
                 input.name = `param-${index}`;
                 input.required = true;
                 
-                // Set input type based on label
+                
                 if (label.toLowerCase().includes('id') || label.toLowerCase().includes('number')) {
                     input.type = 'number';
                     input.min = '1';
@@ -215,7 +215,7 @@
         }
 
         function submitParameters() {
-            // Check if user is guest - show message
+            
             if (isGuest) {
                 const modal = bootstrap.Modal.getInstance(document.getElementById('parameterModal'));
                 modal.hide();
@@ -238,7 +238,7 @@
             const modal = bootstrap.Modal.getInstance(document.getElementById('parameterModal'));
             modal.hide();
             
-            // Submit form to server for redirect
+            
             const formData = new FormData();
             formData.append('queryKey', currentQueryKey);
             parameters.forEach(param => {
@@ -264,8 +264,8 @@
         }
 
         function redirectToQueryManager(queryKey, parameters) {
-            // Check if user has execute_raw_queries permission
-            // Authorized users don't have this permission and should go to PredefinedQueries
+            
+            
             const hasRawQueryPermission = hasPermission('execute_raw_queries');
             
             let url;

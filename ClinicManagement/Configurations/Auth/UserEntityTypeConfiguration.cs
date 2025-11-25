@@ -33,17 +33,17 @@ namespace ClinicManagement.Configurations.Auth
                 .HasColumnType("timestamptz")
                 .IsRequired();
 
-            // Index for email for faster lookups
+            
             builder.HasIndex(u => u.Email)
                 .IsUnique();
 
-            // Relationship with Role
+            
             builder.HasOne(u => u.Role)
                 .WithMany(r => r.Users)
                 .HasForeignKey(u => u.RoleId)
                 .IsRequired();
 
-            // SEED data
+            
             builder.HasData(AuthSeedData.GetSeedData());
         }
     }

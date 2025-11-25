@@ -12,7 +12,7 @@
         public Role? Role { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
 
-        // Navigation property for promotion requests made by this user
+        
         public IEnumerable<PromotionRequest> PromotionRequests { get; set; } = new List<PromotionRequest>();
     }
 }

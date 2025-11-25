@@ -95,11 +95,11 @@ namespace ClinicManagement.Controllers.Auth
 
             try
             {
-                // Set default values for new promotion request
+                
                 entity.RequestedAt = DateTimeOffset.UtcNow;
                 entity.Status = PromotionStatus.Pending;
                 
-                // Clear navigation properties to prevent EF Core from trying to insert them
+                
                 entity.RequestedRole = null!;
                 entity.User = null!;
                 entity.ProcessedByAdmin = null;
@@ -163,7 +163,7 @@ namespace ClinicManagement.Controllers.Auth
 
             try
             {
-                // If status is changing from Pending to Approved/Rejected, set processed info
+                
                 if (existingEntity.Status == PromotionStatus.Pending && entity.Status != PromotionStatus.Pending)
                 {
                     var currentUserId = GetCurrentUserId();
@@ -175,7 +175,7 @@ namespace ClinicManagement.Controllers.Auth
                 }
                 else
                 {
-                    // Preserve existing processed info if status isn't changing from Pending
+                    
                     entity.ProcessedByAdminId = existingEntity.ProcessedByAdminId;
                     entity.ProcessedAt = existingEntity.ProcessedAt;
                 }

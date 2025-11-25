@@ -55,17 +55,17 @@ namespace ClinicManagement.Controllers.Auth
             if (entity == null)
                 return BadRequest("Entity cannot be null.");
 
-            // Handle password from form - if Password field is provided, use it; otherwise keep existing
+            
             var password = Request.Form["Password"].ToString();
             if (!string.IsNullOrWhiteSpace(password))
             {
-                entity.PasswordHash = password; // Will be hashed in service
+                entity.PasswordHash = password; 
             }
             else
             {
-                // Remove PasswordHash from model binding to avoid validation error
+                
                 ModelState.Remove("PasswordHash");
-                entity.PasswordHash = string.Empty; // Will be preserved in service
+                entity.PasswordHash = string.Empty; 
             }
 
             if (entity.RoleId == 0)

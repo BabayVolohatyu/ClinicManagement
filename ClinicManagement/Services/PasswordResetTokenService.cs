@@ -24,13 +24,13 @@ namespace ClinicManagement.Services
                 ExpiresAt = DateTimeOffset.UtcNow.Add(_tokenExpiry)
             };
 
-            // Remove any existing token for this email
+            
             _tokens.TryRemove(email, out _);
             
-            // Add new token
+            
             _tokens.TryAdd(email, tokenInfo);
 
-            // Clean up expired tokens periodically
+            
             CleanupExpiredTokens();
 
             return token;
@@ -43,7 +43,7 @@ namespace ClinicManagement.Services
                 return false;
             }
 
-            // Check if token matches and hasn't expired
+            
             if (tokenInfo.Token != token || DateTimeOffset.UtcNow > tokenInfo.ExpiresAt)
             {
                 _tokens.TryRemove(email, out _);

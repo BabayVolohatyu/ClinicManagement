@@ -111,7 +111,7 @@ namespace ClinicManagement.Controllers
                 return View(model);
             }
 
-            // Validate passwords match
+            
             if (model.NewPassword != model.ConfirmPassword)
             {
                 ModelState.AddModelError("ConfirmPassword", "Passwords do not match.");
@@ -120,12 +120,12 @@ namespace ClinicManagement.Controllers
 
             var user = await _auth.GetUserByEmailAsync(model.Email);
             
-            // Don't reveal if email exists for security - always show success message
+            
             if (user != null)
             {
                 try
                 {
-                    // Hash the requested password
+                    
                     var passwordHash = HashPassword(model.NewPassword);
 
                     var passwordChangeRequest = new PasswordChangeRequest
@@ -140,11 +140,11 @@ namespace ClinicManagement.Controllers
                 }
                 catch (Exception)
                 {
-                    // Log error but don't reveal to user for security
+                    
                 }
             }
 
-            // Always show success message regardless of whether email exists
+            
             ViewBag.SuccessMessage = "If an account with that email exists, a password change request has been submitted. An administrator will process your request shortly.";
 
             return View(model);

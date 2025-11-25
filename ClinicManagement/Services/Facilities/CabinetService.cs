@@ -43,20 +43,20 @@ namespace ClinicManagement.Services.Facilities
             {
                 var query = _dbSet.Include(c => c.Type).AsNoTracking();
 
-                // Apply filtration if search term is provided
+                
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
                     query = ApplySearchFilter(query, searchTerm);
                 }
 
-                // Apply sorting if sort field is provided
+                
                 if (!string.IsNullOrWhiteSpace(sortBy))
                 {
                     query = ApplySorting(query, sortBy, sortAscending);
                 }
                 else
                 {
-                    // Default sorting by ID if no sort specified
+                    
                     query = ApplySorting(query, "Id", true);
                 }
 
@@ -141,7 +141,7 @@ namespace ClinicManagement.Services.Facilities
             if (existingType != null)
                 return existingType.Id;
 
-            // Create new type
+            
             var newType = new CabinetType { Type = typeName.Trim() };
             await _types.AddAsync(newType, token);
             await _context.SaveChangesAsync(token);
@@ -177,8 +177,8 @@ namespace ClinicManagement.Services.Facilities
 
             try
             {
-                // If TypeId is 0 or invalid, we need to handle it via typeName
-                // This will be handled in the controller
+                
+                
                 if (entity.TypeId == 0)
                 {
                     throw new ArgumentException("TypeId cannot be 0. Use GetOrCreateTypeIdAsync to resolve type first.");
@@ -206,8 +206,8 @@ namespace ClinicManagement.Services.Facilities
 
             try
             {
-                // If TypeId is 0 or invalid, we need to handle it via typeName
-                // This will be handled in the controller
+                
+                
                 if (entity.TypeId == 0)
                 {
                     throw new ArgumentException("TypeId cannot be 0. Use GetOrCreateTypeIdAsync to resolve type first.");

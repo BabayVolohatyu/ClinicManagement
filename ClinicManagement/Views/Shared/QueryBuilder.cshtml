@@ -18,7 +18,7 @@
         else
         {
             <div class="row">
-                <!-- Query Building Area -->
+                
                 <div class="col-lg-8 col-md-12 mb-4">
                     <div class="card h-100">
                         <div class="card-header d-flex justify-content-between align-items-center">
@@ -35,14 +35,14 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <!-- Query Blocks Display -->
+                            
                             <div id="queryBlocksContainer" class="mb-3 p-3 border rounded" style="min-height: 150px; background-color: #f8f9fa;">
                                 <div id="queryBlocks" class="d-flex flex-wrap gap-2 align-items-center">
                                     <span class="text-muted">Start building your query by selecting a block below...</span>
                                 </div>
                             </div>
 
-                            <!-- User Input Panel (for fields, tables, etc.) -->
+                            
                             <div id="userInputPanel" class="mb-3" style="display: none;">
                                 <div class="card">
                                     <div class="card-header">
@@ -58,14 +58,14 @@
                                 </div>
                             </div>
 
-                            <!-- Query Text Output -->
+                            
                             <div class="mb-3">
                                 <label class="form-label">Generated Query</label>
                                 <textarea id="queryOutput" class="form-control" rows="6" readonly 
                                           placeholder="Your query will appear here..."></textarea>
                             </div>
 
-                            <!-- Execution Results -->
+                            
                             <div id="resultPanel" style="display: none;">
                                 <div class="card">
                                     <div class="card-header">
@@ -80,7 +80,7 @@
                     </div>
                 </div>
 
-                <!-- Available Blocks Panel -->
+                
                 <div class="col-lg-4 col-md-12 mb-4">
                     <div class="card h-100">
                         <div class="card-header">
@@ -90,7 +90,7 @@
                         </div>
                         <div class="card-body" style="max-height: 600px; overflow-y: auto;">
                             <div id="availableBlocks" class="d-flex flex-wrap gap-2">
-                                <!-- Blocks will be populated by JavaScript -->
+                                
                                 <span class="text-muted">Loading blocks...</span>
                             </div>
                         </div>
@@ -123,7 +123,7 @@
                     displayAvailableBlocks(response.nextBlocks || []);
                     updateQueryDisplay();
                     
-                    // Handle user input requirement
+                    
                     if (response.requiresUserInput) {
                         showUserInput(response.inputType, response.inputLabel, response.schemaData);
                     } else {
@@ -149,7 +149,7 @@
             userInputSelections = [];
 
             if (inputType === 'table' && schemaData && schemaData.tables) {
-                // Show table selection
+                
                 const select = $('<select>').addClass('form-select').attr('multiple', false).attr('id', 'tableSelect');
                 schemaData.tables.forEach(function(table) {
                     $('<option>').val(table.name).text(table.displayName || table.name).appendTo(select);
@@ -157,7 +157,7 @@
                 content.append($('<label>').text('Select Table:').addClass('form-label'));
                 content.append(select);
             } else if (inputType === 'field' && schemaData && schemaData.tables) {
-                // Show field/column selection
+                
                 content.append($('<label>').text('Select Fields:').addClass('form-label'));
                 
                 schemaData.tables.forEach(function(tableData) {
@@ -194,7 +194,7 @@
                     content.append(tableDiv);
                 });
             } else if (inputType === 'condition') {
-                // Show condition input
+                
                 content.append($('<label>').text('Enter Condition:').addClass('form-label'));
                 content.append($('<input>').attr('type', 'text').addClass('form-control').attr('id', 'conditionInput').attr('placeholder', 'e.g., id > 10'));
             }
@@ -326,7 +326,7 @@
                 container.append(blockElement);
             });
 
-            // Update query output
+            
             const queryText = currentQueryBlocks.join(' ');
             $('#queryOutput').val(queryText);
         }

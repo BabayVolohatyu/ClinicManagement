@@ -10,13 +10,13 @@ namespace ClinicManagement.Models.Facilities
         public int Number { get; set; }
         public int TypeId { get; set; }
 
-        //Many-to-one
+        
         public CabinetType Type { get; set; } = null!;
 
-        //One-to-many
+        
         public ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
 
-        //One-to-many
+        
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 
     }

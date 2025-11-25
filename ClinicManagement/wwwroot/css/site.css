@@ -253,7 +253,6 @@ tr[onclick]:hover {
     text-shadow: 0 0 5px var(--accent);
 }
 
-/* Prevent pagination overflow */
 .pagination {
     flex-wrap: wrap;
     justify-content: center;
@@ -316,7 +315,6 @@ tr[onclick]:hover {
     justify-content: center;
 }
 
-/* Modal dark theme styling */
 .modal-content {
     background-color: var(--panel-dark) !important;
     border: 1px solid var(--accent) !important;

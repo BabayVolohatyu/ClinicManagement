@@ -17,7 +17,7 @@ namespace ClinicManagement.Controllers
             _logger = logger;
         }
 
-        // GET: /[controller]
+        
         [HttpGet]
         public virtual async Task<IActionResult> Index(
            int pageNumber = 1,
@@ -40,7 +40,7 @@ namespace ClinicManagement.Controllers
         }
 
 
-        // GET: /[controller]/entity/{id}
+        
         [HttpGet]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
         public virtual async Task<IActionResult> Entity(int id)
@@ -61,7 +61,7 @@ namespace ClinicManagement.Controllers
             }
         }
 
-        // GET: /[controller]/create
+        
         [HttpGet]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
         public virtual async Task<IActionResult> Create()
@@ -79,7 +79,7 @@ namespace ClinicManagement.Controllers
         }
 
 
-        // POST: /[controller]/create
+        
         [HttpPost]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
         public virtual async Task<IActionResult> Create(T entity)
@@ -97,7 +97,7 @@ namespace ClinicManagement.Controllers
             {
                 await _service.AddAsync(entity);
                 
-                // Get the Id property value after save (EF Core populates it)
+                
                 var idProperty = typeof(T).GetProperty("Id");
                 if (idProperty == null)
                 {
@@ -123,7 +123,7 @@ namespace ClinicManagement.Controllers
             }
         }
 
-        // POST: /[controller]/update/{id}
+        
         [HttpPost]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
         public virtual async Task<IActionResult> Update(int id, T entity)
@@ -154,7 +154,7 @@ namespace ClinicManagement.Controllers
             }
         }
 
-        // POST: /[controller]/delete/{id}
+        
         [HttpPost]
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
         public virtual async Task<IActionResult> Delete(int id)
@@ -176,7 +176,7 @@ namespace ClinicManagement.Controllers
             }
         }
 
-        // GET: /[controller]/DownloadCsv
+        
         [HttpGet]
         public virtual async Task<IActionResult> DownloadCsv()
         {
@@ -194,12 +194,12 @@ namespace ClinicManagement.Controllers
             }
         }
 
-        /// <summary>
-        /// Loads dropdown data for views. Override this method in derived controllers to populate ViewBag with SelectList items.
-        /// </summary>
+        
+        
+        
         protected virtual Task LoadDropdownsAsync()
         {
-            // Default implementation does nothing - derived controllers can override to load their specific dropdowns
+            
             return Task.CompletedTask;
         }
 
