@@ -250,7 +250,8 @@ namespace ClinicManagement.Services
                     Description = "Patients who received treatment procedures",
                     Query = @"SELECT DISTINCT
                 p.""FirstName"" || ' ' || p.""LastName"" AS ""Patient"",
-                pr.""Name"" AS ""Procedure""
+                pr.""Name"" AS ""Procedure"",
+                p.""LastName""
             FROM ""Patients"" pt
             JOIN ""People"" p ON pt.""PersonId"" = p.""Id""
             JOIN ""Appointments"" a ON pt.""Id"" = a.""PatientId""
@@ -306,7 +307,7 @@ namespace ClinicManagement.Services
                 ["physio-schedule"] = new QueryDefinition
                 {
                     Name = "Physio Room Schedule",
-                    Description = "Schedule by shifts (1, 2, both) for physical therapy rooms",
+                    Description = "Schedule by shifts (1, 2, 3) for physical therapy rooms",
                     Query = @"SELECT 
                     c.""Building"",
                     c.""Floor"",
@@ -319,11 +320,15 @@ namespace ClinicManagement.Services
                 JOIN ""CabinetTypes"" ct ON c.""TypeId"" = ct.""Id""
                 JOIN ""Doctors"" d ON s.""DoctorId"" = d.""Id""
                 JOIN ""People"" p ON d.""PersonId"" = p.""Id""
-                WHERE ct.""Type"" ILIKE '%physical%' OR ct.""Type"" ILIKE '%therapy%'
-                {0}
+                WHERE (ct.""Type"" ILIKE '%physical%' OR ct.""Type"" ILIKE '%therapy%')
+                AND (
+                    '{0}' = '3' OR
+                    ('{0}' = '1' AND EXTRACT(HOUR FROM s.""StartTime"") >= 8 AND EXTRACT(HOUR FROM s.""StartTime"") < 12) OR
+                    ('{0}' = '2' AND EXTRACT(HOUR FROM s.""StartTime"") >= 13 AND EXTRACT(HOUR FROM s.""StartTime"") < 17)
+                )
                 ORDER BY c.""Building"", c.""Floor"", s.""StartTime"";",
                     RequiresParameters = true,
-                    ParameterLabels = new[] { "Shift Filter (1, 2, or both)" }
+                    ParameterLabels = new[] { "Shift Filter (1=morning 8-12, 2=afternoon 13-17, 3=both)" }
                 },
                 
                 ["physio-doctors-count"] = new QueryDefinition
@@ -389,6 +394,17 @@ namespace ClinicManagement.Services
                 // Escape single quotes for SQL
                 param = param.Replace("'", "''");
                 query = query.Replace($"{{{i}}}", param);
+            }
+
+            // Replace any remaining parameter placeholders with empty strings for optional parameters
+            if (!queryDef.RequiresParameters)
+            {
+                int placeholderIndex = 0;
+                while (query.Contains($"{{{placeholderIndex}}}"))
+                {
+                    query = query.Replace($"{{{placeholderIndex}}}", "");
+                    placeholderIndex++;
+                }
             }
 
             return query;
