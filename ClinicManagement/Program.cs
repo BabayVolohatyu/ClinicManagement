@@ -18,7 +18,6 @@ using ClinicManagement.Models.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 builder.Services.AddDbContext<ClinicDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -74,18 +73,11 @@ builder.Services.AddScoped<IService<PasswordChangeRequest>, PasswordChangeReques
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<PredefinedQueriesService>();
 
-
-
-builder.Services.AddControllers(options =>
-{
-    
-});
+builder.Services.AddControllers();
 
 builder.Services.Configure<RazorViewEngineOptions>(options =>
 {
     options.ViewLocationFormats.Clear();
-
-    
     options.ViewLocationFormats.Add("/Views/{1}/{0}.cshtml");
     options.ViewLocationFormats.Add("/Views/Facilities/{1}/{0}.cshtml");
     options.ViewLocationFormats.Add("/Views/Health/{1}/{0}.cshtml");
@@ -96,8 +88,6 @@ builder.Services.Configure<RazorViewEngineOptions>(options =>
     options.ViewLocationFormats.Add("/Views/Shared/{1}/{0}.cshtml");
     options.ViewLocationFormats.Add("/Views/Shared/_Navigation/{0}.cshtml");
 });
-
-
 
 builder.Services.AddControllersWithViews();
 
@@ -114,7 +104,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    
     app.UseHsts();
 }
 
@@ -125,9 +114,8 @@ app.UseRouting();
 
 app.UseMiddleware<JwtMiddleware>();
 
-app.UseAuthentication();  
+app.UseAuthentication();
 app.UseAuthorization();
-
 
 app.MapControllerRoute(
     name: "default",

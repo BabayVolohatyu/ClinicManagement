@@ -11,9 +11,7 @@ namespace ClinicManagement.Services
         Task<User?> LoginAsync(LoginModel model);
         Task<User> RegisterAsync(RegisterModel model);
         Task<User> GuestLoginAsync();
-        Task<bool> UserExistsAsync(string email);
         Task<User?> GetUserByEmailAsync(string email);
-        Task ResetPasswordAsync(string email, string newPassword);
     }
 
     public class AuthService : IAuthService
@@ -93,25 +91,9 @@ namespace ClinicManagement.Services
             return Convert.ToBase64String(bytes);
         }
 
-        public async Task<bool> UserExistsAsync(string email)
-        {
-            return await _context.Users.AnyAsync(u => u.Email == email);
-        }
-
         public async Task<User?> GetUserByEmailAsync(string email)
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-        }
-
-        public async Task ResetPasswordAsync(string email, string newPassword)
-        {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-            
-            if (user == null)
-                throw new ArgumentException("User not found.");
-
-            user.PasswordHash = HashPassword(newPassword);
-            await _context.SaveChangesAsync();
         }
 
         private bool VerifyPassword(string plain, string hash)

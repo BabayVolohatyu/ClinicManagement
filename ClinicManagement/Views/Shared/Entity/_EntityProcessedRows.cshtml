@@ -1,24 +1,31 @@
 @model dynamic
 
-@if (Model.ProcessedByAdmin != null)
-{
-    <tr>
-        <th>Processed By</th>
-        <td>
-            <a href="@Url.Action("Entity", "User", new { id = Model.ProcessedByAdmin.Id })">
-                @Model.ProcessedByAdmin.FirstName @(Model.ProcessedByAdmin.LastName ?? "") (@Model.ProcessedByAdmin.Email)
-            </a>
-        </td>
-    </tr>
+@{
+    var processedAt = Model?.ProcessedAt as DateTimeOffset?;
 }
 
-@if (Model.ProcessedAt.HasValue)
+@if (Model != null)
 {
-    <tr>
-        <th>Processed At</th>
-        <td>
-            <input value="@Model.ProcessedAt.Value.ToString("yyyy-MM-dd HH:mm:ss")" class="form-control-plaintext" readonly />
-        </td>
-    </tr>
+    @if (Model.ProcessedByAdmin != null)
+    {
+        <tr>
+            <th>Processed By</th>
+            <td>
+                <a href="@Url.Action("Entity", "User", new { id = Model.ProcessedByAdmin.Id })">
+                    @Model.ProcessedByAdmin.FirstName @(Model.ProcessedByAdmin.LastName ?? "") (@Model.ProcessedByAdmin.Email)
+                </a>
+            </td>
+        </tr>
+    }
+
+    @if (processedAt.HasValue)
+    {
+        <tr>
+            <th>Processed At</th>
+            <td>
+                <input value="@processedAt.Value.ToString("yyyy-MM-dd HH:mm:ss")" class="form-control-plaintext" readonly />
+            </td>
+        </tr>
+    }
 }
 

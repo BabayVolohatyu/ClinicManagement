@@ -60,13 +60,10 @@ namespace ClinicManagement.Controllers
         [Authorize(RoleType.Authorized, RoleType.Operator, RoleType.Admin)]
         public IActionResult RedirectToQueryManager(string queryKey, [FromForm] string[] parameters)
         {
-            
             var roleIdClaim = User.FindFirst("roleId");
             var isAuthorized = roleIdClaim != null && 
                               int.TryParse(roleIdClaim.Value, out int userRoleId) && 
                               (RoleType)userRoleId == RoleType.Authorized;
-            
-            
             
             if (isAuthorized)
             {
@@ -83,7 +80,6 @@ namespace ClinicManagement.Controllers
             }
             else
             {
-                
                 var urlHelper = Url;
                 var url = urlHelper.Action("Index", "QueryManager", new { queryKey = queryKey });
                 

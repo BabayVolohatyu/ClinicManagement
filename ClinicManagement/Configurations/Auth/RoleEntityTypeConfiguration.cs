@@ -1,5 +1,4 @@
 using ClinicManagement.Models.Auth;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
